@@ -13,12 +13,13 @@ directory. You will see the following files and directories:
       protected/           files that users don't need to see
       CHANGELOG            describing changes in every Kwalbum release
       COPYING              license of Kwalbum
-      .htaccess.....       example of what .htaccess should look like
+      .htaccess            example of what .htaccess should look like
       index.php            only php file the user should see directly
-      install.php..........temporary file to set up Kwalbum
+      install.php          temporary file to set up Kwalbum
       README               this file
 
-In the protected directory make application/logs and items writable.
+Move "protected" outside the web-accessible directory if possible.
+In "protected" make "application/logs" and "items" writable.
 
 REQUIREMENTS
 ------------
