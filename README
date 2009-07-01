@@ -5,18 +5,24 @@ Kwalbum Without Albums
 INSTALLATION
 ------------
 
-Please make sure the release file is unpacked under a Web-accessible
-directory. You shall see the following files and directories:
+Please make sure the release file is unpacked under a web-accessible
+directory. You will see the following files and directories:
 
-      protected/           kwalbum source files
+      css/                 cascading style sheets
+      js/                  javascript
+      protected/           files that users don't need to see
       CHANGELOG            describing changes in every Kwalbum release
       COPYING              license of Kwalbum
+      .htaccess.....       example of what .htaccess should look like
+      index.php            only php file the user should see directly
+      install.php..........temporary file to set up Kwalbum
       README               this file
 
+In the protected directory make application/logs and items writable.
 
 REQUIREMENTS
 ------------
 
 The minimum requirement by Kwalbum is that your Web server supports
-PHP 5.1.0 or above. Yii has been tested with Apache HTTP server
+PHP 5.2.0 or above. Kwalbum has been tested with Apache HTTP server
 on the Linux operating system.
