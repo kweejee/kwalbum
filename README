@@ -5,25 +5,24 @@ Kwalbum Without Albums
 INSTALLATION
 ------------
 
-Please make sure the release file is unpacked under a web-accessible
-directory. You will see the following files and directories:
-
-      css/                 cascading style sheets
-      js/                  javascript
-      protected/           files that users don't need to see
-      CHANGELOG            describing changes in every Kwalbum release
-      COPYING              license of Kwalbum
-      .htaccess            example of what .htaccess should look like
-      index.php            only php file the user should see directly
-      install.php          temporary file to set up Kwalbum
-      README               this file
-
-Move "protected" outside the web-accessible directory if possible.
-In "protected" make "application/logs" and "items" writable.
+1. Install Kohana from http://kohanaphp.com/
+2. Move the kwalbum directory to kohana's modules directory.
+3. Configure Kohana to use the Kwalbum module.
+   In kohana's application/config/config.php add
+    MODPATH.'kwalbum',
+   after
+    $config['modules'] = array
+    
+   See http://docs.kohanaphp.com/general/modules#configuring for more details.
+4. Create a writable directory for items to be uploaded to.  The default
+   configured location is application/items
+5. Move css and js directories to a public location
+6. Optionally, copy modules/kwalbum/config/kwalbum.php to
+   application/config/kwalbum.php and edit.  Note that the reason to copy the
+   file to applications/config is to ensure it is not overwritten when the
+   Kwalbum module is updated.
 
 REQUIREMENTS
 ------------
 
-The minimum requirement by Kwalbum is that your Web server supports
-PHP 5.2.0 or above. Kwalbum has been tested with Apache HTTP server
-on the Linux operating system.
+Same requirements as Kohana
