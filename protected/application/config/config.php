@@ -7,6 +7,11 @@
 $config['site_domain'] = '/';
 
 /**
+ * Item upload directory.
+ */
+$config['item_directory'] = APPPATH.'../items';
+
+/**
  * Force a default protocol to be used by the site. If no site_protocol is
  * specified, then the current protocol is used, or when possible, only an
  * absolute path (with no protocol/domain) is used.
@@ -121,5 +126,5 @@ $config['modules'] = array
 	MODPATH.'gmaps',     // Google Maps integration
 	MODPATH.'archive',   // Archive utility
 	// MODPATH.'payment',   // Online payments
-	// MODPATH.'unit_test', // Unit testing
+	MODPATH.'unit_test', // Unit testing
 );
