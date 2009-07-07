@@ -40,6 +40,7 @@ $config['dbtables'] = array
 );
 /**
  * Secret key for remote sites to get data about your items
- * Random characters are best.
+ * Random characters are best
+ * No more than 45 characters
  */
-$config['secret_key'] = 'change me';
+$config['key'] = 'change me';
