@@ -21,3 +21,25 @@ $config['url'] = '/index.php/kwalbum';
  */
 $config['css_url'] = 'css';
 $config['js_url'] = 'js';
+/**
+ * Database table names
+ */
+$config['dbtables'] = array
+(
+	'items' => 'kwalbum_items',
+	'users' => 'kwalbum_users',
+	'locations' => 'kwalbum_locations',
+	'tags' => 'kwalbum_tags',
+	'items_tags' => 'kwalbum_items_tags',
+	'persons' => 'kwalbum_persons',
+	'items_persons' => 'kwalbum_items_persons',
+	'comments' => 'kwalbum_comments',
+	'favorites' => 'kwalbum_favorites',
+	'externals' => 'kwalbum_externals',
+	'externals_items' => 'kwalbum_external_items',
+);
+/**
+ * Secret key for remote sites to get data about your items
+ * Random characters are best.
+ */
+$config['secret_key'] = 'change me';

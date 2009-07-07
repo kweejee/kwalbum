@@ -21,8 +21,11 @@ INSTALLATION
    application/config/kwalbum.php and edit.  Note that the reason to copy the
    file to applications/config is to ensure it is not overwritten when the
    Kwalbum module is updated.
+7. Make sure application/config/database.php has been created and configured.
+   A starting file can be copied from system/config/
 
 REQUIREMENTS
 ------------
 
-Same requirements as Kohana
+Same PHP requirements as Kohana
+MySQL 5.0.16

@@ -22,4 +22,9 @@ class Admin_Controller extends Kwalbum_Controller
 		$this->template->title = 'Admin Only';
 
 	}
+
+	function setup()
+	{
+
+	}
 }
