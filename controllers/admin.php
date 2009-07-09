@@ -23,8 +23,13 @@ class Admin_Controller extends Kwalbum_Controller
 
 	}
 
-	function setup()
+
+	function test()
 	{
 
+		$user = new User_Model();
+
+		$this->template->content = $user->get_name(1);
+		$this->template->title = 'Test';
 	}
 }

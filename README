@@ -12,7 +12,6 @@ INSTALLATION
     MODPATH.'kwalbum',
    after
     $config['modules'] = array
-    
    See http://docs.kohanaphp.com/general/modules#configuring for more details.
 4. Create a writable directory for items to be uploaded to.  The default
    configured location is application/items
@@ -23,7 +22,10 @@ INSTALLATION
    Kwalbum module is updated.
 7. Make sure application/config/database.php has been created and configured.
    A starting file can be copied from system/config/
-
+8. Open Kwalbum in your web browser and go to the install page.
+   If Kwalbum is at http://localhost/kwalbum/index.php then the install page
+   is at http://localhost/kwalbum/index.php/install
+  
 REQUIREMENTS
 ------------
 
