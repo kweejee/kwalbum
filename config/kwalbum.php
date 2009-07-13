@@ -35,8 +35,8 @@ $config['dbtables'] = array
 	'items_persons' => 'kwalbum_items_persons',
 	'comments' => 'kwalbum_comments',
 	'favorites' => 'kwalbum_favorites',
-	'externals' => 'kwalbum_externals',
-	'externals_items' => 'kwalbum_external_items',
+	'sites' => 'kwalbum_sites',
+	'items_sites' => 'kwalbum_items_sites',
 );
 /**
  * Secret key for remote sites to get data about your items

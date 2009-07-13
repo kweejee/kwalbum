@@ -13,10 +13,22 @@
 ?>
 <div class="box">
 	<h2>setup stage 1</h2>
-	form to get first OpenId and name/title to show
-	<form action='<?php echo URL; ?>install' method='post'>
-	OpenId: <input type='text' name='openid'/><br/>
-	Name: <input type='text'name='name'/>
-	<input type='submit' name='action' value='Add Kwalbum to Database'/>
-	</form>
+<?php
+	echo (empty($errors['db'])) ? '' : '<div class="errors">'.$errors['db'].'</div>';
+
+	echo form::open();
+	echo form::label('openid', 'OpenId for Administrator');
+	echo form::input('openid', ($form['openid']));
+	echo (empty($errors['openid'])) ? '' : $errors['openid'];
+	echo '<br/>';
+	echo form::label('name', 'Name to Display');
+	echo form::input('name', ($form['name']));
+	echo $_user['minNameLength'].' to '.$_user['maxNameLength'].' characters long';
+	echo (empty($errors['name'])) ? '' : $errors['name'];
+	echo '<br/>';
+
+	echo form::submit('submit', 'Add Kwalbum to Database');
+	echo '<br />';
+	echo form::close();
+?>
 </div>

@@ -12,7 +12,5 @@
 
 ?>
 <div class="box">
-	<h2>setup stage 2</h2>
-	if errors then show them
-	else show completion and delete install message
+	Installation is complete.  You can now delete <strong>modules/kwalbum/controllers/install.php</strong>.
 </div>
