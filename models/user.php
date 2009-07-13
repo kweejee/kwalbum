@@ -24,7 +24,7 @@ class User_Model extends Model
 	public function get_row($userId = 0)
 	{
 		$this->db->where('id', $userId);
-		return $this->db->get($this->_table, $userId);
+		return $this->db->get($this->_table, 1);
 	}
 	public function get_name($userId)
 	{
