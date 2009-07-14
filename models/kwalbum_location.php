@@ -10,7 +10,7 @@
  * @since 3.0 Jul 6, 2009
  */
 
-class Location_Model extends ORM
+class Kwalbum_Location_Model extends ORM
 {
-	protected $has_and_belongs_to_many = array('items');
+	protected $has_many = array('items');
 }

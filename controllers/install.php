@@ -20,16 +20,15 @@ class Install_Controller extends Kwalbum_Controller
 	function index()
 	{
 		$this->template->title = 'Install';
-		$user = new User_Model();
-		$db = Database::instance();
 
 		// Uncomment to delete everything and start over
-		//$this->_drop_tables($db);
+		//$this->_drop_tables();
 
 		// Do not continue installation if at least 1 user exists in the database
 		try
 		{
-			if ($user->total > 0)
+			$user = ORM::factory('kwalbum_user', 1);
+			if ($user->loaded == true)
 			{
 				$view = new View('install/2');
 				$this->template->content = $view;
@@ -68,9 +67,13 @@ class Install_Controller extends Kwalbum_Controller
 
 				try
 				{
-					$this->_create_tables($db);
+					$this->_create_tables();
 
-					$user->insert($name, $openid);
+					$user = new Kwalbum_User_Model();
+					$user->name = $name;
+					$user->openid = $openid;
+					$user->permission_level = 5;
+					$user->save();
 					$this->template->content = new View('install/2');
 					return;
 				}
@@ -104,30 +107,32 @@ class Install_Controller extends Kwalbum_Controller
 	 * @param  Database to connect to
 	 * @return void
 	 */
-	private function _drop_tables($db)
+	private function _drop_tables()
 	{
+		$db = Database::instance();
+
 		// Drop order is arranged based on foreign key restraints.
-		$sql = 'DROP TABLE IF EXISTS `'.Kohana::config('kwalbum.dbtables.comments').'`';
+		$sql = 'DROP TABLE IF EXISTS `kwalbum_comments`';
 		$db->query($sql);
-		$sql = 'DROP TABLE IF EXISTS `'.Kohana::config('kwalbum.dbtables.favorites').'`';
+		$sql = 'DROP TABLE IF EXISTS `kwalbum_favorites`';
 		$db->query($sql);
-		$sql = 'DROP TABLE IF EXISTS `'.Kohana::config('kwalbum.dbtables.items_tags').'`';
+		$sql = 'DROP TABLE IF EXISTS `kwalbum_items_kwalbum_tags`';
 		$db->query($sql);
-		$sql = 'DROP TABLE IF EXISTS `'.Kohana::config('kwalbum.dbtables.items_persons').'`';
+		$sql = 'DROP TABLE IF EXISTS `kwalbum_items_kwalbum_persons`';
 		$db->query($sql);
-		$sql = 'DROP TABLE IF EXISTS `'.Kohana::config('kwalbum.dbtables.items_sites').'`';
+		$sql = 'DROP TABLE IF EXISTS `kwalbum_items_kwalbum_sites`';
 		$db->query($sql);
-		$sql = 'DROP TABLE IF EXISTS `'.Kohana::config('kwalbum.dbtables.tags').'`';
+		$sql = 'DROP TABLE IF EXISTS `kwalbum_tags`';
 		$db->query($sql);
-		$sql = 'DROP TABLE IF EXISTS `'.Kohana::config('kwalbum.dbtables.persons').'`';
+		$sql = 'DROP TABLE IF EXISTS `kwalbum_persons`';
 		$db->query($sql);
-		$sql = 'DROP TABLE IF EXISTS `'.Kohana::config('kwalbum.dbtables.sites').'`';
+		$sql = 'DROP TABLE IF EXISTS `kwalbum_sites`';
 		$db->query($sql);
-		$sql = 'DROP TABLE IF EXISTS `'.Kohana::config('kwalbum.dbtables.items').'`';
+		$sql = 'DROP TABLE IF EXISTS `kwalbum_items`';
 		$db->query($sql);
-		$sql = 'DROP TABLE IF EXISTS `'.Kohana::config('kwalbum.dbtables.users').'`';
+		$sql = 'DROP TABLE IF EXISTS `kwalbum_users`';
 		$db->query($sql);
-		$sql = 'DROP TABLE IF EXISTS `'.Kohana::config('kwalbum.dbtables.locations').'`';
+		$sql = 'DROP TABLE IF EXISTS `kwalbum_locations`';
 		$db->query($sql);
 	}
 
@@ -136,11 +141,12 @@ class Install_Controller extends Kwalbum_Controller
 	 * @param  Database to connect to
 	 * @return void
 	 */
-	private function _create_tables($db)
+	private function _create_tables()
 	{
+		$db = Database::instance();
+
 		// Users
-		$sql = 'CREATE  TABLE IF NOT EXISTS `'
-		        .Kohana::config('kwalbum.dbtables.users').'`(
+		$sql = 'CREATE  TABLE IF NOT EXISTS `kwalbum_users`(
 		          `id` SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT ,
 		          `name` TINYTEXT NOT NULL ,
 		          `openid` TINYTEXT NOT NULL ,
@@ -154,8 +160,7 @@ class Install_Controller extends Kwalbum_Controller
 		$db->query($sql);
 
 		// Locations
-		$sql = 'CREATE TABLE IF NOT EXISTS `'
-		        .Kohana::config('kwalbum.dbtables.locations').'`(
+		$sql = 'CREATE TABLE IF NOT EXISTS `kwalbum_locations`(
 		          `id` SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT ,
 		          `name` VARCHAR('.$this->_user['maxNameLength'].') NOT NULL ,
 		          `latitude` DECIMAL(9,6) NOT NULL DEFAULT 0,
@@ -169,8 +174,7 @@ class Install_Controller extends Kwalbum_Controller
 		$db->query($sql);
 
 		// Items
-		$sql = 'CREATE  TABLE IF NOT EXISTS `'
-		        .Kohana::config('kwalbum.dbtables.items').'`(
+		$sql = 'CREATE  TABLE IF NOT EXISTS `kwalbum_items`(
 		          `id` MEDIUMINT UNSIGNED NOT NULL AUTO_INCREMENT ,
 		          `type_id` TINYINT UNSIGNED NOT NULL ,
 		          `user_id` SMALLINT UNSIGNED NOT NULL ,
@@ -193,23 +197,18 @@ class Install_Controller extends Kwalbum_Controller
 		          INDEX `user_id` (`user_id` ASC) ,
 		          INDEX `coordinates` (`latitude` ASC, `longitude` ASC) ,
 		          INDEX `sort_dt` (`sort_dt` ASC) ,
-		          CONSTRAINT `location_id`
-		            FOREIGN KEY (`location_id` )
-		            REFERENCES `mydb`.`locations` (`id` )
-		            ON DELETE NO ACTION
-		            ON UPDATE NO ACTION,
 		          CONSTRAINT `user_id_i`
 		            FOREIGN KEY (`user_id` )
-		            REFERENCES `mydb`.`users` (`id` )
-		            ON DELETE NO ACTION
-		            ON UPDATE NO ACTION
+		            REFERENCES `kwalbum_users` (`id` ),
+		          CONSTRAINT `location_id_i`
+		            FOREIGN KEY (`location_id` )
+		            REFERENCES `kwalbum_locations` (`id` )
 		        ) ENGINE = InnoDB
 		        DEFAULT CHARACTER SET = utf8';
 		$db->query($sql);
 
 		// Comments
-		$sql = 'CREATE  TABLE IF NOT EXISTS `'
-		        .Kohana::config('kwalbum.dbtables.comments').'`(
+		$sql = 'CREATE  TABLE IF NOT EXISTS `kwalbum_comments`(
 		          `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
 		          `item_id` MEDIUMINT UNSIGNED NOT NULL,
 		          `name` TINYTEXT NOT NULL,
@@ -221,7 +220,7 @@ class Install_Controller extends Kwalbum_Controller
 		          INDEX `create_dt` (`create_dt` ASC) ,
 		          CONSTRAINT `item_id`
 		            FOREIGN KEY (`item_id`)
-		            REFERENCES `'.Kohana::config('kwalbum.dbtables.items').'` (`id`)
+		            REFERENCES `kwalbum_items` (`id`)
 		            ON DELETE CASCADE
 		            ON UPDATE CASCADE
 		        ) ENGINE = InnoDB
@@ -229,8 +228,7 @@ class Install_Controller extends Kwalbum_Controller
 		$db->query($sql);
 
 		// Tags
-		$sql = 'CREATE  TABLE IF NOT EXISTS `'
-		        .Kohana::config('kwalbum.dbtables.tags').'`(
+		$sql = 'CREATE  TABLE IF NOT EXISTS `kwalbum_tags`(
 		          `id` SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT ,
 		          `name` TINYTEXT NOT NULL ,
 		          `count` SMALLINT UNSIGNED NOT NULL ,
@@ -241,8 +239,7 @@ class Install_Controller extends Kwalbum_Controller
 		$db->query($sql);
 
 		// Items_Tags relationship
-		$sql = 'CREATE  TABLE IF NOT EXISTS `'
-		        .Kohana::config('kwalbum.dbtables.items_tags').'`(
+		$sql = 'CREATE  TABLE IF NOT EXISTS `kwalbum_items_kwalbum_tags`(
 		          `item_id` MEDIUMINT UNSIGNED NOT NULL ,
 		          `tag_id` SMALLINT UNSIGNED NOT NULL ,
 		          INDEX `item_id` (`item_id` ASC) ,
@@ -250,12 +247,12 @@ class Install_Controller extends Kwalbum_Controller
 		          PRIMARY KEY (`item_id`, `tag_id`) ,
 		          CONSTRAINT `item_id_t`
 		            FOREIGN KEY (`item_id` )
-		            REFERENCES `'.Kohana::config('kwalbum.dbtables.items').'` (`id` )
+		            REFERENCES `kwalbum_items` (`id` )
 		            ON DELETE CASCADE
 		            ON UPDATE CASCADE,
 		          CONSTRAINT `tag_id`
 		            FOREIGN KEY (`tag_id` )
-		            REFERENCES `'.Kohana::config('kwalbum.dbtables.tags').'` (`id` )
+		            REFERENCES `kwalbum_tags` (`id` )
 		            ON DELETE CASCADE
 		            ON UPDATE CASCADE
 		        ) ENGINE = InnoDB
@@ -263,8 +260,7 @@ class Install_Controller extends Kwalbum_Controller
 		$db->query($sql);
 
 		// Persons
-		$sql = 'CREATE  TABLE IF NOT EXISTS `'
-		        .Kohana::config('kwalbum.dbtables.persons').'`(
+		$sql = 'CREATE  TABLE IF NOT EXISTS `kwalbum_persons`(
 		          `id` SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT ,
 		          `name` TINYTEXT NOT NULL ,
 		          `count` SMALLINT UNSIGNED NOT NULL ,
@@ -275,8 +271,7 @@ class Install_Controller extends Kwalbum_Controller
 		$db->query($sql);
 
 		// Items_Persons relationship
-		$sql = 'CREATE  TABLE IF NOT EXISTS `'
-		        .Kohana::config('kwalbum.dbtables.items_persons').'`(
+		$sql = 'CREATE  TABLE IF NOT EXISTS `kwalbum_items_kwalbum_persons`(
 		          `item_id` MEDIUMINT UNSIGNED NOT NULL ,
 		          `person_id` SMALLINT UNSIGNED NOT NULL ,
 		          INDEX `item_id` (`item_id` ASC) ,
@@ -284,12 +279,12 @@ class Install_Controller extends Kwalbum_Controller
 		          PRIMARY KEY (`item_id`, `person_id`) ,
 		          CONSTRAINT `item_id_p`
 		            FOREIGN KEY (`item_id` )
-		            REFERENCES `'.Kohana::config('kwalbum.dbtables.items').'` (`id` )
+		            REFERENCES `kwalbum_items` (`id` )
 		            ON DELETE CASCADE
 		            ON UPDATE CASCADE,
 		          CONSTRAINT `person_id`
 		            FOREIGN KEY (`person_id` )
-		            REFERENCES `'.Kohana::config('kwalbum.dbtables.persons').'` (`id` )
+		            REFERENCES `kwalbum_persons` (`id` )
 		            ON DELETE CASCADE
 		            ON UPDATE CASCADE
 		        ) ENGINE = InnoDB
@@ -297,8 +292,7 @@ class Install_Controller extends Kwalbum_Controller
 		$db->query($sql);
 
 		// Favorites, relationship between Items and Users
-		$sql = 'CREATE  TABLE IF NOT EXISTS `'
-		        .Kohana::config('kwalbum.dbtables.favorites').'`(
+		$sql = 'CREATE  TABLE IF NOT EXISTS `kwalbum_favorites`(
 		          `user_id` SMALLINT UNSIGNED NOT NULL ,
 		          `item_id` MEDIUMINT UNSIGNED NOT NULL ,
 		          `add_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
@@ -306,12 +300,12 @@ class Install_Controller extends Kwalbum_Controller
 		          PRIMARY KEY (`user_id`, `item_id`) ,
 		          CONSTRAINT `user_id_f`
 		            FOREIGN KEY (`user_id`)
-		            REFERENCES `'.Kohana::config('kwalbum.dbtables.users').'` (`id`)
+		            REFERENCES `kwalbum_users` (`id`)
 		            ON DELETE CASCADE
 		            ON UPDATE CASCADE,
 		          CONSTRAINT `item_id_f`
 		            FOREIGN KEY (`item_id`)
-		            REFERENCES `'.Kohana::config('kwalbum.dbtables.items').'` (`id`)
+		            REFERENCES `kwalbum_items` (`id`)
 		            ON DELETE CASCADE
 		            ON UPDATE CASCADE
 		        ) ENGINE = InnoDB
@@ -319,8 +313,7 @@ class Install_Controller extends Kwalbum_Controller
 		$db->query($sql);
 
 		// Sites, external sites to import items from
-		$sql = 'CREATE  TABLE IF NOT EXISTS `'
-		        .Kohana::config('kwalbum.dbtables.sites').'`(
+		$sql = 'CREATE  TABLE IF NOT EXISTS `kwalbum_sites`(
 		          `id` TINYINT UNSIGNED NOT NULL AUTO_INCREMENT ,
 		          `url` VARCHAR(100) NOT NULL ,
 		          `key` VARCHAR(45) NOT NULL ,
@@ -331,8 +324,7 @@ class Install_Controller extends Kwalbum_Controller
 		$db->query($sql);
 
 		// Items_Sites relationship for imported items
-		$sql = 'CREATE  TABLE IF NOT EXISTS `'
-		        .Kohana::config('kwalbum.dbtables.items_sites').'`(
+		$sql = 'CREATE  TABLE IF NOT EXISTS `kwalbum_items_kwalbum_sites`(
 		          `item_id` MEDIUMINT UNSIGNED NOT NULL ,
 		          `site_id` TINYINT UNSIGNED NOT NULL ,
 		          `external_item_id` MEDIUMINT UNSIGNED NOT NULL ,
@@ -342,12 +334,12 @@ class Install_Controller extends Kwalbum_Controller
 		          INDEX `external_item_id` (`external_item_id` ASC) ,
 		          CONSTRAINT `item_id_s`
 		            FOREIGN KEY (`item_id` )
-		            REFERENCES `'.Kohana::config('kwalbum.dbtables.items').'` (`id` )
+		            REFERENCES `kwalbum_items` (`id` )
 		            ON DELETE CASCADE
 		            ON UPDATE CASCADE,
 		          CONSTRAINT `site_id`
 		            FOREIGN KEY (`site_id` )
-		            REFERENCES `'.Kohana::config('kwalbum.dbtables.sites').'` (`id` )
+		            REFERENCES `kwalbum_sites` (`id` )
 		            ON DELETE RESTRICT
 		            ON UPDATE CASCADE
 		        ) ENGINE = InnoDB

@@ -10,11 +10,11 @@
  * @since 3.0 Jul 6, 2009
  */
 
-class Item_Model extends ORM
+class Kwalbum_Item_Model extends ORM
 {
-	protected $belongs_to = array('user');
+	protected $belongs_to = array('users', 'locations');
 	protected $has_many = array('comments');
-	protected $has_and_belongs_to_many = array('locations', 'tags', 'persons');
+	protected $has_and_belongs_to_many = array('tags', 'persons');
 	protected $types = array(
 		1 => 'gif', 2 => 'jpg', 3 => 'png',
 		40 => 'wmv',
@@ -33,5 +33,20 @@ class Item_Model extends ORM
 		55 => 'mp4',
 		255 => 'description only'
 	);
+	/*private $_table;
 
+	public function __construct($id = NULL)
+	{
+		parent::__construct($id);
+		$this->_table = Kohana::config('kwalbum.dbtables.items');
+	}
+
+	public function get_row($itemId = 0)
+	{
+		$this->db->where('id', $itemId);
+		$result = $this->db->get($this->_table, 1);
+		if ( ! $result->valid())
+			return false;
+		return $result;
+	}*/
 }

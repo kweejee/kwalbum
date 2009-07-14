@@ -30,4 +30,4 @@ REQUIREMENTS
 ------------
 
 Same PHP requirements as Kohana
-MySQL 5.0.16
+MySQL 5.1+
