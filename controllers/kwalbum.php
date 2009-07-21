@@ -10,12 +10,20 @@
  * @since 3.0 Jun 30, 2009
  */
 
-class Kwalbum_Controller extends Kwalbum_Template_Controller
+class Kwalbum_Controller extends Template_Controller
 {
 	// allow to run in production
 	const ALLOW_PRODUCTION = true;
 
-	function index()
+	private $_main_template;
+
+	public function __construct()
+	{
+		parent::__construct();
+		$this->template = new View('kwalbum/template');
+	}
+
+	public function index()
 	{
 		$this->template->content = new View('index');
 

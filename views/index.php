@@ -11,6 +11,4 @@
  */
 
 ?>
-<div class="box">
 	main entry page stuff
-</div>

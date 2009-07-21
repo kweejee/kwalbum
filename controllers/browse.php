@@ -50,6 +50,5 @@ class Browse_Controller extends Kwalbum_Controller
 
 		$args = Router::$arguments;
 		$view->tempInfo = 'location = '.$args[0];
-
 	}
 }

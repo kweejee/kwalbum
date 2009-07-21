@@ -25,24 +25,16 @@ define('URL', Kohana::config('kwalbum.url', TRUE));
 
 </head>
 <body>
-	<p>
-		<a href='<?php echo URL?>'>main page</a> -
-		<a href='<?php echo URL?>item/1'>single item</a> -
-		<a href='<?php echo URL?>admin'>admin</a>
-		<br/>
-		browse by:
-		<a href='<?php echo URL?>2005'>single year</a> -
-		<a href='<?php echo URL?>2009/6/20'>full date</a> -
-		<a href='<?php echo URL?>tag/test'>tag</a> -
-		<a href='<?php echo URL?>Home'>location</a> -
-	</p>
+<?php View::factory('kwalbum/mainmenu')->render(true); ?>
 
+<div class="box">
 	<?php echo $content ?>
+</div>
 
-	<p class="copyright">
-		Rendered in {execution_time} seconds, using {memory_usage} of memory<br />
-		Powered by Kwalbum and Kohana
-	</p>
+<p class="copyright">
+	Rendered in {execution_time} seconds, using {memory_usage} of memory<br />
+	Powered by Kwalbum and Kohana
+</p>
 
 </body>
 </html>
