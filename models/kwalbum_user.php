@@ -24,7 +24,10 @@ class Kwalbum_User_Model extends ORM
 	}
 	public function delete()
 	{
-		$this->db->query("UPDATE kwalbum_items SET user_id=0, hide_level=100 WHERE id=$this->id");
+		// do not delete main admin user or default deleted user
+		if ($this->id < 3)
+			return $this;
+		$this->db->query("UPDATE kwalbum_items SET user_id=2, hide_level=100 WHERE user_id=$this->id");
 		$this->db->query("DELETE FROM kwalbum_favorites WHERE user_id=$this->id");
 		parent::delete();
 	}

@@ -73,7 +73,16 @@ class Kwalbum_Item_Model extends ORM
 	{
 		$this->db->query("DELETE FROM kwalbum_comments WHERE item_id=$this->id");
 		$this->db->query("UPDATE kwalbum_locations SET count=count-1 WHERE id=$this->location_id AND count>0");
-		// TODO: update counts for persons and tags, delete rows from pivot tables
+		foreach ($this->kwalbum_tags as $tag)
+		{
+			$tag_id = $tag->id;
+			$this->db->query("UPDATE kwalbum_tags SET count=count-1 WHERE id=$tag_id AND count>0");
+		}
+		foreach ($this->kwalbum_persons as $person)
+		{
+			$person_id = $person->id;
+			$this->db->query("UPDATE kwalbum_persons SET count=count-1 WHERE id=$person_id AND count>0");
+		}
 		parent::delete();
 	}
 	public function __get($id)

@@ -315,7 +315,7 @@ class Kwalbum_Model_Test extends Unit_Test_Case
 		$user->delete();
 
 		$item->reload();
-		$this->assert_equal(0, $item->location_id);
+		$this->assert_equal(100, $item->hide_level);
 	}
 	public function always_pass_test()
 	{
@@ -342,7 +342,7 @@ class Kwalbum_Model_Test extends Unit_Test_Case
 		$db->query($sql);
 		$sql = 'DELETE FROM `kwalbum_items`';
 		$db->query($sql);
-		$sql = 'DELETE FROM `kwalbum_users` WHERE id > 1';
+		$sql = 'DELETE FROM `kwalbum_users` WHERE id > 2';
 		$db->query($sql);
 		$sql = 'DELETE FROM `kwalbum_locations` WHERE id > 1';
 		$db->query($sql);
