@@ -25,7 +25,7 @@ class Kwalbum_Controller extends Template_Controller
 
 	public function index()
 	{
-		$this->template->content = new View('index');
+		$this->template->content = new View('kwalbum/index');
 
 	}
 }

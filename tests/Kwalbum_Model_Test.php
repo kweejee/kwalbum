@@ -50,34 +50,304 @@ class Kwalbum_Model_Test extends Unit_Test_Case
 		$location->delete();
 		$this->assert_empty($location->id);
 	}
+	public function add_and_delete_person_test()
+	{
+		$person = new Kwalbum_Person_Model();
+		$person->name = 'Me';
+		$this->assert_empty($person->id);
+		$person->save();
+		$this->assert_not_empty($person->id);
+		$person->delete();
+		$this->assert_empty($person->id);
+	}
+	public function add_and_delete_tag_test()
+	{
+		$tag = new Kwalbum_Tag_Model();
+		$tag->name = 'blue sky';
+		$this->assert_empty($tag->id);
+		$tag->save();
+		$this->assert_not_empty($tag->id);
+		$tag->delete();
+		$this->assert_empty($tag->id);
+	}
 
 	public function add_and_delete_item_test()
 	{
-		$user = new Kwalbum_User_Model();
-		$user->name = 'Item Tester';
-		$user->openid = 'testid@example.com';
-		$user->permission_level = 4;
-		$user->save();
-
-		$location = new Kwalbum_Location_Model();
-		$location->name = 'Item Is Here';
-		$location->save();
-
+		// create location if does not exist yet
+		$location = ORM::factory('kwalbum_location')->where('name', 'Item Is Here')->find();
+		if (!$location->loaded)
+		{
+			$location->name = 'Item Is Here';
+			$location->save();
+		}
+		$this->assert_not_empty($location->id);
+		$count = $location->count;
 		$item = new Kwalbum_Item_Model();
-		$item->user_id = $user->id;
+		$item->user_id = 1;
 		$item->location_id = $location->id;
 		$this->assert_empty($item->id);
 		$item->save();
+		$location->reload();
+		$this->assert_same($count+1, $location->count);
 		$this->assert_not_empty($item->id);
 		$item->delete();
+		$location->reload();
+		$this->assert_same($count, $location->count);
 		$this->assert_empty($item->id);
-
-		$location->delete();
-		$user->delete();
 	}
 
-	public function teardown()
+	public function item_tag_test()
+	{
+		$item = ORM::factory('kwalbum_item');
+		$item->user_id = 1;
+		$item->location_id = 1;
+		$item->save();
+		$this->assert_not_empty($item->id);
+
+		$tag = ORM::factory('kwalbum_tag');
+		$tag->name = 'tree tag';
+		$tag->save();
+		$this->assert_equal(0,$tag->count);
+		$item->add($tag);
+
+		$tag2 = ORM::factory('kwalbum_tag');
+		$tag2->name = 'second tag thing';
+		$tag2->save();
+		$item->add($tag2);
+		$item->save();
+
+		$this->assert_equal($tag->name, $item->tags[0]->name);
+		$this->assert_not_empty($item->tags[1]);
+		$tag->reload();
+		$tag2->reload();
+		$this->assert_equal(1, $tag->count);
+		$this->assert_equal(1, $tag2->count);
+
+		$item->remove($tag);
+		$item->save();
+		$item->add($tag2);
+		$item->save();
+		$tag->reload();
+		$tag2->reload();
+		$this->assert_equal(0,$tag->count);
+		$this->assert_equal(1,$tag2->count);
+		$this->assert_empty($item->tags[1]);
+	}
+
+	public function delete_tag_of_item_test()
+	{
+		$item = ORM::factory('kwalbum_item');
+		$item->user_id = 1;
+		$item->location_id = 1;
+		$item->save();
+		$tag = ORM::factory('kwalbum_tag');
+		$tag->name = 'tree tag';
+		$tag->save();
+		$item->add($tag);
+		$tag2 = ORM::factory('kwalbum_tag');
+		$tag2->name = 'second tag thing';
+		$tag2->save();
+		$item->add($tag2);
+		$item->save();
+		$this->assert_not_empty($item->tags[0]);
+		$this->assert_not_empty($item->tags[1]);
+
+		$tag->delete();
+		$item->reload();
+		$this->assert_not_empty($item->tags[0]);
+		$this->assert_empty($item->tags[1]);
+	}
+
+	public function delete_item_with_tag_test()
+	{
+		$tag = ORM::factory('kwalbum_tag');
+		$tag->name = 'tree tag';
+		$tag->save();
+		$item = ORM::factory('kwalbum_item');
+		$item->user_id = 1;
+		$item->location_id = 1;
+		$item->add($tag);
+		$item->save();
+		$item2 = ORM::factory('kwalbum_item');
+		$item2->user_id = 1;
+		$item2->location_id = 1;
+		$item2->add($tag);
+		$item2->save();
+		$tag->reload();
+		$this->assert_equal(2, $tag->count);
+
+		$item->delete();
+		$tag->reload();
+		$this->assert_equal(1, $tag->count);
+		$item2->delete();
+		$tag->reload();
+		$this->assert_equal(0, $tag->count);
+	}
+
+	public function item_person_test()
+	{
+		$item = ORM::factory('kwalbum_item');
+		$item->user_id = 1;
+		$item->location_id = 1;
+		$item->save();
+		$this->assert_not_empty($item->id);
+
+		$person1 = ORM::factory('kwalbum_person');
+		$person1->name = 'person 1';
+		$person1->save();
+		$this->assert_equal(0,$person1->count);
+		$item->add($person1);
+
+		$person2 = ORM::factory('kwalbum_person');
+		$person2->name = 'second person';
+		$person2->save();
+		$item->add($person2);
+		$item->save();
+
+		$this->assert_equal($person1->name, $item->persons[0]->name);
+		$this->assert_not_empty($item->persons[1]);
+		$person1->reload();
+		$person2->reload();
+		$this->assert_equal(1, $person1->count);
+		$this->assert_equal(1, $person2->count);
+
+		$item->remove($person1);
+		$item->save();
+		$item->add($person2);
+		$item->save();
+		$person1->reload();
+		$person2->reload();
+		$this->assert_equal(0,$person1->count);
+		$this->assert_equal(1,$person2->count);
+		$this->assert_empty($item->persons[1]);
+
+		$item->add($person1);
+		$item->save();
+		$person1->reload();
+		$this->assert_equal(1, $person1->count);
+	}
+
+	public function delete_person_of_item_test()
+	{
+		$item = ORM::factory('kwalbum_item');
+		$item->user_id = 1;
+		$item->location_id = 1;
+		$item->save();
+		$person1 = ORM::factory('kwalbum_person');
+		$person1->name = 'person 1';
+		$person1->save();
+		$item->add($person1);
+		$person2 = ORM::factory('kwalbum_person');
+		$person2->name = 'second person';
+		$person2->save();
+		$item->add($person2);
+		$item->save();
+		$this->assert_not_empty($item->persons[0]);
+		$this->assert_not_empty($item->persons[1]);
+
+		$person2->delete();
+		$item->reload();
+		$this->assert_not_empty($item->persons[0]);
+		$this->assert_empty($item->persons[1]);
+	}
+
+	public function delete_item_with_person_test()
+	{
+		$person1 = ORM::factory('kwalbum_person');
+		$person1->name = 'person 1';
+		$person1->save();
+		$item = ORM::factory('kwalbum_item');
+		$item->user_id = 1;
+		$item->location_id = 1;
+		$item->add($person1);
+		$item->save();
+		$item2 = ORM::factory('kwalbum_item');
+		$item2->user_id = 1;
+		$item2->location_id = 1;
+		$item2->add($person1);
+		$item2->save();
+		$person1->reload();
+		$this->assert_equal(2, $person1->count);
+
+		$item->delete();
+		$person1->reload();
+		$this->assert_equal(1, $person1->count);
+		$item2->delete();
+		$person1->reload();
+		$this->assert_equal(0, $person1->count);
+	}
+
+	public function delete_location_of_item_test()
+	{
+		$location = new Kwalbum_Location_Model();
+		$location->name = 'Here';
+		$location->save();
+		$item = ORM::factory('kwalbum_item');
+		$item->user_id = 1;
+		$item->location_id = $location->id;
+		$item->save();
+		$item2 = ORM::factory('kwalbum_item');
+		$item2->user_id = 1;
+		$item2->location_id = $location->id;
+		$item2->save();
+
+		$default_location = ORM::factory('kwalbum_location', 1);
+		// sanity check that previous tests did not change the count
+		$this->assert_equal(0, $default_location->count);
+
+		$location->delete();
+
+		$item->reload();
+		$this->assert_equal(1, $item->location_id);
+		$default_location->reload();
+		$this->assert_equal(2, $default_location->count);
+	}
+
+	public function delete_user_of_item_test()
+	{
+		$user = new Kwalbum_User_Model();
+		$user->name = 'Tester Personer';
+		$user->save();
+		$item = new Kwalbum_Item_Model();
+		$item->user_id = $user->id;
+		$item->location_id = 1;
+		$item->save();
+		$user->delete();
+
+		$item->reload();
+		$this->assert_equal(0, $item->location_id);
+	}
+	public function always_pass_test()
 	{
 
+	}
+	public function teardown()
+	{
+		$db = Database::instance();
+		$sql = 'DELETE FROM `kwalbum_comments`';
+		$db->query($sql);
+		$sql = 'DELETE FROM `kwalbum_favorites`';
+		$db->query($sql);
+		$sql = 'DELETE FROM `kwalbum_items_kwalbum_tags`';
+		$db->query($sql);
+		$sql = 'DELETE FROM `kwalbum_items_kwalbum_persons`';
+		$db->query($sql);
+		$sql = 'DELETE FROM `kwalbum_items_kwalbum_sites`';
+		$db->query($sql);
+		$sql = 'DELETE FROM `kwalbum_tags`';
+		$db->query($sql);
+		$sql = 'DELETE FROM `kwalbum_persons`';
+		$db->query($sql);
+		$sql = 'DELETE FROM `kwalbum_sites`';
+		$db->query($sql);
+		$sql = 'DELETE FROM `kwalbum_items`';
+		$db->query($sql);
+		$sql = 'DELETE FROM `kwalbum_users` WHERE id > 1';
+		$db->query($sql);
+		$sql = 'DELETE FROM `kwalbum_locations` WHERE id > 1';
+		$db->query($sql);
+		$location = ORM::factory('kwalbum_location', 1);
+		$location->count = 0;
+		$location->save();
 	}
 }

@@ -74,6 +74,9 @@ class Install_Controller extends Kwalbum_Controller
 					$user->openid = $openid;
 					$user->permission_level = 5;
 					$user->save();
+					$location = new Kwalbum_Location_Model();
+					$location->name = 'Unknown Location';
+					$location->save();
 					$this->template->content = new View('install/2');
 					return;
 				}

@@ -10,7 +10,8 @@
  * @since 3.0 Jul 6, 2009
  */
 
-$config['kwalbum/admin'] = 'admin';
+$config['kwalbum/admin(/{0,1}.*)'] = 'admin$1';
+$config['kwalbum/install'] = 'install';
 //$config['ajax'] = 'ajax';
 $config['kwalbum/item/([0-9]+)(/.*)?'] = 'item/single/$1$2';
 $config['kwalbum/tag/([a-zA-Z0-9]+)'] = 'browse/tag/$1';

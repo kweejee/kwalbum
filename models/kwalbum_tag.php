@@ -10,7 +10,17 @@
  * @since 3.0 Jul 6, 2009
  */
 
-class Tag_Model extends ORM
+class Kwalbum_Tag_Model extends ORM
 {
-	protected $has_and_belongs_to_many = array('items');
+	protected $has_and_belongs_to_many = array('items' => 'kwalbum_item_tag');
+	protected $foreign_key = array('' => 'tag_id');
+
+	public function unique_key($id = null)
+	{
+		if (is_string($id))
+		{
+			return 'name';
+		}
+		return parent::unique_key($id);
+	}
 }

@@ -18,7 +18,7 @@ class Admin_Controller extends Kwalbum_Controller
 
 	function index()
 	{
-		$this->template->content = new View('admin');
+		$this->template->content = new View('kwalbum/admin');
 		$this->template->title = 'Admin Only';
 
 	}
@@ -27,9 +27,9 @@ class Admin_Controller extends Kwalbum_Controller
 	function test()
 	{
 
-		$user = new User_Model();
+		$user = ORM::factory('kwalbum_user')->find(1);
 
-		$this->template->content = $user->get_name(1);
+		$this->template->content = $user->name;
 		$this->template->title = 'Test';
 	}
 }
