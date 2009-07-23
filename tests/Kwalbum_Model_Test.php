@@ -317,6 +317,19 @@ class Kwalbum_Model_Test extends Unit_Test_Case
 		$item->reload();
 		$this->assert_equal(100, $item->hide_level);
 	}
+
+
+	public function external_site_test()
+	{
+		$this->assert_true(false);
+	}
+
+	public function external_item_test()
+	{
+		$this->assert_true(false);
+	}
+
+
 	public function always_pass_test()
 	{
 
