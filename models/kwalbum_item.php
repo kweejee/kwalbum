@@ -13,11 +13,10 @@
 class Kwalbum_Item_Model extends ORM
 {
 	protected $belongs_to = array('user' => 'kwalbum_user', 'location' => 'kwalbum_location');
-	protected $has_one = array('site' => 'kwalbum_site');
-	protected $has_many = array('comments' => 'kwalbum_comments');
+	protected $has_many = array('kwalbum_comments', 'kwalbum_items_sites');
 	protected $has_and_belongs_to_many = array('kwalbum_tags', 'kwalbum_persons');
-	//protected $object_relations = array('kwalbum_tags' => array());
-	protected $foreign_key = array('' => 'item_id');
+	protected $object_relations = array('kwalbum_items_sites' => array());
+	protected $foreign_key = array('' => 'item_id', 'kwalbum_comments' => 'item_id');
 
 	public function save()
 	{
@@ -89,8 +88,10 @@ class Kwalbum_Item_Model extends ORM
 	{
 		if ($id == 'tags')
 			$id = 'kwalbum_tags';
-		if ($id == 'persons')
+		else if ($id == 'persons')
 			$id = 'kwalbum_persons';
+		else if ($id == 'comments')
+			$id = 'kwalbum_comments';
 		return parent::__get($id);
 	}
 		/*protected $types = array(

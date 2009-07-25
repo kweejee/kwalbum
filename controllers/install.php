@@ -222,7 +222,7 @@ class Install_Controller extends Kwalbum_Controller
 		          `name` TINYTEXT NOT NULL,
 		          `text` TEXT NOT NULL,
 		          `create_dt` DATETIME NOT NULL,
-		          `ip` INT UNSIGNED NOT NULL,
+		          `ip` INT SIGNED NOT NULL,
 		          PRIMARY KEY (`id`) ,
 		          INDEX `item_id` (`item_id` ASC) ,
 		          INDEX `create_dt` (`create_dt` ASC) ,
@@ -332,7 +332,7 @@ class Install_Controller extends Kwalbum_Controller
 		$db->query($sql);
 
 		// Items_Sites relationship for imported items
-		$sql = 'CREATE  TABLE IF NOT EXISTS `kwalbum_items_kwalbum_sites`(
+		$sql = 'CREATE  TABLE IF NOT EXISTS `kwalbum_items_sites`(
 		          `item_id` MEDIUMINT UNSIGNED NOT NULL ,
 		          `site_id` TINYINT UNSIGNED NOT NULL ,
 		          `external_item_id` MEDIUMINT UNSIGNED NOT NULL ,

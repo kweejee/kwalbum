@@ -1,4 +1,4 @@
-<?php
+<?php defined('SYSPATH') OR die('No direct access allowed.');
 /**
  *
  *
@@ -12,7 +12,7 @@
 
 class Kwalbum_User_Model extends ORM
 {
-	protected $has_many = array('items');
+	protected $has_many = array('items' => 'kwalbum_items');
 
 	public function unique_key($id = null)
 	{

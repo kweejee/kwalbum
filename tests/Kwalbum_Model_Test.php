@@ -247,8 +247,16 @@ class Kwalbum_Model_Test extends Unit_Test_Case
 
 		$person2->delete();
 		$item->reload();
+		$person1->reload();
 		$this->assert_not_empty($item->persons[0]);
 		$this->assert_empty($item->persons[1]);
+		$this->assert_equal(1, $person1->count);
+
+		$item->remove($person1);
+		$item->save();
+		$person1->reload();
+		$this->assert_empty($item->persons[0]);
+		$this->assert_equal(0, $person1->count);
 	}
 
 	public function delete_item_with_person_test()
@@ -321,19 +329,87 @@ class Kwalbum_Model_Test extends Unit_Test_Case
 
 	public function external_site_test()
 	{
-		$this->assert_true(false);
+		$site = new Kwalbum_Site_Model;
+		$site->url = 'http://example.com';
+		$site->key = 'k3y';
+		$site->save();
+		$id = $site->id;
+		$site->clear();
+
+		$site = ORM::factory('kwalbum_site',$id);
+		$this->assert_equal('k3y', $site->key);
 	}
 
 	public function external_item_test()
 	{
+		$site = new Kwalbum_Site_Model;
+		$site->url = 'http://example.com';
+		$site->key = 'k3y';
+		$site->save();
+		$item = new Kwalbum_Item_Model;
+		$item->user_id = 1;
+		$item->location_id = 1;
+		$item->save();
+		$this->assert_false($item->is_external);
+
+		$itemsite = new Kwalbum_Items_Site_Model;
+		$itemsite->site_id=$site->id;
+		//$itemsite->save();
+
+		$item->add($itemsite);
+		$item->save();
+exit;
 		$this->assert_true(false);
 	}
 
+	public function add_and_delete_comment_test()
+	{
+		$item = new Kwalbum_Item_Model;
+		$item->user_id = 1;
+		$item->location_id = 1;
+		$item->save();
+		$this->assert_false($item->has_comments);
 
+		$comment = new Kwalbum_Comment_Model;
+		$comment->item_id = $item->id;
+		$comment->name = 'Test Name';
+		$comment->text = 'Test Text';
+		$comment->ip = '192.168.0.1';
+		$comment->save();
+
+		$comment2 = new Kwalbum_Comment_Model;
+		$comment2->item_id = $item->id;
+		$comment2->name = 'Test Name 2';
+		$comment2->text = 'Test Text 2';
+		$comment2->ip = '192.168.0.2';
+		$comment2->save();
+
+		$item->reload();
+		$this->assert_true($item->has_comments);
+		$this->assert_equal('Test Name', $item->comments[0]->name);
+		$this->assert_equal('Test Text', $item->comments[0]->text);
+		$this->assert_equal('192.168.0.1', $item->comments[0]->ip);
+		$this->assert_equal('Test Name 2', $item->comments[1]->name);
+		$this->assert_equal('Test Text 2', $item->comments[1]->text);
+		$this->assert_equal('192.168.0.2', $item->comments[1]->ip);
+
+		$item->comments[0]->delete();
+		$item->reload();
+		$this->assert_true($item->has_comments);
+		$this->assert_equal('Test Name 2', $item->comments[0]->name);
+		$this->assert_equal('Test Text 2', $item->comments[0]->text);
+		$this->assert_equal('192.168.0.2', $item->comments[0]->ip);
+
+		$comment2->delete();
+		$item->reload();
+		$this->assert_false($item->has_comments);
+
+	}
 	public function always_pass_test()
 	{
 
 	}
+
 	public function teardown()
 	{
 		$db = Database::instance();
