@@ -10,7 +10,7 @@
  * @since 3.0 Jul 6, 2009
  */
 
-class Kwalbum_Comment_Model extends ORM
+class Model_Kwalbum_Comment extends ORM
 {
 	protected $belongs_to = array('item' => 'kwalbum_item');
 

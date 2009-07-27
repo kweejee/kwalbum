@@ -11,44 +11,33 @@
  */
 
 
-class Browse_Controller extends Kwalbum_Controller
+class Controller_Browse extends Controller_Kwalbum
 {
-	function date()
+	function action_date($year = '0000', $month = '00', $day = '00')
 	{
-		$view = new View('browse');
+		$view = new View('kwalbum/browse');
 		$this->template->content = $view;
 		$this->template->title = 'date browsing';
 
-		$args = Router::$arguments;
-		$date = $args[0];
-		if (isset($args[1]))
-			$date .= '-'.$args[1];
-		else
-			$date .= '-00';
-		if (isset($args[2]))
-			$date .= '-'.$args[2];
-		else
-			$date .= '-00';
+		$date = $year.'-'.$month.'-'.$day;
 		$view->tempInfo = "date = $date";
 
 	}
-	function tag()
+	function action_tag($tag)
 	{
-		$view = new View('browse');
+		$view = new View('kwalbum/browse');
 		$this->template->content = $view;
 		$this->template->title = 'tag browsing';
 
-		$args = Router::$arguments;
-		$view->tempInfo = 'tag = '.$args[0];
+		$view->tempInfo = 'tag = '.$tag;
 
 	}
-	function location()
+	function action_location($location)
 	{
-		$view = new View('browse');
+		$view = new View('kwalbum/browse');
 		$this->template->content = $view;
 		$this->template->title = 'location browsing';
 
-		$args = Router::$arguments;
-		$view->tempInfo = 'location = '.$args[0];
+		$view->tempInfo = 'location = '.$location;
 	}
 }

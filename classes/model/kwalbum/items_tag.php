@@ -9,13 +9,8 @@
  * @since Jul 21, 2009
  */
 
-class Kwalbum_Items_Tag_Model extends ORM
+class Model_Kwalbum_Items_Tag extends ORM
 {
 	protected $belongs_to = array('item' => 'kwalbum_items', 'tag' => 'kwalbum_tags');
-
-	public function __construct($id = null)
-	{
-		$this->foreign_key = array('kwalbum_items' => 'item_id');
-		parent::__construct($id);
-	}
+	protected $foreign_key = array('kwalbum_items' => 'item_id');
 }

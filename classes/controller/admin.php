@@ -11,12 +11,12 @@
  */
 
 
-class Admin_Controller extends Kwalbum_Controller
+class Controller_Admin extends Controller_Kwalbum
 {
 	// allow to run in production
 	const ALLOW_PRODUCTION = true;
 
-	function index()
+	function action_index()
 	{
 		$this->template->content = new View('kwalbum/admin');
 		$this->template->title = 'Admin Only';
@@ -24,7 +24,7 @@ class Admin_Controller extends Kwalbum_Controller
 	}
 
 
-	function test()
+	function action_test()
 	{
 
 		$user = ORM::factory('kwalbum_user')->find(1);

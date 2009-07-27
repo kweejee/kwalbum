@@ -11,13 +11,24 @@
  */
 
 
-class Item_Controller extends Kwalbum_Controller
+class Controller_Item extends Controller_Kwalbum
 {
-	function single()
+	function action_single($id = 0)
 	{
-		$view = new View('item/single');
+		$view = new View('kwalbum/item/single');
+		$view->id = $id;
 		$this->template->content = $view;
 		$this->template->title = 'single item';
+
+		$view->description = 'description stuff';
+
+	}
+	function action_edit($id = 0)
+	{
+		$view = new View('kwalbum/item/edit');
+		$view->id = $id;
+		$this->template->content = $view;
+		$this->template->title = 'edit item';
 
 		$view->description = 'description stuff';
 

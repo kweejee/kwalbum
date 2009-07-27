@@ -11,7 +11,8 @@
  * @since 3.0 Jul 1, 2009
  */
 
-define('URL', Kohana::config('kwalbum.url', TRUE));
+$config = Kohana::config('kwalbum', true);
+define('URL', $config->url);
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
@@ -19,13 +20,13 @@ define('URL', Kohana::config('kwalbum.url', TRUE));
 <head>
 
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-	<title><?php echo html::specialchars(isset($title) ? $title.Kohana::config('kwalbum.title_separator').Kohana::config('kwalbum.title') : Kohana::config('kwalbum.title')) ?></title>
+	<title><?php echo htmlspecialchars(isset($title) ? $title.$config->title_separator.$config->title : $config->title) ?></title>
 
-	<?php echo html::stylesheet(Kohana::config('kwalbum.css_url').'/default')?>
+	<?php echo html::style('kwalbum/media/css/default.css')?>
 
 </head>
 <body>
-<?php View::factory('kwalbum/mainmenu')->render(true); ?>
+<?php echo View::factory('kwalbum/mainmenu')->render(); ?>
 
 <div class="box">
 	<?php echo $content ?>

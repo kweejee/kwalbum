@@ -12,5 +12,5 @@
 
 ?>
 <div class="box">
-	item editing stuff
+	item editing stuff <?=$id?>
 </div>

@@ -13,16 +13,16 @@
  * @since 3.0 Jul 8, 2009
  */
 
-class Install_Controller extends Kwalbum_Controller
+class Controller_Install extends Controller_Kwalbum
 {
 	private $_user = array('minNameLength' => 2, 'maxNameLength' => 45);
 
-	function index()
+	public function action_index()
 	{
 		$this->template->title = 'Install';
 
 		// Uncomment to delete everything and start over
-		//$this->_drop_tables();
+		$this->_drop_tables();
 
 		// Do not continue installation if at least 1 user exists in the database
 		try
@@ -30,8 +30,8 @@ class Install_Controller extends Kwalbum_Controller
 			$user = ORM::factory('kwalbum_user', 1);
 			if ($user->loaded == true)
 			{
-				$view = new View('install/2');
-				$this->template->content = $view;
+				$view = View::factory('install/2');
+				$this->template->bind('content', $view);
 				return;
 			}
 		}
@@ -51,25 +51,25 @@ class Install_Controller extends Kwalbum_Controller
 
 		if ($_POST)
 		{
-			$post = Validation::factory($_POST)
-				->pre_filter('trim', true)
-				->pre_filter('htmlspecialchars')
-				->add_rules('openid', 'required')
-				->add_rules('name', 'required',
-					'standard_text',
-					'length['.$this->_user['minNameLength'].','.$this->_user['maxNameLength'].']');
+			$post = Validate::factory($_POST)
+				->filter(true, 'trim')
+				->filter(true, 'htmlspecialchars')
+				->rule('name', 'not_empty')
+				->rule('openid', 'not_empty')
+				->rule('name', 'min_length', array($this->_user['minNameLength']))
+				->rule('name', 'max_length', array($this->_user['maxNameLength']));
 
-			if ($post->validate())
+			if ($post->check())
 			{
 				$data = $post->as_array();
-				$name = $this->input->xss_clean($data['name']);
-				$openid = $this->input->xss_clean($data['openid']);
+				$name = $data['name'];
+				$openid = $data['openid'];
 
 				try
 				{
 					$this->_create_tables();
 
-					$user = new Kwalbum_User_Model();
+					$user = ORM::factory('kwalbum_user');
 					$user->name = $name;
 					$user->openid = $openid;
 					$user->permission_level = 5;
@@ -79,7 +79,7 @@ class Install_Controller extends Kwalbum_Controller
 					$user->openid = '';
 					$user->permission_level = 0;
 					$user->save();
-					$location = new Kwalbum_Location_Model();
+					$location = ORM::factory('kwalbum_location');
 					$location->name = 'Unknown Location';
 					$location->save();
 					$this->template->content = new View('install/2');
@@ -87,7 +87,7 @@ class Install_Controller extends Kwalbum_Controller
 				}
 				catch (Exception $e)
 				{
-					$errors = array('db', Kohana::lang("install_form_errors.db"));
+					$errors = array('db', 'There was an error creating the database tables.');
 				}
 			}
 			else // Did not validate
@@ -98,7 +98,7 @@ class Install_Controller extends Kwalbum_Controller
 				// Populate the error fields, if any
 				// Pass the error message file name to the errors() method
 				// Default error message file is in i18n/en_US/
-				$errors = arr::overwrite($errors, $post->errors('install_form_errors'));
+				$errors = arr::overwrite($errors, $post->errors('install_form/errors'));
 			}
 		}
 
@@ -121,27 +121,27 @@ class Install_Controller extends Kwalbum_Controller
 
 		// Drop order is arranged based on foreign key restraints.
 		$sql = 'DROP TABLE IF EXISTS `kwalbum_comments`';
-		$db->query($sql);
+		$db->query(null, $sql);
 		$sql = 'DROP TABLE IF EXISTS `kwalbum_favorites`';
-		$db->query($sql);
+		$db->query(null, $sql);
 		$sql = 'DROP TABLE IF EXISTS `kwalbum_items_kwalbum_tags`';
-		$db->query($sql);
+		$db->query(null, $sql);
 		$sql = 'DROP TABLE IF EXISTS `kwalbum_items_kwalbum_persons`';
-		$db->query($sql);
-		$sql = 'DROP TABLE IF EXISTS `kwalbum_items_kwalbum_sites`';
-		$db->query($sql);
+		$db->query(null, $sql);
+		$sql = 'DROP TABLE IF EXISTS `kwalbum_items_sites`';
+		$db->query(null, $sql);
 		$sql = 'DROP TABLE IF EXISTS `kwalbum_tags`';
-		$db->query($sql);
+		$db->query(null, $sql);
 		$sql = 'DROP TABLE IF EXISTS `kwalbum_persons`';
-		$db->query($sql);
+		$db->query(null, $sql);
 		$sql = 'DROP TABLE IF EXISTS `kwalbum_sites`';
-		$db->query($sql);
+		$db->query(null, $sql);
 		$sql = 'DROP TABLE IF EXISTS `kwalbum_items`';
-		$db->query($sql);
+		$db->query(null, $sql);
 		$sql = 'DROP TABLE IF EXISTS `kwalbum_users`';
-		$db->query($sql);
+		$db->query(null, $sql);
 		$sql = 'DROP TABLE IF EXISTS `kwalbum_locations`';
-		$db->query($sql);
+		$db->query(null, $sql);
 	}
 
 	/** Create new Kwalbum tables
@@ -165,7 +165,7 @@ class Install_Controller extends Kwalbum_Controller
 		        ) ENGINE = InnoDB
 		        DEFAULT CHARACTER SET = utf8
 		        PACK_KEYS = DEFAULT;';
-		$db->query($sql);
+		$db->query(null, $sql);
 
 		// Locations
 		$sql = 'CREATE TABLE IF NOT EXISTS `kwalbum_locations`(
@@ -179,7 +179,7 @@ class Install_Controller extends Kwalbum_Controller
 		          INDEX `coordinates` (`latitude` ASC, `longitude` ASC)
 		        ) ENGINE = InnoDB
 		        DEFAULT CHARACTER SET = utf8';
-		$db->query($sql);
+		$db->query(null, $sql);
 
 		// Items
 		$sql = 'CREATE  TABLE IF NOT EXISTS `kwalbum_items`(
@@ -213,7 +213,7 @@ class Install_Controller extends Kwalbum_Controller
 		            REFERENCES `kwalbum_locations` (`id` )
 		        ) ENGINE = InnoDB
 		        DEFAULT CHARACTER SET = utf8';
-		$db->query($sql);
+		$db->query(null, $sql);
 
 		// Comments
 		$sql = 'CREATE  TABLE IF NOT EXISTS `kwalbum_comments`(
@@ -233,7 +233,7 @@ class Install_Controller extends Kwalbum_Controller
 		            ON UPDATE CASCADE
 		        ) ENGINE = InnoDB
 		        DEFAULT CHARACTER SET = utf8;';
-		$db->query($sql);
+		$db->query(null, $sql);
 
 		// Tags
 		$sql = 'CREATE  TABLE IF NOT EXISTS `kwalbum_tags`(
@@ -244,7 +244,7 @@ class Install_Controller extends Kwalbum_Controller
 		          INDEX `tag` (`name`(10) ASC)
 		        ) ENGINE = InnoDB
 		        DEFAULT CHARACTER SET = utf8;';
-		$db->query($sql);
+		$db->query(null, $sql);
 
 		// Items_Tags relationship
 		$sql = 'CREATE  TABLE IF NOT EXISTS `kwalbum_items_kwalbum_tags`(
@@ -265,7 +265,7 @@ class Install_Controller extends Kwalbum_Controller
 		            ON UPDATE CASCADE
 		        ) ENGINE = InnoDB
 		        DEFAULT CHARACTER SET = utf8;';
-		$db->query($sql);
+		$db->query(null, $sql);
 
 		// Persons
 		$sql = 'CREATE  TABLE IF NOT EXISTS `kwalbum_persons`(
@@ -276,7 +276,7 @@ class Install_Controller extends Kwalbum_Controller
 		          INDEX `person` (`name`(10) ASC)
 		        ) ENGINE = InnoDB
 		        DEFAULT CHARACTER SET = utf8;';
-		$db->query($sql);
+		$db->query(null, $sql);
 
 		// Items_Persons relationship
 		$sql = 'CREATE  TABLE IF NOT EXISTS `kwalbum_items_kwalbum_persons`(
@@ -297,7 +297,7 @@ class Install_Controller extends Kwalbum_Controller
 		            ON UPDATE CASCADE
 		        ) ENGINE = InnoDB
 		        DEFAULT CHARACTER SET = utf8;';
-		$db->query($sql);
+		$db->query(null, $sql);
 
 		// Favorites, relationship between Items and Users
 		$sql = 'CREATE  TABLE IF NOT EXISTS `kwalbum_favorites`(
@@ -318,7 +318,7 @@ class Install_Controller extends Kwalbum_Controller
 		            ON UPDATE CASCADE
 		        ) ENGINE = InnoDB
 		        DEFAULT CHARACTER SET = utf8;';
-		$db->query($sql);
+		$db->query(null, $sql);
 
 		// Sites, external sites to import items from
 		$sql = 'CREATE  TABLE IF NOT EXISTS `kwalbum_sites`(
@@ -329,7 +329,7 @@ class Install_Controller extends Kwalbum_Controller
 		          PRIMARY KEY (`id`)
 		        ) ENGINE = InnoDB
 		        DEFAULT CHARACTER SET = utf8;';
-		$db->query($sql);
+		$db->query(null, $sql);
 
 		// Items_Sites relationship for imported items
 		$sql = 'CREATE  TABLE IF NOT EXISTS `kwalbum_items_sites`(
@@ -352,6 +352,6 @@ class Install_Controller extends Kwalbum_Controller
 		            ON UPDATE CASCADE
 		        ) ENGINE = InnoDB
 		        DEFAULT CHARACTER SET = utf8;';
-		$db->query($sql);
+		$db->query(null, $sql);
 	}
 }

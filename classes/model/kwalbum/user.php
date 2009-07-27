@@ -10,25 +10,25 @@
  * @since 3.0 Jul 6, 2009
  */
 
-class Kwalbum_User_Model extends ORM
+class Model_Kwalbum_User extends ORM
 {
 	protected $has_many = array('items' => 'kwalbum_items');
 
-	public function unique_key($id = null)
+	public function delete($id = NULL)
 	{
-		if (is_string($id))
+		if ($id === NULL)
 		{
-			return 'name';
+			$id = $this->id;
 		}
-		return parent::unique_key($id);
-	}
-	public function delete()
-	{
+
 		// do not delete main admin user or default deleted user
-		if ($this->id < 3)
+		if ($id < 3)
+		{
 			return $this;
-		$this->db->query("UPDATE kwalbum_items SET user_id=2, hide_level=100 WHERE user_id=$this->id");
-		$this->db->query("DELETE FROM kwalbum_favorites WHERE user_id=$this->id");
-		parent::delete();
+		}
+
+		$this->db->query(Database::UPDATE, "UPDATE kwalbum_items SET user_id=2, hide_level=100 WHERE user_id=$id");
+		$this->db->query(Database::DELETE, "DELETE FROM kwalbum_favorites WHERE user_id=$id");
+		return parent::delete($id);
 	}
 }

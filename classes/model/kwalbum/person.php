@@ -5,15 +5,14 @@
  * @author Tim Redmond <kweejee@tummycaching.com>
  * @copyright Copyright 2009 Tim Redmond
  * @license GNU General Public License version 3 <http://www.gnu.org/licenses/>
- * @version 3.0 Jun 30, 2009
+ * @version 3.0 Jul 6, 2009
  * @package kwalbum
- * @since 3.0 Jun 30, 2009
+ * @since 3.0 Jul 6, 2009
  */
 
-?>
-<div class="box">
-	single image and details for id <b><big><?=$id?></big></b>
-	<p>
-		<?php echo $description ?>
-	</p>
-</div>
+class Model_Kwalbum_Person extends ORM
+{
+	protected $has_and_belongs_to_many = array('items' => 'kwalbum_items');
+	protected $foreign_key = array('' => 'person_id');
+
+}
