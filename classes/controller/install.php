@@ -22,13 +22,13 @@ class Controller_Install extends Controller_Kwalbum
 		$this->template->title = 'Install';
 
 		// Uncomment to delete everything and start over
-		$this->_drop_tables();
+		//$this->_drop_tables();
 
 		// Do not continue installation if at least 1 user exists in the database
 		try
 		{
-			$user = ORM::factory('kwalbum_user', 1);
-			if ($user->loaded == true)
+			$user = Model::factory('kwalbum_user');
+			if ($user->load(1)->loaded == true)
 			{
 				$view = View::factory('install/2');
 				$this->template->bind('content', $view);
@@ -69,7 +69,7 @@ class Controller_Install extends Controller_Kwalbum
 				{
 					$this->_create_tables();
 
-					$user = ORM::factory('kwalbum_user');
+					$user = Model::factory('kwalbum_user');
 					$user->name = $name;
 					$user->openid = $openid;
 					$user->permission_level = 5;
@@ -79,7 +79,7 @@ class Controller_Install extends Controller_Kwalbum
 					$user->openid = '';
 					$user->permission_level = 0;
 					$user->save();
-					$location = ORM::factory('kwalbum_location');
+					$location = Model::factory('kwalbum_location');
 					$location->name = 'Unknown Location';
 					$location->save();
 					$this->template->content = new View('install/2');
@@ -124,9 +124,9 @@ class Controller_Install extends Controller_Kwalbum
 		$db->query(null, $sql);
 		$sql = 'DROP TABLE IF EXISTS `kwalbum_favorites`';
 		$db->query(null, $sql);
-		$sql = 'DROP TABLE IF EXISTS `kwalbum_items_kwalbum_tags`';
+		$sql = 'DROP TABLE IF EXISTS `kwalbum_items_tags`';
 		$db->query(null, $sql);
-		$sql = 'DROP TABLE IF EXISTS `kwalbum_items_kwalbum_persons`';
+		$sql = 'DROP TABLE IF EXISTS `kwalbum_items_persons`';
 		$db->query(null, $sql);
 		$sql = 'DROP TABLE IF EXISTS `kwalbum_items_sites`';
 		$db->query(null, $sql);
@@ -247,7 +247,7 @@ class Controller_Install extends Controller_Kwalbum
 		$db->query(null, $sql);
 
 		// Items_Tags relationship
-		$sql = 'CREATE  TABLE IF NOT EXISTS `kwalbum_items_kwalbum_tags`(
+		$sql = 'CREATE  TABLE IF NOT EXISTS `kwalbum_items_tags`(
 		          `item_id` MEDIUMINT UNSIGNED NOT NULL ,
 		          `tag_id` SMALLINT UNSIGNED NOT NULL ,
 		          INDEX `item_id` (`item_id` ASC) ,
@@ -279,7 +279,7 @@ class Controller_Install extends Controller_Kwalbum
 		$db->query(null, $sql);
 
 		// Items_Persons relationship
-		$sql = 'CREATE  TABLE IF NOT EXISTS `kwalbum_items_kwalbum_persons`(
+		$sql = 'CREATE  TABLE IF NOT EXISTS `kwalbum_items_persons`(
 		          `item_id` MEDIUMINT UNSIGNED NOT NULL ,
 		          `person_id` SMALLINT UNSIGNED NOT NULL ,
 		          INDEX `item_id` (`item_id` ASC) ,
