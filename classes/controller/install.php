@@ -324,7 +324,7 @@ class Controller_Install extends Controller_Kwalbum
 		$sql = 'CREATE  TABLE IF NOT EXISTS `kwalbum_sites`(
 		          `id` TINYINT UNSIGNED NOT NULL AUTO_INCREMENT ,
 		          `url` VARCHAR(100) NOT NULL ,
-		          `key` VARCHAR(45) NOT NULL ,
+		          `site_key` VARCHAR(45) NOT NULL ,
 		          `import_dt` DATETIME NOT NULL ,
 		          PRIMARY KEY (`id`)
 		        ) ENGINE = InnoDB

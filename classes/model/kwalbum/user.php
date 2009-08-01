@@ -37,7 +37,7 @@ class Model_Kwalbum_User extends Kwalbum_Model
 
 		$row = $result[0];
 
-		$this->id = $id;
+		$this->id = (int)$id;
 		$this->name = $row['name'];
 		$this->openid = $row['openid'];
 		$this->visit_date = $row['visit_dt'];
@@ -51,13 +51,15 @@ class Model_Kwalbum_User extends Kwalbum_Model
 	{
 		if ($this->loaded == false)
 		{
-			$query = DB::query(Database::INSERT, "INSERT INTO kwalbum_users
+			$query = DB::query(Database::INSERT,
+				"INSERT INTO kwalbum_users
 				(name, openid, visit_dt, permission_level)
 				VALUES (:name, :openid, :visit_dt, :permission_level)");
 		}
 		else
 		{
-			$query = DB::query(Database::UPDATE, "UPDATE kwalbum_users
+			$query = DB::query(Database::UPDATE,
+				"UPDATE kwalbum_users
 				SET name = :name, openid = :openid, visit_dt = :visit_dt, permission_level= :permission_level
 				WHERE id = :id")
 				->param(':id', $this->id);
@@ -119,5 +121,10 @@ class Model_Kwalbum_User extends Kwalbum_Model
 		$this->id = 0;
 		$this->name = $this->openid = $this->visit_date = $this->permission_level = '';
 		$this->loaded = false;
+	}
+
+	public function __toString()
+	{
+		return $this->name;
 	}
 }

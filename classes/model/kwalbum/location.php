@@ -12,7 +12,7 @@
 
 class Model_Kwalbum_Location extends Kwalbum_Model
 {
-	public $id = 0, $name = '', $latitude = 0.0, $longitude = 0.0, $count = 0;
+	public $id, $name, $latitude, $longitude, $count;
 
 	public function load($id = null)
 	{
@@ -22,13 +22,14 @@ class Model_Kwalbum_Location extends Kwalbum_Model
 			return $this;
 		}
 
-		$result = DB::query(Database::SELECT,
+		$query = DB::query(Database::SELECT,
 			"SELECT name, latitude, longitude, count
 			FROM kwalbum_locations
 			WHERE id = :id
 			LIMIT 1")
-			->param(':id', $id)
-			->execute();
+			->param(':id', $id);
+
+		$result = $query->execute();
 
 		if ($result->count() == 0)
 		{
@@ -38,11 +39,11 @@ class Model_Kwalbum_Location extends Kwalbum_Model
 
 		$row = $result[0];
 
-		$this->id = $id;
+		$this->id = (int)$id;
 		$this->name = $row['name'];
 		$this->latitude = $row['latitude'];
 		$this->longitude = $row['longitude'];
-		$this->count = $row['count'];
+		$this->count = (int)$row['count'];
 		$this->loaded = true;
 
 		return $this;
@@ -54,27 +55,47 @@ class Model_Kwalbum_Location extends Kwalbum_Model
 
 		if ($id == 0)
 		{
-			$query = DB::query(Database::INSERT, "INSERT INTO kwalbum_locations
-				(name, latitude, longitude, count)
-				VALUES (:name, :latitude, :longitude, :count)");
+			$result = DB::query(Database::SELECT,
+				"SELECT id, latitude, longitude, count
+				FROM kwalbum_locations
+				WHERE name = :name
+				LIMIT 1")
+				->param(':name', $this->name)
+				->execute();
+			if ($result->count() == 0)
+			{
+				$result = DB::query(Database::INSERT,
+					"INSERT INTO kwalbum_locations
+					(name, latitude, longitude, count)
+					VALUES (:name, :latitude, :longitude, :count)")
+					->param(':name', $this->name)
+					->param(':latitude', $this->latitude)
+					->param(':longitude', $this->longitude)
+					->param(':count', $this->count)
+					->execute();
+				$this->id = $result[0];
+				return;
+			}
+			$this->id = $id = (int)$result[0]['id'];
+			if ($this->latitude == 0)
+				$this->latitude = $result[0]['latitude'];
+			if ($this->longitude == 0)
+				$this->longitude = $result[0]['longitude'];
+			if ($this->count == 0)
+				$this->count = (int)$result[0]['count'];
 		}
 		else
 		{
-			$query = DB::query(Database::UPDATE, "UPDATE kwalbum_locations
+			$query = DB::query(Database::UPDATE,
+				"UPDATE kwalbum_locations
 				SET name = :name, latitude = :latitude, longitude = :longitude, count= :count
 				WHERE id = :id")
-				->param(':id', $id);
-		}
-		$query
+				->param(':id', $id)
 			->param(':name', $this->name)
 			->param(':latitude', $this->latitude)
 			->param(':longitude', $this->longitude)
 			->param(':count', $this->count);
-
-		$result = $query->execute();
-		if ($id == 0)
-		{
-			$this->id = $result[0];
+			$query->execute();
 		}
 	}
 
@@ -91,10 +112,23 @@ class Model_Kwalbum_Location extends Kwalbum_Model
 			return $this;
 		}
 
-		$db = $this->_db;
-		$count = $db->query(Database::UPDATE, "UPDATE kwalbum_items SET location_id = 1 WHERE location_id=$id");
-		$db->query(Database::UPDATE, "UPDATE kwalbum_locations SET count = count+$count WHERE id=1");
-		$db->query(Database::DELETE, "DELETE FROM kwalbum_locations WHERE id=$id");
+		$count = DB::query(Database::UPDATE,
+			"UPDATE kwalbum_items
+			SET location_id = 1
+			WHERE location_id = :id")
+			->param(':id', $id)
+			->execute();
+		DB::query(Database::UPDATE,
+			"UPDATE kwalbum_locations
+			SET count = count+:count
+			WHERE id = 1")
+			->param(':count', $count)
+			->execute();
+		DB::query(Database::DELETE,
+			"DELETE FROM kwalbum_locations
+			WHERE id = :id")
+			->param(':id', $id)
+			->execute();
 
 		if ($id == $this->id)
 		{
@@ -109,4 +143,8 @@ class Model_Kwalbum_Location extends Kwalbum_Model
 		$this->loaded = false;
 	}
 
+	public function __toString()
+	{
+		return $this->name;
+	}
 }

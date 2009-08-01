@@ -12,10 +12,11 @@
 
 class Model_Kwalbum_Tag extends Kwalbum_Model
 {
+	public $id, $name, $count, $loaded;
 
 	public function load($id = null)
 	{
-		if ($id == null)
+		if ($id === null)
 		{
 			$this->clear();
 			return $this;
@@ -36,9 +37,9 @@ class Model_Kwalbum_Tag extends Kwalbum_Model
 
 		$row = $result[0];
 
-		$this->id = $id;
+		$this->id = (int)$id;
 		$this->name = $row['name'];
-		$this->count = $row['count'];
+		$this->count = (int)$row['count'];
 		$this->loaded = true;
 
 		return $this;
@@ -48,28 +49,42 @@ class Model_Kwalbum_Tag extends Kwalbum_Model
 	{
 		$id = $this->id;
 
-		if ($id == 0)
+		if ($this->loaded === false)
 		{
-			$query = DB::query(Database::INSERT, "INSERT INTO kwalbum_tags
-				(name, count)
-				VALUES (:name, :count)");
-		}
-		else
-		{
-			$query = DB::query(Database::UPDATE, "UPDATE kwalbum_tags
-				SET name = :name, count = :count
-				WHERE id = :id")
-				->param(':id', $id);
-		}
-		$query
-			->param(':name', $this->name)
-			->param(':count', $this->count);
+			$result = DB::query(Database::SELECT,
+				"SELECT id, count
+				FROM kwalbum_tags
+				WHERE name = :name
+				LIMIT 1")
+				->param(':name', $this->name)
+				->execute();
+			if ($result->count() == 0)
+			{
+				$result = DB::query(Database::INSERT,
+					"INSERT INTO kwalbum_tags
+					(name, count)
+					VALUES (:name, :count)")
+					->param(':name', $this->name)
+					->param(':count', $this->count)
+					->execute();
+				$this->id = $result[0];
+				$this->loaded = true;
+				return;
+			}
 
-		$result = $query->execute();
-		if ($id == 0)
-		{
-			$this->id = $result[0];
+			$this->id = $id = (int)$result[0]['id'];
+			$this->count = (int)$result[0]['count'];
+			$this->loaded = true;
 		}
+
+		DB::query(Database::UPDATE,
+			"UPDATE kwalbum_tags
+			SET name = :name, count = :count
+			WHERE id = :id")
+			->param(':id', $id)
+			->param(':name', $this->name)
+			->param(':count', $this->count)
+			->execute();
 	}
 
 	public function delete($id = NULL)
@@ -80,13 +95,15 @@ class Model_Kwalbum_Tag extends Kwalbum_Model
 		}
 
 		// Delete relations between the tag and items
-		DB::query(Database::DELETE, "DELETE FROM kwalbum_items_tags
+		DB::query(Database::DELETE,
+			"DELETE FROM kwalbum_items_tags
 			WHERE tag_id = :id")
 			->param(':id', $id)
 			->execute();
 
 		// Delete the tag
-		DB::query(Database::DELETE, "DELETE FROM kwalbum_tags
+		DB::query(Database::DELETE,
+			"DELETE FROM kwalbum_tags
 			WHERE id = :id")
 			->param(':id', $id)
 			->execute();
@@ -102,5 +119,10 @@ class Model_Kwalbum_Tag extends Kwalbum_Model
 		$this->id = $this->count = 0;
 		$this->name = '';
 		$this->loaded = false;
+	}
+
+	public function __toString()
+	{
+		return $this->name;
 	}
 }

@@ -21,13 +21,15 @@ abstract class Kwalbum_Model extends Model
 
 	public function reload()
 	{
-		return $this->load($this->id);
+		$id = $this->id;
+		$this->clear();
+		return $this->load($id);
 	}
 
 	abstract public function load($id = null);
 	//abstract public function find($val = null);
 	abstract public function save();
-	abstract public function delete($id = NULL);
+	abstract public function delete($id = null);
 	abstract public function clear();
 }
 

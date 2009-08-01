@@ -12,16 +12,14 @@
 
 class Model_Kwalbum_Item extends Kwalbum_Model
 {
-	protected $belongs_to = array('user' => 'kwalbum_user', 'location' => 'kwalbum_location');
-	protected $has_many = array('kwalbum_comments', 'kwalbum_items_sites');
-	protected $has_and_belongs_to_many = array('kwalbum_tags', 'kwalbum_persons');
-
 	public $id, $type, $user_id, $location,
 		$visible_date, $sort_date, $update_date, $create_date,
 		$description, $latitude, $longitude, $path, $filename,
-		$has_comments, $hide_level, $count, $is_external;
+		$has_comments, $hide_level, $count, $is_external, $loaded;
 	private $_user_name, $_original_location, $_original_user_id,
-		 $_location_id, $_tags, $_persons, $_comments;
+		 $_location_id, $_tags, $_persons, $_comments,
+		 $_external_site, $_external_id;
+
 	protected $types = array(
 			0 => 'unknown',
 			1 => 'gif', 2 => 'jpg', 3 => 'png',
@@ -67,8 +65,8 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 
 		$this->id = $id;
 		$this->type = $this->types[$row['type_id']];
-		$this->user_id = $this->_original_user_id = $row['user_id'];
-		$this->_location_id = $row['location_id'];
+		$this->user_id = $this->_original_user_id = (int)$row['user_id'];
+		$this->_location_id = (int)$row['location_id'];
 		$this->visible_date = $row['visible_dt'];
 		$this->sort_date = $row['sort_dt'];
 		$this->update_date = $row['update_dt'];
@@ -78,12 +76,11 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 		$this->longitude = $row['longitude'];
 		$this->path = $row['path'];
 		$this->filename = $row['filename'];
-		$this->has_comments = $row['has_comments'];
-		$this->hide_level = $row['hide_level'];
-		$this->count = $row['count'];
-		$this->is_external = $row['is_external'];
+		$this->has_comments = (bool)$row['has_comments'];
+		$this->hide_level = (int)$row['hide_level'];
+		$this->count = (int)$row['count'];
+		$this->is_external = (bool)$row['is_external'];
 		$this->_tags = $this->_persons = $this->_comments = $this->_location = $this->_user_name = null;
-		$this->loaded = true;
 
 		$result = DB::query(Database::SELECT,
 			"SELECT name
@@ -94,6 +91,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 			->execute();
 		$this->location = $this->_original_location = $result[0]['name'];
 
+		$this->loaded = true;
 		return $this;
 	}
 
@@ -162,14 +160,18 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 						VALUES (:name)")
 						->param(':name', $this->location)
 						->execute();
+					$location_id = $result[0];
 				}
-				$location_id = $result[0]['id'];
+				else
+				{
+					$location_id = $result[0]['id'];
+				}
 			}
 
 			// Update count on new location
-			DB::query(Database::UPDATE, "UPDATE kwalbum_locations
+			$result = DB::query(Database::UPDATE, "UPDATE kwalbum_locations
 				SET count = count+1
-				WHERE name = :id")
+				WHERE id = :id")
 				->param(':id', $location_id)
 				->execute();
 		}
@@ -178,111 +180,88 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 		$this->_location_id = $location_id;
 		$this->_original_location_name = $this->location;
 
+		// Set user
+
+		$user_id = $this->user_id;
+
+
+		// Save actual item
 
 		if ($this->loaded == false)
 		{
-			$query = DB::query(Database::INSERT, "INSERT INTO kwalbum_items
-				(type_id, location_id)
-				VALUES (:type_id, :location_id)");
+			$query = DB::query(Database::INSERT,
+				"INSERT INTO kwalbum_items
+				(type_id, location_id, user_id)
+				VALUES (:type_id, :location_id, :user_id)");
 		}
 		else
 		{
-			$query = DB::query(Database::UPDATE, "UPDATE kwalbum_items
-				SET type_id = :type_id, location_id = :location_id
+			$query = DB::query(Database::UPDATE,
+				"UPDATE kwalbum_items
+				SET type_id = :type_id, location_id = :location_id, user_id = :user_id
 				WHERE id = :id")
 				->param(':id', $this->id);
 		}
 		$query
 			->param(':type_id', $type_id)
-			->param(':location_id', $location_id);
-
+			->param(':location_id', $location_id)
+			->param(':user_id', $user_id);
 
 		$result = $query->execute();
+
 		if ($this->loaded == false)
 		{
 			$this->id = $result[0];
 			$this->loaded = true;
 		}
+
+
+
+		// Set tags and persons once we know we have an item_id for the relationship
+
+		// Remove old item-person and item-tag relations
+		$this->_delete_person_relations();
+		$this->_delete_tag_relations();
+
+		// Remove duplicates of new person and tags
+		// Use __get to make sure the array exists
+		$this->_persons = array_unique($this->persons);
+		$this->_tags = array_unique($this->tags);
+
+		// Create new item-person and item-tag relations
+		$person = Model::factory('kwalbum_person');
+		foreach($this->_persons as $name)
+		{
+			$person->clear();
+			$person->name = $name;
+			$person->save();
+			DB::query(Database::INSERT, "INSERT INTO kwalbum_items_persons
+				(item_id, person_id)
+				VALUES (:item_id, :person_id)")
+				->param(':item_id', $this->id)
+				->param(':person_id', $person->id)
+				->execute();;
+			$person->count = $person->count+1;
+			$person->save();
+		}
+		$tag = Model::factory('kwalbum_tag');
+		foreach($this->_tags as $name)
+		{
+			$tag->clear();
+			$tag->name = $name;
+			$tag->save();
+			DB::query(Database::INSERT, "INSERT INTO kwalbum_items_tags
+				(item_id, tag_id)
+				VALUES (:item_id, :tag_id)")
+				->param(':item_id', $this->id)
+				->param(':tag_id', $tag->id)
+				->execute();;
+			$tag->count = $tag->count+1;
+			$tag->save();
+		}
+
+		//echo Kohana::debug($query);exit;
 	}
-//	public function save()
-//	{
-//		if (isset($this->changed['location_id']))
-//		{
-//			if ($this->id)
-//			{
-//				$this->db->query(Database::UPDATE, "UPDATE kwalbum_locations SET count=count-1 WHERE id=(SELECT location_id FROM kwalbum_items WHERE id=$this->id) AND count>0");
-//			}
-//			$this->db->query(Database::UPDATE, "UPDATE kwalbum_locations SET count=count+1 WHERE id=$this->location_id");
-//		}
-//
-//		// add new tags
-//		if (isset($this->changed_relations['kwalbum_tags']))
-//		{
-//			if (isset($this->object_relations['kwalbum_tags']))
-//				$new_tags = array_diff($this->changed_relations['kwalbum_tags'],$this->object_relations['kwalbum_tags']);
-//			else
-//				$new_tags = $this->changed_relations['kwalbum_tags'];
-//			foreach ($new_tags as $tag)
-//				$this->db->query(Database::UPDATE, "UPDATE kwalbum_tags SET count=count+1 WHERE id=$tag");
-//		}
-//		// remove old tags
-//		if (isset($this->object_relations['kwalbum_tags']))
-//		{
-//			if (isset($this->changed_relations['kwalbum_tags']))
-//				$new_tags = array_diff($this->object_relations['kwalbum_tags'],$this->changed_relations['kwalbum_tags']);
-//			else
-//				$new_tags = $this->object_relations['kwalbum_tags'];
-//			foreach ($new_tags as $tag)
-//				$this->db->query(Database::UPDATE, "UPDATE kwalbum_tags SET count=count-1 WHERE id=$tag AND count>0");
-//		}
-//
-//		// add new persons
-//		if (isset($this->changed_relations['kwalbum_persons']))
-//		{
-//			if (isset($this->object_relations['kwalbum_persons']))
-//				$new_persons = array_diff($this->changed_relations['kwalbum_persons'],$this->object_relations['kwalbum_persons']);
-//			else
-//				$new_persons = $this->changed_relations['kwalbum_persons'];
-//			foreach ($new_persons as $person)
-//				$this->db->query(Database::UPDATE, "UPDATE kwalbum_persons SET count=count+1 WHERE id=$person");
-//		}
-//		// remove old persons
-//		if (isset($this->object_relations['kwalbum_persons']))
-//		{
-//			if (isset($this->changed_relations['kwalbum_persons']))
-//				$new_persons = array_diff($this->object_relations['kwalbum_persons'],$this->changed_relations['kwalbum_persons']);
-//			else
-//				$new_persons = $this->object_relations['kwalbum_persons'];
-//			foreach ($new_persons as $person)
-//				$this->db->query(Database::UPDATE, "UPDATE kwalbum_persons SET count=count-1 WHERE id=$person AND count>0");
-//		}
-//		parent::save();
-//	}
-//	public function delete($id = null)
-//	{
-//		if ($id === null)
-//		{
-//			$id = $this->primary_key;
-//		}
-//
-//		$this->db->query(Database::UPDATE, "UPDATE kwalbum_locations SET count=count-1 WHERE id=$this->location_id AND count>0");
-//
-//			foreach ($this->kwalbum_tags as $tag)
-//			{
-//				if (is_object($tag))
-//				{//		echo Kohana::debug($this->kwalbum_tags);
-//				$this->remove($tag);
-////					$tag_id = $tag->id;
-////					$this->db->query(Database::UPDATE, "UPDATE kwalbum_tags SET count=count-1 WHERE id=$tag_id AND count>0");
-//				}
-//			}
-//		foreach ($this->kwalbum_persons as $person)
-//		{
-//			$person_id = $person->id;
-//			$this->db->query(Database::UPDATE, "UPDATE kwalbum_persons SET count=count-1 WHERE id=$person_id AND count>0");
-//		}
-//		parent::delete($id);
-//	}
 	public function delete($id = NULL)
 	{
 		if ($id === NULL)
@@ -324,29 +303,24 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 			->param(':id', $id)
 			->execute();
 
-		// Remove item from person counts
+		// Remove item-person relations and reduce persons' item counts
+		$this->_delete_person_relations($id);
 
-
-		// Delete relations between item and persons
-		DB::query(Database::DELETE, "DELETE FROM kwalbum_items_persons
-			WHERE item_id = :id")
-			->param(':id', $id)
-			->execute();
-
-		// Remove item from tag counts
-
-
-		// Delete relations between item and tags
-		DB::query(Database::DELETE, "DELETE FROM kwalbum_items_tags
-			WHERE item_id = :id")
-			->param(':id', $id)
-			->execute();
+		// Remove item-tag relations and reduce tags' item counts
+		$this->_delete_tag_relations($id);
 
 		// Delete the item
 		DB::query(Database::DELETE, "DELETE FROM kwalbum_items
 			WHERE id = :id")
 			->param(':id', $id)
 			->execute();
+
+		// Delete comments
+		$comments = $this->_load_comments($id);
+		foreach ($comments as $comment)
+		{
+			$comment->delete();
+		}
 
 		if ($id == $this->id)
 		{
@@ -359,18 +333,50 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 		if ($id == 'tags')
 		{
 			if ($this->_tags === null)
-
+			{
 				$this->_tags = array();
+				$result = DB::query(Database::SELECT,
+					"SELECT name
+					FROM kwalbum_items_tags
+						LEFT JOIN kwalbum_tags ON tag_id = id
+					WHERE item_id = :id")
+					->param(':id', $this->id)
+					->execute();
+				foreach($result as $row)
+				{
+					$this->_tags[] = $row['name'];
+				}
+			}
 
 			return $this->_tags;
 		}
 		else if ($id == 'persons')
 		{
-			return array();
+			if ($this->_persons === null)
+			{
+				$this->_persons = array();
+				$result = DB::query(Database::SELECT,
+					"SELECT name
+					FROM kwalbum_items_persons
+						LEFT JOIN kwalbum_persons ON person_id = id
+					WHERE item_id = :id")
+					->param(':id', $this->id)
+					->execute();
+				foreach($result as $row)
+				{
+					$this->_persons[] = $row['name'];
+				}
+			}
+
+			return $this->_persons;
 		}
 		else if ($id == 'comments')
 		{
-			return array();
+			if ($this->_comments === null)
+			{
+				$this->_comments = $this->_load_comments($this->id);
+			}
+			return $this->_comments;
 		}
 		else if ($id == 'user_name')
 		{
@@ -387,13 +393,70 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 			}
 			return $this->_user_name;
 		}
+		else if ($id == 'external_site' or $id == 'external_id')
+		{
+			if ($this->_external_site === null)
+			{
+				$result = DB::query(Database::SELECT,
+					"SELECT site_id, external_item_id
+					FROM kwalbum_items_sites
+					WHERE item_id = :id
+					LIMIT 1")
+					->param(':id', $this->item_id)
+					->execute();
+				$site_id = $result[0]['site_id'];
+				$this->_external_id = $result[0]['external_item_id'];
+				$this->_external_site = Model::factory('kwalbum_site')->load($site_id);
+			}
+			return $this->_external_site;
+		}
 	}
 
-	public function __set($id, $value)
+	public function __set($key, $value)
 	{
-		if ($id == 'location')
+		// Overwrite tags if an array is given or add to the existing array
+		if ($key == 'tags')
 		{
-			$this->_location = $value;
+			if (is_array($value))
+				$this->_tags = $value;
+			else
+			{
+				if ($this->_tags === null)
+				{
+					$this->_tags = $this->tags;
+				}
+				$this->_tags[] = (string)$value;
+			}
+		}
+
+		// Overwrite persons if an array is given or add to the existing array
+		elseif ($key == 'persons')
+		{
+			if (is_array($value))
+				$this->_persons = $value;
+			else
+			{
+				if ($this->_persons === null)
+				{
+					$this->_persons = $this->persons;
+				}
+				$this->_persons[] = (string)$value;
+			}
+		}
+
+		// Overwrite comments if an array is given or add to the existing array
+		elseif ($key == 'comments')
+		{
+			if (is_array($value))
+				$this->_comments = $value;
+			else
+			{
+				if ($this->_comments === null)
+				{
+					$this->_comments = $this->comments;
+				}
+				$this->_comments[] = (string)$value;
+			}
 		}
 	}
 
@@ -401,12 +464,98 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 	{
 		$this->id = $this->user_id = $this->location_id = $this->latitude
 			= $this->longitude = $this->hide_level = $this->count
-			= $this->has_comments = $this->is_external = 0;
+			= $this->_external_id = 0;
+		$this->has_comments = $this->is_external = false;
 		$this->description = $this->visible_date = $this->sort_date = $this->update_date
 			= $this->create_date = $this->path = $this->filename = '';
 		$this->_tags = $this->_persons = $this->_comments = $this->_location = $this->_user_name
-			= $this->_original_location = $this->_original_user_id = null;
+			= $this->_original_location = $this->_original_user_id
+			= $this->_external_site = null;
 		$this->type = $this->types[0];
 		$this->loaded = false;
+	}
+
+	private function _delete_person_relations($id = null)
+	{
+		if ($id === NULL)
+		{
+			$id = $this->id;
+		}
+
+		// Remove item from person counts
+		$result = DB::query(Database::UPDATE,
+			"UPDATE kwalbum_persons
+			SET count = count-1
+			WHERE id IN
+				(SELECT person_id
+					FROM kwalbum_items_persons
+					WHERE item_id = :id
+				)")
+			->param(':id', $id)
+			->execute();
+
+		if ($result > 0)
+		{
+			// Remove relations between item and persons
+			$result = DB::query(Database::DELETE,
+				"DELETE FROM kwalbum_items_persons
+				WHERE item_id = :id")
+				->param(':id', $id)
+				->execute();
+		}
+	}
+
+	private function _delete_tag_relations($id = null)
+	{
+		if ($id === NULL)
+		{
+			$id = $this->id;
+		}
+
+		// Remove item from tag counts
+		$result = DB::query(Database::UPDATE,
+			"UPDATE kwalbum_tags
+			SET count = count-1
+			WHERE id IN
+				(SELECT tag_id
+					FROM kwalbum_items_tags
+					WHERE item_id = :id
+				)")
+			->param(':id', $id)
+			->execute();
+
+		if ($result > 0)
+		{
+			// Remove relations between item and tags
+			$result = DB::query(Database::DELETE,
+				"DELETE FROM kwalbum_items_tags
+				WHERE item_id = :id")
+				->param(':id', $id)
+				->execute();
+		}
+	}
+
+	private function _load_comments($id = null)
+	{
+		if ($id === NULL)
+		{
+			$id = $this->id;
+		}
+
+		$comments = array();
+
+		$result = DB::query(Database::SELECT,
+			"SELECT id
+			FROM kwalbum_comments
+			WHERE item_id = :id")
+			->param(':id', $this->id)
+			->execute();
+
+		foreach ($result as $row)
+		{
+			$comments[] = Model::factory('kwalbum_comment')->load($row['id']);
+		}
+
+		return $comments;
 	}
 }
