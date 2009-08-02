@@ -77,6 +77,8 @@ class Controller_Install extends Controller_Kwalbum
 					$user->clear();
 					$user->name = 'Deleted User';
 					$user->openid = '';
+					$user->save();
+					// Normally, permission level should never be 0.
 					$user->permission_level = 0;
 					$user->save();
 					$location = Model::factory('kwalbum_location');

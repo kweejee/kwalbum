@@ -41,7 +41,7 @@ class Model_Kwalbum_User extends Kwalbum_Model
 		$this->name = $row['name'];
 		$this->openid = $row['openid'];
 		$this->visit_date = $row['visit_dt'];
-		$this->permission_level = $row['permission_level'];
+		$this->permission_level = (int)$row['permission_level'];
 		$this->loaded = true;
 
 		return $this;
@@ -55,6 +55,12 @@ class Model_Kwalbum_User extends Kwalbum_Model
 				"INSERT INTO kwalbum_users
 				(name, openid, visit_dt, permission_level)
 				VALUES (:name, :openid, :visit_dt, :permission_level)");
+			if ( ! $this->permission_level)
+			{
+				$this->permission_level = 1;
+			}
+			// Creating a new user does not mean they are visiting.
+			$this->visit_date = '0000-00-00 00:00:00';
 		}
 		else
 		{
@@ -118,8 +124,8 @@ class Model_Kwalbum_User extends Kwalbum_Model
 
 	public function clear()
 	{
-		$this->id = 0;
-		$this->name = $this->openid = $this->visit_date = $this->permission_level = '';
+		$this->id = $this->permission_level = 0;
+		$this->name = $this->openid = $this->visit_date = '';
 		$this->loaded = false;
 	}
 

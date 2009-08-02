@@ -110,9 +110,9 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 			// Update original location's item count if the name is different
 			if ($this->location != $this->_original_location)
 			{
-				DB::query(Database::UPDATE, "UPDATE kwalbum_locations
+				$result = DB::query(Database::UPDATE, "UPDATE kwalbum_locations
 					SET count = count-1
-					WHERE name = :id")
+					WHERE id = :id")
 					->param(':id', $this->_location_id)
 					->execute();
 			}
@@ -124,13 +124,13 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 			}
 		}
 
-		// If there is no location id set then get id for new location name
+		// If there is no location id set then there is a change so get id for new location name
 		if (!isset($location_id))
 		{
 			// The location name is unknown so use default unknown id and name
 			if (empty($this->location))
 			{
-				$location_id = 1;
+				$location_id = $this->_location_id = 1;
 				$result = DB::query(Database::SELECT,
 					"SELECT name
 					FROM kwalbum_locations
@@ -180,32 +180,61 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 		$this->_location_id = $location_id;
 		$this->_original_location_name = $this->location;
 
-		// Set user
+		// Set update_date
 
-		$user_id = $this->user_id;
-
+		$this->update_date = date('Y-m-d H:i:s');
 
 		// Save actual item
 
 		if ($this->loaded == false)
 		{
+			// create_date is never updated, only set at insert
+			$this->create_date = $this->update_date;
 			$query = DB::query(Database::INSERT,
 				"INSERT INTO kwalbum_items
-				(type_id, location_id, user_id)
-				VALUES (:type_id, :location_id, :user_id)");
+				(type_id, location_id, user_id, description, path, filename,
+					create_dt, update_dt, visible_dt, sort_dt,
+					count, latitude, longitude, hide_level, is_external)
+				VALUES (:type_id, :location_id, :user_id, :description, :path, :filename,
+					:create_date, :update_date, :visible_date, :sort_date,
+					:count, :latitude, :longitude, :hide_level, :is_external)")
+				->param(':create_date', $this->create_date);
+			if ( ! $this->visible_date)
+			{
+				$this->visible_date = $this->update_date;
+			}
+			if ( ! $this->sort_date)
+			{
+				$this->sort_date = $this->update_date;
+			}
 		}
 		else
 		{
 			$query = DB::query(Database::UPDATE,
 				"UPDATE kwalbum_items
-				SET type_id = :type_id, location_id = :location_id, user_id = :user_id
+				SET type_id = :type_id, location_id = :location_id, user_id = :user_id,
+					description = :description, path = :path, filename = :filename,
+					update_dt = :update_date, sort_dt = :sort_date, visible_dt = :visible_date,
+					count = :count, latitude = :latitude, longitude = :longitude,
+					hide_level = :hide_level, is_external = :is_external
 				WHERE id = :id")
 				->param(':id', $this->id);
 		}
 		$query
 			->param(':type_id', $type_id)
 			->param(':location_id', $location_id)
-			->param(':user_id', $user_id);
+			->param(':user_id', $this->user_id)
+			->param(':description', $this->description)
+			->param(':path', $this->path)
+			->param(':filename', $this->filename)
+			->param(':update_date', $this->update_date)
+			->param(':visible_date', $this->visible_date)
+			->param(':sort_date', $this->sort_date)
+			->param(':count', $this->count)
+			->param(':latitude', $this->latitude)
+			->param(':longitude', $this->longitude)
+			->param(':hide_level', $this->hide_level)
+			->param(':is_external', (int)$this->is_external);
 
 		$result = $query->execute();
 
