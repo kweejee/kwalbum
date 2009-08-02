@@ -18,7 +18,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 		$has_comments, $hide_level, $count, $is_external, $loaded;
 	private $_user_name, $_original_location, $_original_user_id,
 		 $_location_id, $_tags, $_persons, $_comments,
-		 $_external_site, $_external_id;
+		 $_external_site, $_external_id, $_external_site_is_changed;
 
 	protected $types = array(
 			0 => 'unknown',
@@ -42,9 +42,10 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 
 	public function load($id = null)
 	{
+		$this->clear();
+
 		if ($id === null)
 		{
-			$this->clear();
 			return $this;
 		}
 
@@ -57,7 +58,6 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 			->execute();
 		if ($result->count() == 0)
 		{
-			$this->clear();
 			return $this;
 		}
 
@@ -80,7 +80,6 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 		$this->hide_level = (int)$row['hide_level'];
 		$this->count = (int)$row['count'];
 		$this->is_external = (bool)$row['is_external'];
-		$this->_tags = $this->_persons = $this->_comments = $this->_location = $this->_user_name = null;
 
 		$result = DB::query(Database::SELECT,
 			"SELECT name
@@ -155,7 +154,8 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 				// If new location does not exist then create it
 				if ($result->count() == 0)
 				{
-					$result = DB::query(Database::INSERT, "INSERT INTO kwalbum_locations
+					$result = DB::query(Database::INSERT,
+						"INSERT INTO kwalbum_locations
 						(name)
 						VALUES (:name)")
 						->param(':name', $this->location)
@@ -169,7 +169,8 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 			}
 
 			// Update count on new location
-			$result = DB::query(Database::UPDATE, "UPDATE kwalbum_locations
+			$result = DB::query(Database::UPDATE,
+				"UPDATE kwalbum_locations
 				SET count = count+1
 				WHERE id = :id")
 				->param(':id', $location_id)
@@ -244,9 +245,8 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 			$this->loaded = true;
 		}
 
-
-
-		// Set tags and persons once we know we have an item_id for the relationship
+		// Set tags, persons, and external site once we know we have
+		// an item_id for the relationship.
 
 		// Remove old item-person and item-tag relations
 		$this->_delete_person_relations();
@@ -264,7 +264,8 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 			$person->clear();
 			$person->name = $name;
 			$person->save();
-			DB::query(Database::INSERT, "INSERT INTO kwalbum_items_persons
+			DB::query(Database::INSERT,
+				"INSERT INTO kwalbum_items_persons
 				(item_id, person_id)
 				VALUES (:item_id, :person_id)")
 				->param(':item_id', $this->id)
@@ -279,14 +280,66 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 			$tag->clear();
 			$tag->name = $name;
 			$tag->save();
-			DB::query(Database::INSERT, "INSERT INTO kwalbum_items_tags
+			DB::query(Database::INSERT,
+				"INSERT INTO kwalbum_items_tags
 				(item_id, tag_id)
 				VALUES (:item_id, :tag_id)")
 				->param(':item_id', $this->id)
 				->param(':tag_id', $tag->id)
-				->execute();;
+				->execute();
 			$tag->count = $tag->count+1;
 			$tag->save();
+		}
+
+		if ($this->_external_site_is_changed)
+		{
+			// remove old relation if it exists
+			DB::query(Database::DELETE,
+				"DELETE FROM kwalbum_items_sites
+				WHERE item_id = :id")
+				->param(':id', $this->id)
+				->execute();
+
+			// create relation and update item if is_external is not already correct
+			$query_item_again = false;
+			if ($this->_external_site != null and $this->_external_id != 0)
+			{
+				DB::query(Database::INSERT,
+					"INSERT INTO kwalbum_items_sites
+					(item_id, site_id, external_item_id)
+					VALUES (:id, :site_id, :external_id)")
+					->param(':id', $this->id)
+					->param(':site_id', $this->_external_site->id)
+					->param(':external_id', $this->_external_id)
+					->execute();
+
+				if ($this->is_external !== true)
+				{
+					$query_item_again = true;
+					$this->is_external = true;
+				}
+
+			}
+			else
+			{
+				if ($this->is_external !== false)
+				{
+					$query_item_again = true;
+					$this->is_external = false;
+					$this->_external_site = null;
+					$this->_external_id = 0;
+				}
+			}
+			if ($query_item_again === true)
+			{
+				DB::query(Database::UPDATE,
+					"UPDATE kwalbum_items
+					SET is_external = :is_external
+					WHERE id = :id")
+					->param(':id', $this->id)
+					->param(':is_external', (int)$this->is_external)
+					->execute();
+			}
 		}
 
 		//echo Kohana::debug($query);exit;
@@ -350,6 +403,13 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 		{
 			$comment->delete();
 		}
+
+		// Delete external site relation
+		DB::query(Database::DELETE,
+			"DELETE FROM kwalbum_items_sites
+			WHERE item_id = :id")
+			->param(':id', $id)
+			->execute();
 
 		if ($id == $this->id)
 		{
@@ -426,18 +486,28 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 		{
 			if ($this->_external_site === null)
 			{
+				if ($this->is_external === false)
+				{
+					if ($id == 'external_site')
+						return null;
+					else
+						return 0;
+				}
 				$result = DB::query(Database::SELECT,
 					"SELECT site_id, external_item_id
 					FROM kwalbum_items_sites
 					WHERE item_id = :id
 					LIMIT 1")
-					->param(':id', $this->item_id)
+					->param(':id', $this->id)
 					->execute();
 				$site_id = $result[0]['site_id'];
-				$this->_external_id = $result[0]['external_item_id'];
+				$this->_external_id = (int)$result[0]['external_item_id'];
 				$this->_external_site = Model::factory('kwalbum_site')->load($site_id);
 			}
-			return $this->_external_site;
+			if ($id == 'external_site')
+				return $this->_external_site;
+			else
+				return $this->_external_id;
 		}
 	}
 
@@ -459,7 +529,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 		}
 
 		// Overwrite persons if an array is given or add to the existing array
-		elseif ($key == 'persons')
+		else if ($key == 'persons')
 		{
 			if (is_array($value))
 				$this->_persons = $value;
@@ -474,7 +544,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 		}
 
 		// Overwrite comments if an array is given or add to the existing array
-		elseif ($key == 'comments')
+		else if ($key == 'comments')
 		{
 			if (is_array($value))
 				$this->_comments = $value;
@@ -487,6 +557,14 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 				$this->_comments[] = (string)$value;
 			}
 		}
+		else if ($key == 'external_site' or $key == 'external_id')
+		{
+			$this->_external_site_is_changed = true;
+			if ($key == 'external_site')
+				$this->_external_site = $value;
+			else
+				$this->_external_id = (int)$value;
+		}
 	}
 
 	public function clear()
@@ -494,14 +572,14 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 		$this->id = $this->user_id = $this->location_id = $this->latitude
 			= $this->longitude = $this->hide_level = $this->count
 			= $this->_external_id = 0;
-		$this->has_comments = $this->is_external = false;
 		$this->description = $this->visible_date = $this->sort_date = $this->update_date
 			= $this->create_date = $this->path = $this->filename = '';
 		$this->_tags = $this->_persons = $this->_comments = $this->_location = $this->_user_name
 			= $this->_original_location = $this->_original_user_id
 			= $this->_external_site = null;
 		$this->type = $this->types[0];
-		$this->loaded = false;
+		$this->has_comments = $this->is_external
+			= $this->loaded = $this->_external_site_is_changed = false;
 	}
 
 	private function _delete_person_relations($id = null)
