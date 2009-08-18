@@ -14,7 +14,7 @@ class Model_Kwalbum_Location extends Kwalbum_Model
 {
 	public $id, $name, $latitude, $longitude, $count;
 
-	public function load($id = null)
+	public function load($id = null, $field = 'id')
 	{
 		if ($id === null)
 		{
@@ -23,9 +23,9 @@ class Model_Kwalbum_Location extends Kwalbum_Model
 		}
 
 		$query = DB::query(Database::SELECT,
-			"SELECT name, latitude, longitude, count
+			"SELECT id, name, latitude, longitude, count
 			FROM kwalbum_locations
-			WHERE id = :id
+			WHERE $field = :id
 			LIMIT 1")
 			->param(':id', $id);
 
@@ -39,7 +39,7 @@ class Model_Kwalbum_Location extends Kwalbum_Model
 
 		$row = $result[0];
 
-		$this->id = (int)$id;
+		$this->id = (int)$row['id'];
 		$this->name = $row['name'];
 		$this->latitude = $row['latitude'];
 		$this->longitude = $row['longitude'];

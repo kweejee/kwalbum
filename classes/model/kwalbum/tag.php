@@ -14,7 +14,7 @@ class Model_Kwalbum_Tag extends Kwalbum_Model
 {
 	public $id, $name, $count, $loaded;
 
-	public function load($id = null)
+	public function load($id = null, $field = 'id')
 	{
 		if ($id === null)
 		{
@@ -23,9 +23,9 @@ class Model_Kwalbum_Tag extends Kwalbum_Model
 		}
 
 		$result = DB::query(Database::SELECT,
-			"SELECT name, count
+			"SELECT id, name, count
 			FROM kwalbum_tags
-			WHERE id = :id
+			WHERE $field = :id
 			LIMIT 1")
 			->param(':id', $id)
 			->execute();
@@ -37,7 +37,7 @@ class Model_Kwalbum_Tag extends Kwalbum_Model
 
 		$row = $result[0];
 
-		$this->id = (int)$id;
+		$this->id = (int)$row['id'];
 		$this->name = $row['name'];
 		$this->count = (int)$row['count'];
 		$this->loaded = true;

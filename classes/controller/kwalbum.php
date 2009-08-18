@@ -15,11 +15,16 @@ class Controller_Kwalbum extends Controller_Template
 	// allow to run in production
 	const ALLOW_PRODUCTION = true;
 
-	private $_main_template;
+	public $user;
 
 	public function before()
 	{
 		$this->template = new View('kwalbum/template');
+
+		// Set up test user
+		$this->user = Model::factory('kwalbum_user')->load(1);
+
+		$this->template->set_global('user', $this->user);
 	}
 
 	public function action_index()

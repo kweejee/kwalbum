@@ -14,7 +14,7 @@ class Model_Kwalbum_Site extends Kwalbum_Model
 {
 	public $id, $url, $key, $import_date, $loaded;
 
-	public function load($id = null)
+	public function load($id = null, $field = 'id')
 	{
 		if ($id === null)
 		{
@@ -23,9 +23,9 @@ class Model_Kwalbum_Site extends Kwalbum_Model
 		}
 
 		$result = DB::query(Database::SELECT,
-			"SELECT url, site_key, import_dt
+			"SELECT id, url, site_key, import_dt
 			FROM kwalbum_sites
-			WHERE id = :id
+			WHERE $field = :id
 			LIMIT 1")
 			->param(':id', $id)
 			->execute();
@@ -37,7 +37,7 @@ class Model_Kwalbum_Site extends Kwalbum_Model
 
 		$row = $result[0];
 
-		$this->id = (int)$id;
+		$this->id = (int)$row['id'];
 		$this->url = $row['url'];
 		$this->key = $row['site_key'];
 		$this->import_date = $row['import_dt'];

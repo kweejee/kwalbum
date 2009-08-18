@@ -6,11 +6,12 @@ Route::set('kwalbum_install', 'kwalbum/install')
 		'action'     => 'index',
 	));
 
-Route::set('kwalbum_admin', 'kwalbum/admin(/<action>)', array(
+Route::set('kwalbum_admin', 'kwalbum/~(<controller>)(/<action>)', array(
+		'controller'   => '.+',
 		'action'   => '.+',
 	))
 	->defaults(array(
-		'controller' => 'admin',
+		'controller' => 'browse',
 		'action'     => 'index',
 	));
 

@@ -24,8 +24,10 @@ class UnitTest_Kwalbum_Model extends UnitTest_Case
 		$user->name = 'Test Name';
 		$user->openid = 'testid@example.com';
 		$this->assert_empty($user->id);
+		$this->assert_false($user->loaded);
 		$user->save();
 		$this->assert_not_empty($user->id);
+		$this->assert_true($user->loaded);
 
 		$user->reload();
 		$this->assert_equal($user->name, 'Test Name');
@@ -36,8 +38,13 @@ class UnitTest_Kwalbum_Model extends UnitTest_Case
 
 		$user->permission_level = 2;
 		$user->save();
-		$user->reload();
+
+		$user->load('Test Name', 'name');
+		$this->assert_equal($user->name, 'Test Name');
+		$this->assert_equal($user->openid, 'testid@example.com');
 		$this->assert_equal($user->permission_level, 2);
+		$this->assert_not_empty($user->visit_date);
+		$this->assert_equal($user->visit_date, '0000-00-00 00:00:00');
 
 		$user->delete();
 		$this->assert_empty($user->id);
@@ -50,6 +57,43 @@ class UnitTest_Kwalbum_Model extends UnitTest_Case
 		$this->assert_false($user->load(-1)->loaded);
 		$this->assert_false($user->load('hi')->loaded);
 		$this->assert_true($user->load(1)->loaded);
+	}
+
+	public function test_user_permissions()
+	{
+		$user = Model::factory('kwalbum_user');
+		$user->name = 'Test Name';
+		$user->openid = 'testid@example.com';
+		$user->save();
+
+		$item = Model::factory('kwalbum_item');
+		$item->type = 'mp3';
+		$item->user_id = 1;
+		$item->description = 'd escription';
+		$item->path = 'p ath';
+		$item->filename = 'f ilename';
+		$item->save();
+
+		// default can not edit
+		$this->assert_false($user->can_edit());
+
+		// 4 can edit all
+		$user->permission_level = 4;
+		$this->assert_true($user->can_edit());
+		$this->assert_true($user->can_edit_item($item));
+
+		// 3 can edit only what they own
+		$user->permission_level = 3;
+		$this->assert_true($user->can_edit());
+		$this->assert_false($user->can_edit_item($item));
+		$item->user_id = $user->id;
+		$this->assert_true($user->can_edit());
+		$this->assert_true($user->can_edit_item($item));
+
+		// 2 can not edit
+		$user->permission_level = 2;
+		$this->assert_false($user->can_edit());
+		$this->assert_false($user->can_edit_item($item));
 	}
 
 	public function test_add_and_delete_location()

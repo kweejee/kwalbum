@@ -13,10 +13,12 @@ return array
 	 * Item upload directory.
 	 */
 	'item_path' => APPPATH.'items',
+
 	/**
 	 * Root path in the URL to get to Kwalbum
 	 */
 	'url' => '/kwalbum/',
+
 	/**
 	 * Secret key for remote sites to get data about your items
 	 * Random characters are best

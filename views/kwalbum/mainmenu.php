@@ -8,15 +8,29 @@
  * @package kohana
  * @since Jul 21, 2009
  */
+
 ?>
 <p>
-	<?php echo html::anchor(URL,'main page')?> -
-	<a href='<?php echo URL?>item/1'>single item</a> -
-	<a href='<?php echo URL?>admin'>admin</a>
-	<br/>
-	browse by:
-	<a href='<?php echo URL?>2005'>single year</a> -
-	<a href='<?php echo URL?>2009/6/20'>full date</a> -
-	<a href='<?php echo URL?>tag/test'>tag</a> -
-	<a href='<?php echo URL?>Home'>location</a> -
+	<?php
+	echo html::anchor(URL, 'main page').' - ';
+	echo html::anchor(URL.'~map', 'map').' - ';
+	echo html::anchor(URL.'~user/list', 'contributors').' - ';
+	if ($user->can_edit)
+	{
+		echo html::anchor(URL.'~user/upload', 'upload').' - ';
+		echo html::anchor(URL.'~user/edit', 'edit').' - ';
+	}
+	if ($user->is_admin)
+	{
+		echo html::anchor(URL.'~admin', 'admin').' - ';
+	}
+	if ($user->is_logged_in)
+	{
+		echo html::anchor(URL.'~user/logout', 'logout');
+	}
+	else
+	{
+		echo html::anchor(URL.'~user/login', 'login');
+	}
+	?>
 </p>

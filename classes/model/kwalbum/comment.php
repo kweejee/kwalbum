@@ -31,7 +31,7 @@ class Model_Kwalbum_Comment extends Kwalbum_Model
 		}
 	}
 
-	public function load($id = null)
+	public function load($id = null, $field = 'id')
 	{
 		if ($id === null)
 		{
@@ -39,9 +39,9 @@ class Model_Kwalbum_Comment extends Kwalbum_Model
 		}
 
 		$result = DB::query(Database::SELECT,
-			"SELECT item_id, name, text, create_dt, ip
+			"SELECT id, item_id, name, text, create_dt, ip
 			FROM kwalbum_comments
-			WHERE id = :id
+			WHERE $field = :id
 			LIMIT 1")
 			->param(':id', $id)
 			->execute();
@@ -52,7 +52,7 @@ class Model_Kwalbum_Comment extends Kwalbum_Model
 		}
 
 		$row = $result[0];
-		$this->id = $id;
+		$this->id = (int)$row['id'];
 		$this->item_id = $row['item_id'];
 		$this->name = $row['name'];
 		$this->text = $row['text'];

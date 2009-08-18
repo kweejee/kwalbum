@@ -23,7 +23,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 	protected $types = array(
 			0 => 'unknown',
 			1 => 'gif', 2 => 'jpg', 3 => 'png',
-			40 => 'wmv',
+			/*40 => 'wmv',
 			41 => 'txt',
 			42 => 'mp3',
 			43 => 'zip',
@@ -36,11 +36,11 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 			52 => 'flv',
 			53 => 'doc',
 			54 => 'mpeg',
-			55 => 'mp4',
+			55 => 'mp4',*/
 			255 => 'description only'
 		);
 
-	public function load($id = null)
+	public function load($id = null, $field = 'id')
 	{
 		$this->clear();
 
@@ -52,7 +52,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 		$result = DB::query(Database::SELECT,
 			"SELECT *
 			FROM kwalbum_items
-			WHERE id = :id
+			WHERE $field = :id
 			LIMIT 1")
 			->param(':id', $id)
 			->execute();
@@ -63,7 +63,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 
 		$row = $result[0];
 
-		$this->id = $id;
+		$this->id = (int)$row['id'];
 		$this->type = $this->types[$row['type_id']];
 		$this->user_id = $this->_original_user_id = (int)$row['user_id'];
 		$this->_location_id = (int)$row['location_id'];
