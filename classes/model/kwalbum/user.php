@@ -161,7 +161,9 @@ class Model_Kwalbum_User extends Kwalbum_Model
 		{
 			case 'is_logged_in': return ($this->permission_level > 0);
 			case 'can_see_all': return ($this->permission_level >= 2);
-			case 'can_edit': return ($this->permission_level >= 3);
+			case 'can_edit':
+			case 'can_add': return ($this->permission_level >= 3);
+			//case 'can_edit_all': return ($this->permission_level >= 4); // see can_edit_item($item)
 			case 'is_admin': return ($this->permission_level == 5);
 		}
 	}

@@ -125,4 +125,75 @@ class Model_Kwalbum_Tag extends Kwalbum_Model
 	{
 		return $this->name;
 	}
+
+
+	static public function getTagArray($limit = 10, $offset = 0, $name = '', $order = 'name ASC')
+	{
+		$tags = array();
+
+		$name = trim($name);
+
+		// Select almost exact (not case sensitive) match first if searching by name
+		if ( ! empty($name))
+		{
+			$result = DB::query(Database::SELECT,
+				'SELECT name
+				FROM kwalbum_tags
+				WHERE name = :name')
+				->param(':name', $name)
+				->execute();
+			if ($result->count() == 1)
+			{
+				$tags[] = $result[0]['name'];
+				$limit--;
+			}
+		}
+
+		// Select from starting matches if searching by name or select from all
+		$partName = "$name%";
+		$query = 'AND name != :name';
+		$result = DB::query(Database::SELECT,
+			"SELECT name
+			FROM kwalbum_tags"
+			.( ! empty($name) ? " WHERE name LIKE :partName $query" : null)
+			." ORDER BY $order
+			LIMIT :offset,:limit")
+			->param(':partName', $partName)
+			->param(':name', $name)
+			->param(':limit', $limit)
+			->param(':offset', $offset)
+			->execute();
+
+		if ($result->count() > 0)
+		{
+			foreach($result as $row)
+			{
+				$tags[] = $row['name'];
+				$query .= " AND name != '$row[name]'";
+			}
+			$limit -= $result->count();
+		}
+
+		// Select from any partial matches if searching by name
+		if ( ! empty($name) and $limit > 0)
+		{
+			$partName = "%$name%";
+			$result = DB::query(Database::SELECT,
+				"SELECT name
+				FROM kwalbum_tags
+				WHERE name LIKE :partName $query"
+				." ORDER BY $order
+				LIMIT :limit")
+				->param(':partName', $partName)
+				->param(':name', $name)
+				->param(':limit', $limit)
+				->execute();
+
+			foreach($result as $row)
+			{
+				$tags[] = $row['name'];
+			}
+		}
+		return $tags;
+	}
 }

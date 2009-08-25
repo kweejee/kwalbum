@@ -11,4 +11,10 @@
  */
 
 ?>
-	main entry page stuff
+<p>
+From here you can <?php echo html::anchor(URL.'~browse', 'browse all pictures') ?> or search below to find something specific.
+</p>
+
+<p>
+search form goes here
+</p>

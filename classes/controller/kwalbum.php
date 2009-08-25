@@ -16,6 +16,7 @@ class Controller_Kwalbum extends Controller_Template
 	const ALLOW_PRODUCTION = true;
 
 	public $user;
+	public $location, $date, $tags, $people;
 
 	public function before()
 	{

@@ -22,7 +22,10 @@ define('URL', $config->url);
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 	<title><?php echo htmlspecialchars(isset($title) ? $title.$config->title_separator.$config->title : $config->title) ?></title>
 
-	<?php echo html::style('kwalbum/media/css/default.css')?>
+	<?php
+		echo html::style('kwalbum/media/css/default.css');
+		echo isset($head) ? $head : null;
+	?>
 
 </head>
 <body>

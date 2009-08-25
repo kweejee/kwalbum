@@ -6,23 +6,32 @@ Route::set('kwalbum_install', 'kwalbum/install')
 		'action'     => 'index',
 	));
 
-Route::set('kwalbum_admin', 'kwalbum/~(<controller>)(/<action>)', array(
-		'controller'   => '.+',
-		'action'   => '.+',
-	))
-	->defaults(array(
-		'controller' => 'browse',
-		'action'     => 'index',
-	));
-
-Route::set('kwalbum_item', 'kwalbum/item(/<id>)(/<action>)', array(
-		'action' => '[a-zA-Z0-9]+',
+Route::set('kwalbum_item', 'kwalbum/(~<id>)(/<action>)', array(
 		'id' => '[0-9]+',
+		'action' => '[a-zA-Z0-9]+',
 	))
 	->defaults(array(
 		'controller' => 'item',
 		'action'     => 'single',
 	));
+
+Route::set('kwalbum_controller', 'kwalbum/~(<controller>)(/<action>)', array(
+		'controller'   => '[a-zA-Z0-9]+',
+		'action'   => '[a-zA-Z0-9]+',
+	))
+	->defaults(array(
+		'controller' => 'kwalbum',
+		'action'     => 'index',
+	));
+
+Route::set('kwalbum_media', 'kwalbum/media/<file>', array(
+		'file' => '.+',
+	))
+	->defaults(array(
+		'controller' => 'kwalbum',
+		'action'     => 'media',
+	));
+
 
 Route::set('kwalbum_tag', 'kwalbum/tag/<tag>', array(
 		'tag' => '[a-zA-Z0-9]+',
@@ -43,17 +52,9 @@ Route::set('kwalbum_date', 'kwalbum/(<year>)(/<month>)(/<day>)', array(
 	));
 
 Route::set('kwalbum_location', 'kwalbum/<location>', array(
-		'location' => '[a-zA-Z0-9]+',
+		'location' => '.{1,}',
 	))
 	->defaults(array(
 		'controller' => 'browse',
 		'action'     => 'location',
-	));
-
-Route::set('kwalbum_media', 'kwalbum/media/<file>', array(
-		'file' => '.+',
-	))
-	->defaults(array(
-		'controller' => 'kwalbum',
-		'action'     => 'media',
 	));
