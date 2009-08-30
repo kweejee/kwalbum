@@ -30,22 +30,25 @@ class Controller_User extends Controller_Kwalbum
 			return;
 		}
 
-		$hidden = (int)@$_POST['hidden'];
-		$location = $this->location;
-		$tags = $this->tags;
 		if (!$date = $this->date)
 			$date = date('Y-m-d');
 
-
 		$content = new View('kwalbum/user/upload');
 		$content->user_is_admin = $user->is_admin;
-		$content->hidden = $hidden;
-		$content->location = $location;
-		$content->tags = $tags;
 		$content->date = $date;
 
-		$this->template->content = $content;
-		$this->template->title = 'Upload';
-		$this->template->head = html::style('kwalbum/media/ajax/jqueryautocomplete/jquery.autocomplete.css');
+		$template = $this->template;
+		$template->content = $content;
+		$template->title = 'Upload';
+		$template->head = html::style('kwalbum/media/ajax/jqueryautocomplete/jquery.autocomplete.css')
+			.html::style('kwalbum/media/ajax/uploadify/uploadify.css')
+			.html::script('kwalbum/media/ajax/jquery.js')
+			.html::script('kwalbum/media/ajax/jqueryautocomplete/jquery.autocomplete.pack.js')
+		//	.html::script('http://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js')
+			.html::script('kwalbum/media/ajax/uploadify/jquery.uploadify.v2.1.0.js')
+			.html::script('http://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject_src.js')
+			.html::script('kwalbum/media/ajax/upload.js')
+		;
 	}
+
 }

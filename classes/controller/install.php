@@ -22,7 +22,7 @@ class Controller_Install extends Controller_Kwalbum
 		$this->template->title = 'Install';
 
 		// Uncomment to delete everything and start over
-		//$this->_drop_tables();
+		$this->_drop_tables();
 
 		// Do not continue installation if at least 1 user exists in the database
 		try
@@ -173,8 +173,8 @@ class Controller_Install extends Controller_Kwalbum
 		$sql = 'CREATE TABLE IF NOT EXISTS `kwalbum_locations`(
 		          `id` SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT ,
 		          `name` VARCHAR('.$this->_user['maxNameLength'].') NOT NULL ,
-		          `latitude` DECIMAL(9,6) NOT NULL DEFAULT 0,
-		          `longitude` DECIMAL(9,6) NOT NULL DEFAULT 0,
+		          `latitude` DECIMAL(10,7) NOT NULL DEFAULT 0,
+		          `longitude` DECIMAL(10,7) NOT NULL DEFAULT 0,
 		          `count` SMALLINT UNSIGNED NOT NULL DEFAULT 0 ,
 		          PRIMARY KEY (`id`) ,
 		          INDEX `location` (`name`(10) ASC) ,
@@ -197,8 +197,8 @@ class Controller_Install extends Controller_Kwalbum
 		          `has_comments` TINYINT NOT NULL DEFAULT 0 ,
 		          `hide_level` TINYINT UNSIGNED NOT NULL DEFAULT 0 ,
 		          `count` SMALLINT UNSIGNED NOT NULL DEFAULT 0 ,
-		          `latitude` DECIMAL(9,6) NOT NULL DEFAULT 0,
-		          `longitude` DECIMAL(9,6) NOT NULL DEFAULT 0,
+		          `latitude` DECIMAL(10,7) NOT NULL DEFAULT 0,
+		          `longitude` DECIMAL(10,7) NOT NULL DEFAULT 0,
 		          `update_dt` DATETIME NOT NULL ,
 		          `create_dt` DATETIME NOT NULL ,
 		          `is_external` TINYINT NOT NULL DEFAULT 0 ,

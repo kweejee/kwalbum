@@ -15,9 +15,10 @@ Route::set('kwalbum_item', 'kwalbum/(~<id>)(/<action>)', array(
 		'action'     => 'single',
 	));
 
-Route::set('kwalbum_controller', 'kwalbum/~(<controller>)(/<action>)', array(
+Route::set('kwalbum_controller', 'kwalbum/~<controller>(/<action>(<ext>))', array(
 		'controller'   => '[a-zA-Z0-9]+',
 		'action'   => '[a-zA-Z0-9]+',
+		'ext' => '\.\w+'
 	))
 	->defaults(array(
 		'controller' => 'kwalbum',

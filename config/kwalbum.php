@@ -12,7 +12,7 @@ return array
 	/**
 	 * Item upload directory.
 	 */
-	'item_path' => APPPATH.'items',
+	'item_path' => APPPATH.'items/',
 
 	/**
 	 * Root path in the URL to get to Kwalbum

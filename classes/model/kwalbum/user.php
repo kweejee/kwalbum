@@ -22,13 +22,17 @@ class Model_Kwalbum_User extends Kwalbum_Model
 			return $this;
 		}
 
-		$result = DB::query(Database::SELECT,
-			"SELECT id, name, openid, visit_dt, permission_level
-			FROM kwalbum_users
-			WHERE $field = :id
-			LIMIT 1")
-			->param(':id', $id)
-			->execute();
+		try {
+			$result = DB::query(Database::SELECT,
+				"SELECT id, name, openid, visit_dt, permission_level
+				FROM kwalbum_users
+				WHERE $field = :id
+				LIMIT 1")
+				->param(':id', $id)
+				->execute();
+		}
+		catch (Exception $e){ return $this;}
+
 		if ($result->count() == 0)
 		{
 			return $this;

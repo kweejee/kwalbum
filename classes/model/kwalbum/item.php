@@ -20,9 +20,9 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 		 $_location_id, $_tags, $_persons, $_comments,
 		 $_external_site, $_external_id, $_external_site_is_changed;
 
-	protected $types = array(
+	static public $types = array(
 			0 => 'unknown',
-			1 => 'gif', 2 => 'jpg', 3 => 'png',
+			1 => 'gif', 2 => 'jpeg', 3 => 'png',
 			/*40 => 'wmv',
 			41 => 'txt',
 			42 => 'mp3',
@@ -64,7 +64,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 		$row = $result[0];
 
 		$this->id = (int)$row['id'];
-		$this->type = $this->types[$row['type_id']];
+		$this->type = Model_Kwalbum_Item::$types[$row['type_id']];
 		$this->user_id = $this->_original_user_id = (int)$row['user_id'];
 		$this->_location_id = (int)$row['location_id'];
 		$this->visible_date = $row['visible_dt'];
@@ -74,7 +74,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 		$this->description = $row['description'];
 		$this->latitude = $row['latitude'];
 		$this->longitude = $row['longitude'];
-		$this->path = $row['path'];
+		$this->path = Kohana::config('kwalbum.item_path').$row['path'];
 		$this->filename = $row['filename'];
 		$this->has_comments = (bool)$row['has_comments'];
 		$this->hide_level = (int)$row['hide_level'];
@@ -98,9 +98,8 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 	{
 		// Set type
 
-		$types = array_flip($this->types);
+		$types = array_flip(Model_Kwalbum_Item::$types);
 		$type_id = $types[$this->type];
-
 		// Set location
 
 		// Item has an original location so check for name changes
@@ -109,7 +108,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 			// Update original location's item count if the name is different
 			if ($this->location != $this->_original_location)
 			{
-				$result = DB::query(Database::UPDATE, "UPDATE kwalbum_locations
+				DB::query(Database::UPDATE, "UPDATE kwalbum_locations
 					SET count = count-1
 					WHERE id = :id")
 					->param(':id', $this->_location_id)
@@ -169,7 +168,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 			}
 
 			// Update count on new location
-			$result = DB::query(Database::UPDATE,
+			DB::query(Database::UPDATE,
 				"UPDATE kwalbum_locations
 				SET count = count+1
 				WHERE id = :id")
@@ -226,7 +225,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 			->param(':location_id', $location_id)
 			->param(':user_id', $this->user_id)
 			->param(':description', $this->description)
-			->param(':path', $this->path)
+			->param(':path', str_replace(Kohana::config('kwalbum.item_path'), '', $this->path))
 			->param(':filename', $this->filename)
 			->param(':update_date', $this->update_date)
 			->param(':visible_date', $this->visible_date)
@@ -254,8 +253,8 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 
 		// Remove duplicates of new person and tags
 		// Use __get to make sure the array exists
-		$this->_persons = array_unique($this->persons);
-		$this->_tags = array_unique($this->tags);
+		$this->_persons = array_filter(array_unique($this->persons));
+		$this->_tags = array_filter(array_unique($this->tags));
 
 		// Create new item-person and item-tag relations
 		$person = Model::factory('kwalbum_person');
@@ -577,7 +576,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 		$this->_tags = $this->_persons = $this->_comments = $this->_location = $this->_user_name
 			= $this->_original_location = $this->_original_user_id
 			= $this->_external_site = null;
-		$this->type = $this->types[0];
+		$this->type = Model_Kwalbum_Item::$types[0];
 		$this->has_comments = $this->is_external
 			= $this->loaded = $this->_external_site_is_changed = false;
 	}

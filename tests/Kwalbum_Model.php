@@ -67,7 +67,7 @@ class UnitTest_Kwalbum_Model extends UnitTest_Case
 		$user->save();
 
 		$item = Model::factory('kwalbum_item');
-		$item->type = 'mp3';
+		$item->type = 'png';
 		$item->user_id = 1;
 		$item->description = 'd escription';
 		$item->path = 'p ath';
@@ -75,24 +75,24 @@ class UnitTest_Kwalbum_Model extends UnitTest_Case
 		$item->save();
 
 		// default can not edit
-		$this->assert_false($user->can_edit());
+		$this->assert_false($user->can_edit);
 
 		// 4 can edit all
 		$user->permission_level = 4;
-		$this->assert_true($user->can_edit());
+		$this->assert_true($user->can_edit);
 		$this->assert_true($user->can_edit_item($item));
 
 		// 3 can edit only what they own
 		$user->permission_level = 3;
-		$this->assert_true($user->can_edit());
+		$this->assert_true($user->can_edit);
 		$this->assert_false($user->can_edit_item($item));
 		$item->user_id = $user->id;
-		$this->assert_true($user->can_edit());
+		$this->assert_true($user->can_edit);
 		$this->assert_true($user->can_edit_item($item));
 
 		// 2 can not edit
 		$user->permission_level = 2;
-		$this->assert_false($user->can_edit());
+		$this->assert_false($user->can_edit);
 		$this->assert_false($user->can_edit_item($item));
 	}
 
@@ -165,7 +165,7 @@ class UnitTest_Kwalbum_Model extends UnitTest_Case
 		$unknown_count = $unknown_location->count;
 
 		$item = Model::factory('kwalbum_item');
-		$item->type = 'mp3';
+		$item->type = 'jpeg';
 		$item->user_id = 1;
 		$item->description = 'd escription';
 		$item->path = 'p ath';
@@ -185,10 +185,10 @@ class UnitTest_Kwalbum_Model extends UnitTest_Case
 		$this->assert_equal($item->location, $unknown_location->name);
 		$this->assert_equal($item->count, 0);
 		$this->assert_equal($item->user_id, 1);
-		$this->assert_equal($item->type, 'mp3');
+		$this->assert_equal($item->type, 'jpeg');
 		$this->assert_equal($item->user_id, 1);
 		$this->assert_equal($item->description, 'd escription');
-		$this->assert_equal($item->path, 'p ath');
+		$this->assert_equal($item->path, Kohana::config('kwalbum.item_path').'p ath');
 		$this->assert_equal($item->filename, 'f ilename');
 		$this->assert_similar($item->latitude, 0.0);
 		$this->assert_similar($item->longitude, 0.0);
