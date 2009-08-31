@@ -15,12 +15,19 @@ class Controller_Kwalbum extends Controller_Template
 	// allow to run in production
 	const ALLOW_PRODUCTION = true;
 
-	public $user;
 	public $location, $date, $tags, $people;
+	public $user;
 
 	public function before()
 	{
 		$this->template = new View('kwalbum/template');
+
+		$this->tags = Security::xss_clean($this->request->param('tag'));
+		$this->location = Security::xss_clean($this->request->param('location'));
+		$year = (int)$this->request->param('year');
+		$month = (int)$this->request->param('month');
+		$day = (int)$this->request->param('day');
+		$this->date = ($year ? $year : '0000').'-'.($month ? $month : '00').'-'.($day ? $day : '00');
 
 		// Set up test user
 		$this->user = Model::factory('kwalbum_user')->load(1);

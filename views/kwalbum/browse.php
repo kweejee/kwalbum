@@ -12,6 +12,10 @@
 
 ?>
 <h1><?php echo $tempInfo ?></h1>
+<?php foreach ($items as $item)
+{
+	echo '
 <div class="box">
 	thumbnails go here
-</div>
+</div>';
+}
