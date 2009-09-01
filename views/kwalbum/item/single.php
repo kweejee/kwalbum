@@ -12,8 +12,9 @@
 
 ?>
 <div class="box">
-	single image and details for id <b><big><?=$id?></big></b>
-	<p>
-		<?php echo $description ?>
-	</p>
+	<?php
+		$resizedview = new View('kwalbum/item/resized');
+		$resizedview->item = $item;
+		echo $resizedview->render();
+	?>
 </div>

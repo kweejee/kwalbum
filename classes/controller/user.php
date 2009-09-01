@@ -30,11 +30,15 @@ class Controller_User extends Controller_Kwalbum
 			return;
 		}
 
+		$url = $this->url;
+
 		if (!$date = $this->date)
 			$date = date('Y-m-d');
 
 		$content = new View('kwalbum/user/upload');
 		$content->user_is_admin = $user->is_admin;
+		$content->location = $this->location;
+		$content->tags = implode(',', $this->tags);
 		$content->date = $date;
 
 		$template = $this->template;

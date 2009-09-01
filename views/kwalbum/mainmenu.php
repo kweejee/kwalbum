@@ -12,25 +12,25 @@
 ?>
 <p>
 	<?php
-	echo html::anchor(URL, 'main page').' - ';
-	echo html::anchor(URL.'~map', 'map').' - ';
-	echo html::anchor(URL.'~user/list', 'contributors').' - ';
+	echo html::anchor($kwalbum_url, 'main page').' - ';
+	echo html::anchor($kwalbum_url.'/~map', 'map').' - ';
+	echo html::anchor($kwalbum_url.'/~user/list', 'contributors').' - ';
 	if ($user->can_edit)
 	{
-		echo html::anchor(URL.'~user/upload', 'upload').' - ';
-		echo html::anchor(URL.'~user/edit', 'edit').' - ';
+		echo html::anchor($kwalbum_url.'/~user/upload', 'upload').' - ';
+		echo html::anchor($kwalbum_url.'/~user/edit', 'edit').' - ';
 	}
 	if ($user->is_admin)
 	{
-		echo html::anchor(URL.'~admin', 'admin').' - ';
+		echo html::anchor($kwalbum_url.'/~admin', 'admin').' - ';
 	}
 	if ($user->is_logged_in)
 	{
-		echo html::anchor(URL.'~user/logout', 'logout');
+		echo html::anchor($kwalbum_url.'/~user/logout', 'logout');
 	}
 	else
 	{
-		echo html::anchor(URL.'~user/login', 'login');
+		echo html::anchor($kwalbum_url.'/~user/login', 'login');
 	}
 	?>
 </p>

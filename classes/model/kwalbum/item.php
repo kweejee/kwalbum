@@ -39,6 +39,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 			55 => 'mp4',*/
 			255 => 'description only'
 		);
+	static private $_where = array();
 
 	public function load($id = null, $field = 'id')
 	{
@@ -663,5 +664,109 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 		}
 
 		return $comments;
+	}
+
+	static public function get_where_query()
+	{
+		$query = '';
+		foreach (Model_Kwalbum_Item::$_where as $where)
+		{
+			if ($query)
+				$query .= ' AND '.$where;
+			else
+				$query = ' WHERE '.$where;
+		}
+
+		return $query;
+	}
+
+	static public function append_where($name, $value)
+	{
+		$query = '';
+
+		if ($name == 'location')
+		{
+			$query = (string)DB::query(null, " location_id =
+				(SELECT id
+				FROM kwalbum_locations
+				WHERE name = :location)")
+				->param(':location', $value);
+		}
+		else if ($name == 'date')
+		{
+			$newDate = explode('-', $value);
+			$year = (int) $newDate[0];
+			$month = (int) @$newDate[1];
+			$day = (int) @$newDate[2];
+
+			if (1800 <= $year and 12 >= $month and 32 >= $day)
+			{
+				if (0 == $month)
+				{
+					$date1 = "$value 00:00:00";
+					$date2 = "$year-12-31 23:59:59";
+				}
+				else if (0 == $day)
+				{
+					$date1 = "$value 00:00:00";
+					$date2 = "$year-$month-32 23:59:59";
+				} else
+				{
+					$date1 = "$value 00:00:00";
+					$date2 = "$value 23:59:59";
+				}
+				$query = (string)DB::query(null, 'sort_dt >= :date1 AND sort_dt <= :date2')
+					->param(':date1', $date1)
+					->param(':date2', $date2);
+			}
+
+		}
+
+		else if ($name == 'tags')
+		{
+			foreach($value as $tag)
+			{
+				$query .= ($query ? ' AND ' : null).
+					(string)DB::query(null, " 0 < (SELECT count(*) FROM kwalbum_items_tags
+					LEFT JOIN kwalbum_tags ON kwalbum_items_tags.tag_id = kwalbum_tags.id
+					WHERE kwalbum_tags.name=:tag AND kwalbum_items_tags.item_id=kwalbum_items.id)")
+					->param(':tag', $tag);
+			}
+		}
+
+		else if ($name == 'people')
+		{
+			foreach($value as $tag)
+			{
+				$query .= ($query ? ' AND ' : null).
+					(string)DB::query(null, " 0 < (SELECT count(*) FROM kwalbum_items_persons
+					LEFT JOIN kwalbum_persons ON kwalbum_items_persons.person_id = kwalbum_persons.id
+					WHERE kwalbum_persons.name=:tag AND kwalbum_items_persons.item_id=kwalbum_items.id)")
+					->param(':tag', $tag);
+			}
+		}
+
+		Model_Kwalbum_Item::$_where[] = $query;
+	}
+
+	static public function get_thumbnails($page_number = 1)
+	{
+		$query = 'SELECT kwalbum_items.id AS id
+		FROM kwalbum_items'.Model_Kwalbum_Item::get_where_query();
+
+		$offset = 0;
+		$limit = 100;
+		$result = DB::query(Database::SELECT, $query)
+			->param(':offset', $offset)
+			->param(':limit', $limit)
+			->execute();
+
+		$items = array();
+		foreach ($result as $row)
+		{
+			$items[] = Model::factory('kwalbum_item')->load($row['id']);
+		}
+
+		return $items;
 	}
 }

@@ -1,15 +1,15 @@
 // Kwalbum 3.0
 $(document).ready(function(){ 
-	$("#loc").focus().autocomplete('/kwalbum/~ajax/getInputLocations',{
+	$("#loc").focus().autocomplete('KWALBUM_URL/~ajax/getInputLocations',{
 		max:10,cacheLength:10
 	});
-	$("#tags").focus().autocomplete('/kwalbum/~ajax/getInputTags',{
+	$("#tags").focus().autocomplete('KWALBUM_URL/~ajax/getInputTags',{
 		max:10,cacheLength:10
 	});
 	$('#fileInput').uploadify({
-		'uploader':'../media/ajax/uploadify/uploadify.swf',
-		'cancelImg':'../media/ajax/uploadify/cancel.png',
-		'script':'../~ajax/upload.php',
+		'uploader':'KWALBUM_URL/media/ajax/uploadify/uploadify.swf',
+		'cancelImg':'KWALBUM_URL/media/ajax/uploadify/cancel.png',
+		'script':'KWALBUM_URL/~ajax/upload.php',
 		'multi':true,
 		'buttonText':'Browse Files',
 		'fileExt':'*.jpg;*.png;*.gif','fileDesc':'Image Files Only'

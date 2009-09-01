@@ -25,11 +25,11 @@
 		<tr>
 		<td>
 			<label>Location:</label>
-			<input type="text" class="text" name="loc" id="loc" size="15" />
+			<input type="text" class="text" name="loc" id="loc" value="<?php echo $location?>" size="15" />
 		</td>
 		<td>
 			<label>Tags:</label>
-			<input type="text" class="text" name="tags" id="tags" size="20" />
+			<input type="text" class="text" name="tags" id="tags" value="<?php echo $tags?>" size="20" />
 		</td>
 		<td>Date if not found on picture: <input type="text" class="text" name="date" id="date" value="<?php echo $date ?>" size="8" /></td>
 	</tr></table>

@@ -22,7 +22,7 @@ class Controller_Install extends Controller_Kwalbum
 		$this->template->title = 'Install';
 
 		// Uncomment to delete everything and start over
-		$this->_drop_tables();
+		//$this->_drop_tables();
 
 		// Do not continue installation if at least 1 user exists in the database
 		try
