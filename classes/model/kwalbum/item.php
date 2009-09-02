@@ -752,7 +752,8 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 	static public function get_thumbnails($page_number = 1)
 	{
 		$query = 'SELECT kwalbum_items.id AS id
-		FROM kwalbum_items'.Model_Kwalbum_Item::get_where_query();
+			FROM kwalbum_items'.Model_Kwalbum_Item::get_where_query()
+			.' ORDER BY sort_dt';
 
 		$offset = 0;
 		$limit = 100;

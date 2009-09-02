@@ -8,7 +8,12 @@
  * @package kwalbum
  * @since Sep 1, 2009
  */
+?>
+<div class='kwalbumBox'>
 
+<?php
+echo $item->visible_date.'<br/>';
+// show thumbnail based on file type
 if ($item->type == 'jpeg' or $item->type == 'gif' or $item->type == 'png')
 {
 	echo html::anchor($kwalbum_url.'/~'.$item->id,
@@ -16,7 +21,9 @@ if ($item->type == 'jpeg' or $item->type == 'gif' or $item->type == 'png')
 }
 else if ($item->type == 'description only')
 {
-?>
-description
-<?php
+	echo 'Description<br/>Only';
 }
+
+echo '<br/>'.$item->location;
+?>
+</div>

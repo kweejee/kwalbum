@@ -9,15 +9,10 @@
  * @package kwalbum
  * @since 3.0 Jun 30, 2009
  */
-?>
-<h1><?php echo $tempInfo ?></h1>
-<div class="box">
-<?php
-	foreach ($items as $item)
-	{
-		$thumbview = new View('kwalbum/item/thumbnail');
-		$thumbview->item = $item;
-		echo $thumbview->render();
-	}
-?>
-</div>
+
+foreach ($items as $item)
+{
+	$thumbview = new View('kwalbum/item/thumbnail');
+	$thumbview->item = $item;
+	echo $thumbview->render();
+}

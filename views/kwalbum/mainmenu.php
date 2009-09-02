@@ -10,7 +10,7 @@
  */
 
 ?>
-<p>
+<div class='kwalbumMenu'>
 	<?php
 	echo html::anchor($kwalbum_url, 'main page').' - ';
 	echo html::anchor($kwalbum_url.'/~map', 'map').' - ';
@@ -33,4 +33,4 @@
 		echo html::anchor($kwalbum_url.'/~user/login', 'login');
 	}
 	?>
-</p>
+</div>

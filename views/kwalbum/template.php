@@ -28,11 +28,10 @@ $config = Kohana::config('kwalbum', true);
 
 </head>
 <body>
-<?php echo View::factory('kwalbum/mainmenu')->render(); ?>
-
-<div class="box">
-	<?php echo $content ?>
-</div>
+<?php
+echo View::factory('kwalbum/mainmenu')->render();
+echo $content
+?>
 
 <p class="copyright">
 	Rendered in {execution_time} seconds, using {memory_usage} of memory<br />
