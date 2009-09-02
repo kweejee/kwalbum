@@ -12,7 +12,7 @@
 
 ?>
 <p>
-From here you can search below to find something specific.
+From here you can <?php echo html::anchor($kwalbum_url.'/~browse', 'browse all the pictures')?> or search below to find something specific.
 </p>
 
 <p>

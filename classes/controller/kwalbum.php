@@ -24,10 +24,17 @@ class Controller_Kwalbum extends Controller_Template
 		$this->url = Kohana::$base_url.'kwalbum';
 
 		// get location from URL
-		if ($this->location = Security::xss_clean($this->request->param('location')))
+		if ( $this->request->param('location'))
 		{
+			$this->location = Security::xss_clean($this->request->param('location'));
 			Model_Kwalbum_Item::append_where('location', $this->location);
 		}
+		else if ( ! empty($_GET['location']))
+		{
+			$this->location = Security::xss_clean($_GET['location']);
+			Model_Kwalbum_Item::append_where('location', $this->location);
+		}
+
 
 		// date
 		$year = (int)$this->request->param('year');
@@ -38,20 +45,35 @@ class Controller_Kwalbum extends Controller_Template
 			$this->date = ($year ? abs($year) : '0000').'-'.($month ? abs($month) : '00').'-'.($day ? abs($day) : '00');
 			Model_Kwalbum_Item::append_where('date', $this->date);
 		}
+		else if ( ! empty($_GET['date']))
+		{
+			$date = explode('-', $_GET['date']);
+			$this->date = ((int)@$date[0] ? abs($date[0]) : '0000').'-'.((int)@$date[1] ? abs($date[1]) : '00').'-'.((int)@$date[2] ? abs($date[2]) : '00');
+			Model_Kwalbum_Item::append_where('date', $this->date);
+		}
 
 		// tags
 		$this->tags = explode(',', Security::xss_clean($this->request->param('tags')));
-		if ($this->tags[0])
+		if ($this->tags[0] != '')
 		{
 			Model_Kwalbum_Item::append_where('tags', $this->tags);
 		}
+		else if ( ! empty($_GET['tags']))
+		{
+			$this->tags = explode(',', Security::xss_clean($_GET['tags']));
+			Model_Kwalbum_Item::append_where('tags', $this->tags);
+		}
+		else
+			$this->tags = null;
 
 		// people names
 		$this->people = explode(',', Security::xss_clean($this->request->param('people')));
-		if ($this->people[0])
+		if ($this->people[0] != '')
 		{
 			Model_Kwalbum_Item::append_where('people', $this->people);
 		}
+		else
+			$this->people = null;
 
 		// item id
 		if (0 < $this->request->param('id'))
@@ -61,7 +83,6 @@ class Controller_Kwalbum extends Controller_Template
 
 		// Set up test user
 		$this->user = Model::factory('kwalbum_user')->load(1);
-
 
 		$this->template->set_global('user', $this->user);
 		$this->template->set_global('kwalbum_url', $this->url);
