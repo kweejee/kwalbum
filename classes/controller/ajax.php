@@ -15,7 +15,7 @@ class Controller_Ajax extends Controller_Kwalbum
 	{
 		$this->auto_render = false;
 		$userInput = trim(@$_GET['q']);
-		$locations = Model_Kwalbum_Location::getNameArray(10, 0, $userInput, 'count DESC');
+		$locations = Model_Kwalbum_Location::getNameArray(0, 10, 0, $userInput, 'count DESC');
 
 		foreach($locations as $location)
 		{
@@ -26,7 +26,7 @@ class Controller_Ajax extends Controller_Kwalbum
 	{
 		$this->auto_render = false;
 		$userInput = trim(@$_GET['q']);
-		$tags = Model_Kwalbum_Tag::getTagArray(10, 0, $userInput, 'count DESC');
+		$tags = Model_Kwalbum_Tag::getNameArray(0, 10, 0, $userInput, 'count DESC');
 
 		foreach($tags as $tag)
 		{

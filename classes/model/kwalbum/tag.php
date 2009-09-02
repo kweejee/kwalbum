@@ -127,15 +127,15 @@ class Model_Kwalbum_Tag extends Kwalbum_Model
 	}
 
 
-	static public function getTagArray($limit = 10, $offset = 0, $name = '', $order = 'name ASC')
+	static public function getNameArray($min_count = 1, $limit = 10, $offset = 0, $name = '', $order = 'name ASC')
 	{
 		$tags = array();
 
 		$name = trim($name);
 
-		// Select almost exact (not case sensitive) match first if searching by name
 		if ( ! empty($name))
 		{
+			// Select almost exact (not case sensitive) match first
 			$result = DB::query(Database::SELECT,
 				'SELECT name
 				FROM kwalbum_tags
@@ -149,7 +149,7 @@ class Model_Kwalbum_Tag extends Kwalbum_Model
 			}
 		}
 
-		// Select from starting matches if searching by name or select from all
+		// Select from starting matches
 		$partName = "$name%";
 		$query = 'AND name != :name';
 		$result = DB::query(Database::SELECT,
@@ -157,11 +157,10 @@ class Model_Kwalbum_Tag extends Kwalbum_Model
 			FROM kwalbum_tags"
 			.( ! empty($name) ? " WHERE name LIKE :partName $query" : null)
 			." ORDER BY $order
-			LIMIT :offset,:limit")
+			LIMIT :limit")
 			->param(':partName', $partName)
 			->param(':name', $name)
 			->param(':limit', $limit)
-			->param(':offset', $offset)
 			->execute();
 
 		if ($result->count() > 0)
@@ -194,6 +193,24 @@ class Model_Kwalbum_Tag extends Kwalbum_Model
 				$tags[] = $row['name'];
 			}
 		}
+		else
+		{
+			$result = DB::query(Database::SELECT,
+				"SELECT name, count
+				FROM kwalbum_tags
+				ORDER BY $order"
+				.($limit ? ' LIMIT :offset,:limit' : null))
+				->param(':offset', $offset)
+				->param(':limit', $limit)
+				->execute();
+
+			$locations = array();
+			foreach ($result as $row)
+			{
+				$locations[] = $row['name'];
+			}
+		}
+
 		return $tags;
 	}
 }

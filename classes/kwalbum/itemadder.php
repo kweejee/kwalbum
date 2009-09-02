@@ -128,11 +128,22 @@ class Kwalbum_ItemAdder
         $item = $this->_item;
 
         $targetFile = Security :: xss_clean($_FILES['Filedata']['name']);
-        $item->filename = $this->replace_bad_filename_characters($targetFile);
+        $item->path = $this->make_path();
 
+        $item->filename = $this->replace_bad_filename_characters($targetFile);
+        if ( ! Model_Kwalbum_Item::check_unique_filename($item->path, $item->filename))
+        {
+	        $i = 1;
+	        $name = pathinfo($item->filename, PATHINFO_FILENAME);
+			$extension = strtolower(pathinfo($item->filename, PATHINFO_EXTENSION));
+			do
+			{
+				$item->filename = "{$name}_$i.$extension";
+				$i++;
+			} while ( ! Model_Kwalbum_Item::check_unique_filename($item->path, $item->filename));
+        }
 		$item->type = $this->get_filetype($item->filename);
 
-        $item->path = $this->make_path();
 
         if (!Upload :: save($_FILES['Filedata'], $item->filename, $item->path))
             return false;

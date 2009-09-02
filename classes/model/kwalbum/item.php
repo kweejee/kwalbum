@@ -666,6 +666,27 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 		return $comments;
 	}
 
+	static public function check_unique_filename($path = null, $filename = null)
+	{
+		if ($path == null or $filename == null)
+	        throw new Kohana_Exception('$path or $filename was not given when calling Model_Kwalbum_Item::check_unique_filename($path, $filename)');
+
+		$result = DB::query(Database::SELECT,
+			"SELECT id
+			FROM kwalbum_items
+			WHERE path = :path AND filename = :filename
+			LIMIT 1")
+			->param(':path', str_replace(Kohana::config('kwalbum.item_path'), '', $path))
+			->param(':filename', $filename)
+			->execute();
+		if ($result->count() == 0)
+		{
+			return true;
+		}
+
+		return false;
+	}
+
 	static public function get_where_query()
 	{
 		$query = '';

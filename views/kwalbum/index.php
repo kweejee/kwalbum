@@ -16,5 +16,29 @@ From here you can <?php echo html::anchor($kwalbum_url.'/~browse', 'browse all t
 </p>
 
 <p>
-search form goes here
+<form method='get' action='<?php echo $kwalbum_url;?>'>
+<table><tr>
+<td>
+Location:<br/>
+<select name="location" size="3">
+<?php
+$locations = Model_Kwalbum_Location::getNameArray();
+foreach ($locations as $name)
+	echo "<option value='$name'>$name</option>";
+?>
+</td>
+<td>
+Tags:<br/>
+<select name="tags" multiple size="3">
+<?php
+$tags = Model_Kwalbum_Tag::getNameArray();
+foreach ($tags as $name)
+	echo "<option value='$name'>$name</option>";
+?>
+</select>
+</td>
+</tr></table>
+<br/>
+<input type='submit' value='Search'/>
+</form>
 </p>

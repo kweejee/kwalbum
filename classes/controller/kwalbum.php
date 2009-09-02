@@ -86,6 +86,16 @@ class Controller_Kwalbum extends Controller_Template
 
 		$this->template->set_global('user', $this->user);
 		$this->template->set_global('kwalbum_url', $this->url);
+		$this->params =
+			($year ? $year.'/' : null)
+			.($month ? $month.'/' : null)
+			.($day ? $day.'/' : null)
+			.($this->location ? $this->location.'/' : null)
+			.($this->request->param('tags') ? 'tags/'.$this->request->param('tags').'/' : null)
+			.($_GET['tags'] ? 'tags/'.$_GET['tags'].'/' : null)
+			.($this->request->param('people') ? 'people/'.$this->request->param('people').'/' : null)
+			.($_GET['people'] ? 'people/'.$_GET['people'].'/' : null);
+		$this->template->set_global('kwalbum_url_params', $this->params);
 	}
 
 	public function action_media($file)

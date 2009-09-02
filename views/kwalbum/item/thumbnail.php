@@ -16,7 +16,7 @@ echo $item->visible_date.'<br/>';
 // show thumbnail based on file type
 if ($item->type == 'jpeg' or $item->type == 'gif' or $item->type == 'png')
 {
-	echo html::anchor($kwalbum_url.'/~'.$item->id,
+	echo html::anchor($kwalbum_url.'/~'.$item->id.'/'.$kwalbum_url_params,
 		"<img src='$kwalbum_url/~$item->id/~item/thumbnail' title='$item->filename'/>")."\n";
 }
 else if ($item->type == 'description only')

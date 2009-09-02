@@ -148,15 +148,15 @@ class Model_Kwalbum_Location extends Kwalbum_Model
 		return $this->name;
 	}
 
-	static public function getNameArray($limit = 10, $offset = 0, $name = '', $order = 'name ASC')
+	static public function getNameArray($min_count = 1, $limit = null, $offset = 0, $name = '', $order = 'name ASC')
 	{
 		$locations = array();
 
 		$name = trim($name);
 
-		// Select almost exact (not case sensitive) match first if searching by name
 		if ( ! empty($name))
 		{
+			// Select almost exact (not case sensitive) match first
 			$result = DB::query(Database::SELECT,
 				'SELECT name
 				FROM kwalbum_locations
@@ -168,53 +168,74 @@ class Model_Kwalbum_Location extends Kwalbum_Model
 				$locations[] = $result[0]['name'];
 				$limit--;
 			}
-		}
 
-		// Select from starting matches if searching by name or select from all
-		$partName = "$name%";
-		$query = 'AND name != :name';
-		$result = DB::query(Database::SELECT,
-			"SELECT name
-			FROM kwalbum_locations"
-			.( ! empty($name) ? " WHERE name LIKE :partName $query" : null)
-			." ORDER BY $order
-			LIMIT :offset,:limit")
-			->param(':partName', $partName)
-			->param(':name', $name)
-			->param(':limit', $limit)
-			->param(':offset', $offset)
-			->execute();
-
-		if ($result->count() > 0)
-		{
-			foreach($result as $row)
-			{
-				$locations[] = $row['name'];
-				$query .= " AND name != '$row[name]'";
-			}
-			$limit -= $result->count();
-		}
-
-		// Select from any partial matches if searching by name
-		if ( ! empty($name) and $limit > 0)
-		{
-			$partName = "%$name%";
+			// Select from starting matches if searching by name or select from all
+			$partName = "$name%";
+			$query = 'AND name != :name';
 			$result = DB::query(Database::SELECT,
 				"SELECT name
 				FROM kwalbum_locations
-				WHERE name LIKE :partName $query"
-				." ORDER BY $order
-				LIMIT :limit")
+				WHERE name LIKE :partName $query AND count >= :min_count
+				ORDER BY $order"
+				.($limit ? ' LIMIT :limit' : null))
 				->param(':partName', $partName)
 				->param(':name', $name)
+				->param(':min_count', $min_count)
 				->param(':limit', $limit)
 				->execute();
 
-			foreach($result as $row)
+			if ($result->count() > 0)
+			{
+				foreach($result as $row)
+				{
+					$locations[] = $row['name'];
+					$query .= " AND name != '$row[name]'";
+				}
+				$limit -= $result->count();
+			}
+
+			// Select from any partial matches if the result limit hasn't been reached yet
+			if ($limit > 0)
+			{
+				$partName = "%$name%";
+				$result = DB::query(Database::SELECT,
+					"SELECT name
+					FROM kwalbum_locations
+					WHERE name LIKE :partName $query AND count >= :min_count
+					ORDER BY $order"
+					.($limit ? ' LIMIT :limit' : null))
+					->param(':partName', $partName)
+					->param(':name', $name)
+					->param(':min_count', $min_count)
+					->param(':limit', $limit)
+					->execute();
+
+				foreach($result as $row)
+				{
+					$locations[] = $row['name'];
+				}
+			}
+		}
+		else
+		{
+			$result = DB::query(Database::SELECT,
+				"SELECT name
+				FROM kwalbum_locations
+				WHERE count >= :min_count
+				ORDER BY $order"
+				.($limit ? ' LIMIT :offset,:limit' : null))
+				->param(':offset', $offset)
+				->param(':min_count', $min_count)
+				->param(':limit', $limit)
+				->execute();
+
+			$locations = array();
+			foreach ($result as $row)
 			{
 				$locations[] = $row['name'];
 			}
 		}
+
 		return $locations;
 	}
 }
