@@ -5,27 +5,24 @@ Kwalbum Without Albums
 INSTALLATION
 ------------
 
-1. Install Kohana from http://kohanaphp.com/
-2. Move the kwalbum directory to kohana's modules directory.
-3. Configure Kohana to use the Kwalbum module.
-   In kohana's application/config/config.php add
-    MODPATH.'kwalbum',
+1. Install Kohana 3 from http://kohanaphp.com/
+2. Make sure Kohana's database module has been enabled and configured.
+3. Move the kwalbum directory to kohana's modules directory.
+4. Configure Kohana to use the Kwalbum module.
+   In your application/bootstrap.php file add
+     'kwalbum' => MODPATH.'kwalbum',
    after
-    $config['modules'] = array
-   See http://docs.kohanaphp.com/general/modules#configuring for more details.
-4. Create a writable directory for items to be uploaded to.  The default
+     Kohana::modules(array(
+5. Create a writable directory for items to be uploaded to.  The default
    configured location is application/items
-5. Move css and js directories to a public location
 6. Optionally, copy modules/kwalbum/config/kwalbum.php to
    application/config/kwalbum.php and edit.  Note that the reason to copy the
    file to applications/config is to ensure it is not overwritten when the
    Kwalbum module is updated.
-7. Make sure application/config/database.php has been created and configured.
-   A starting file can be copied from system/config/
-8. Open Kwalbum in your web browser and go to the install page.
+7. Open Kwalbum in your web browser and go to the install page.
    If Kwalbum is at http://localhost/kwalbum/index.php then the install page
-   is at http://localhost/kwalbum/index.php/install
-  
+   is at http://localhost/kwalbum/index.php/~install
+
 REQUIREMENTS
 ------------
 
