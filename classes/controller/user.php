@@ -44,13 +44,13 @@ class Controller_User extends Controller_Kwalbum
 		$template = $this->template;
 		$template->content = $content;
 		$template->title = 'Upload';
-		$template->head = html::style('kwalbum/media/ajax/jqueryautocomplete/jquery.autocomplete.css')
-			.html::style('kwalbum/media/ajax/uploadify/uploadify.css')
-			.html::script('kwalbum/media/ajax/jquery.js')
+		$template->head = html::script('kwalbum/media/ajax/jquery.js')
+			.html::style('kwalbum/media/ajax/jqueryautocomplete/jquery.autocomplete.min.css')
 			.html::script('kwalbum/media/ajax/jqueryautocomplete/jquery.autocomplete.pack.js')
-		//	.html::script('http://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js')
-			.html::script('kwalbum/media/ajax/uploadify/jquery.uploadify.v2.1.0.js')
-			.html::script('http://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject_src.js')
+			.html::script('kwalbum/media/ajax/uploadify/swfobject.js')
+		//	.html::script('http://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject_src.js')
+			.html::style('kwalbum/media/ajax/uploadify/uploadify.min.css')
+			.html::script('kwalbum/media/ajax/uploadify/jquery.uploadify.v2.1.0.min.js')
 			.html::script('kwalbum/media/ajax/upload.js')
 		;
 	}
