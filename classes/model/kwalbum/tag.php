@@ -147,40 +147,14 @@ class Model_Kwalbum_Tag extends Kwalbum_Model
 				$tags[] = $result[0]['name'];
 				$limit--;
 			}
-		}
 
-		// Select from starting matches
-		$partName = "$name%";
-		$query = 'AND name != :name';
-		$result = DB::query(Database::SELECT,
-			"SELECT name
-			FROM kwalbum_tags"
-			.( ! empty($name) ? " WHERE name LIKE :partName $query" : null)
-			." ORDER BY $order
-			LIMIT :limit")
-			->param(':partName', $partName)
-			->param(':name', $name)
-			->param(':limit', $limit)
-			->execute();
-
-		if ($result->count() > 0)
-		{
-			foreach($result as $row)
-			{
-				$tags[] = $row['name'];
-				$query .= " AND name != '$row[name]'";
-			}
-			$limit -= $result->count();
-		}
-
-		// Select from any partial matches if searching by name
-		if ( ! empty($name) and $limit > 0)
-		{
-			$partName = "%$name%";
+			// Select from starting matches
+			$partName = "$name%";
+			$query = 'AND name != :name';
 			$result = DB::query(Database::SELECT,
 				"SELECT name
-				FROM kwalbum_tags
-				WHERE name LIKE :partName $query"
+				FROM kwalbum_tags"
+				.( ! empty($name) ? " WHERE name LIKE :partName $query" : null)
 				." ORDER BY $order
 				LIMIT :limit")
 				->param(':partName', $partName)
@@ -188,15 +162,41 @@ class Model_Kwalbum_Tag extends Kwalbum_Model
 				->param(':limit', $limit)
 				->execute();
 
-			foreach($result as $row)
+			if ($result->count() > 0)
 			{
-				$tags[] = $row['name'];
+				foreach($result as $row)
+				{
+					$tags[] = $row['name'];
+					$query .= " AND name != '$row[name]'";
+				}
+				$limit -= $result->count();
+			}
+
+			// Select from any partial matches if the result limit hasn't been reached yet
+			if ($limit > 0)
+			{
+				$partName = "%$name%";
+				$result = DB::query(Database::SELECT,
+					"SELECT name
+					FROM kwalbum_tags
+					WHERE name LIKE :partName $query"
+					." ORDER BY $order
+					LIMIT :limit")
+					->param(':partName', $partName)
+					->param(':name', $name)
+					->param(':limit', $limit)
+					->execute();
+
+				foreach($result as $row)
+				{
+					$tags[] = $row['name'];
+				}
 			}
 		}
 		else
 		{
 			$result = DB::query(Database::SELECT,
-				"SELECT name, count
+				"SELECT name
 				FROM kwalbum_tags
 				ORDER BY $order"
 				.($limit ? ' LIMIT :offset,:limit' : null))
@@ -204,10 +204,9 @@ class Model_Kwalbum_Tag extends Kwalbum_Model
 				->param(':limit', $limit)
 				->execute();
 
-			$locations = array();
 			foreach ($result as $row)
 			{
-				$locations[] = $row['name'];
+				$tags[] = $row['name'];
 			}
 		}
 

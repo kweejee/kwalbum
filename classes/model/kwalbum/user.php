@@ -12,7 +12,8 @@
 
 class Model_Kwalbum_User extends Kwalbum_Model
 {
-	public $id, $name, $openid, $visit_date, $permission_level;
+	public $id, $name, $login_name, $email, $token, $visit_date, $permission_level;
+	private $_password;
 
 	public function load($id = null, $field = 'id')
 	{
@@ -24,7 +25,7 @@ class Model_Kwalbum_User extends Kwalbum_Model
 
 		try {
 			$result = DB::query(Database::SELECT,
-				"SELECT id, name, openid, visit_dt, permission_level
+				"SELECT id, name, login_name, email, password, token, visit_dt, permission_level
 				FROM kwalbum_users
 				WHERE $field = :id
 				LIMIT 1")
@@ -42,7 +43,10 @@ class Model_Kwalbum_User extends Kwalbum_Model
 
 		$this->id = (int)$row['id'];
 		$this->name = $row['name'];
-		$this->openid = $row['openid'];
+		$this->login_name = $row['login_name'];
+		$this->email = $row['email'];
+		$this->_password = $row['password'];
+		$this->token = $row['token'];
 		$this->visit_date = $row['visit_dt'];
 		$this->permission_level = (int)$row['permission_level'];
 		$this->loaded = true;
@@ -56,8 +60,8 @@ class Model_Kwalbum_User extends Kwalbum_Model
 		{
 			$query = DB::query(Database::INSERT,
 				"INSERT INTO kwalbum_users
-				(name, openid, visit_dt, permission_level)
-				VALUES (:name, :openid, :visit_dt, :permission_level)");
+				(name, login_name, email, password, token, visit_dt, permission_level)
+				VALUES (:name, :login_name, :email, :password, :token, :visit_dt, :permission_level)");
 			if ( ! $this->permission_level)
 			{
 				$this->permission_level = 1;
@@ -69,13 +73,17 @@ class Model_Kwalbum_User extends Kwalbum_Model
 		{
 			$query = DB::query(Database::UPDATE,
 				"UPDATE kwalbum_users
-				SET name = :name, openid = :openid, visit_dt = :visit_dt, permission_level= :permission_level
+				SET name = :name, login_name = :login_name, email = :email, password = :password,
+					token = :token, visit_dt = :visit_dt, permission_level= :permission_level
 				WHERE id = :id")
 				->param(':id', $this->id);
 		}
 		$query
 			->param(':name', $this->name)
-			->param(':openid', $this->openid)
+			->param(':login_name', $this->login_name)
+			->param(':email', $this->email)
+			->param(':password', $this->_password)
+			->param(':token', $this->token)
 			->param(':visit_dt', $this->visit_date)
 			->param(':permission_level', $this->permission_level);
 
@@ -103,12 +111,6 @@ class Model_Kwalbum_User extends Kwalbum_Model
 		// Change ownership of items from the user to the default "deleted user" account
 		DB::query(Database::UPDATE, "UPDATE kwalbum_items
 			SET user_id=2, hide_level=100
-			WHERE user_id = :id")
-			->param(':id', $id)
-			->execute();
-
-		// Delete favorites of the user
-		DB::query(Database::DELETE, "DELETE FROM kwalbum_favorites
 			WHERE user_id = :id")
 			->param(':id', $id)
 			->execute();
@@ -147,10 +149,16 @@ class Model_Kwalbum_User extends Kwalbum_Model
 		return false;
 	}
 
+	public function password_equals($password_to_check)
+	{
+		return (sha1($password_to_check) === $this->_password);
+	}
+
 	public function clear()
 	{
 		$this->id = $this->permission_level = 0;
-		$this->name = $this->openid = $this->visit_date = '';
+		$this->name = $this->login_name = $this->email = $this->password
+			= $this->token = $this->visit_date = '';
 		$this->loaded = false;
 	}
 
@@ -169,6 +177,14 @@ class Model_Kwalbum_User extends Kwalbum_Model
 			case 'can_add': return ($this->permission_level >= 3);
 			//case 'can_edit_all': return ($this->permission_level >= 4); // see can_edit_item($item)
 			case 'is_admin': return ($this->permission_level == 5);
+		}
+	}
+
+	public function __set($key, $value)
+	{
+		if ($key == 'password')
+		{
+			$this->_password = sha1($value);
 		}
 	}
 }

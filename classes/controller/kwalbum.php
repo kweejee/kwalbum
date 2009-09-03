@@ -96,6 +96,10 @@ class Controller_Kwalbum extends Controller_Template
 			.($this->request->param('people') ? 'people/'.$this->request->param('people').'/' : null)
 			.($_GET['people'] ? 'people/'.$_GET['people'].'/' : null);
 		$this->template->set_global('kwalbum_url_params', $this->params);
+
+//		echo $count = Model_Kwalbum_Item::get_total_items('');
+//		echo '-';
+//		echo Model_Kwalbum_Item::get_total_pages($count);
 	}
 
 	public function action_media($file)

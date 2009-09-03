@@ -21,8 +21,10 @@ class UnitTest_Kwalbum_Model extends UnitTest_Case
 	public function test_add_and_delete_user()
 	{
 		$user = Model::factory('kwalbum_user');
+		$user->login_name = 'loginname';
 		$user->name = 'Test Name';
-		$user->openid = 'testid@example.com';
+		$user->email = 'testid@example.com';
+		$user->password = 'password';
 		$this->assert_empty($user->id);
 		$this->assert_false($user->loaded);
 		$user->save();
@@ -31,7 +33,9 @@ class UnitTest_Kwalbum_Model extends UnitTest_Case
 
 		$user->reload();
 		$this->assert_equal($user->name, 'Test Name');
-		$this->assert_equal($user->openid, 'testid@example.com');
+		$this->assert_equal($user->login_name, 'loginname');
+		$this->assert_equal($user->email, 'testid@example.com');
+		$this->assert_true($user->password_equals('password'));
 		$this->assert_equal($user->permission_level, 1);
 		$this->assert_not_empty($user->visit_date);
 		$this->assert_equal($user->visit_date, '0000-00-00 00:00:00');
@@ -41,7 +45,8 @@ class UnitTest_Kwalbum_Model extends UnitTest_Case
 
 		$user->load('Test Name', 'name');
 		$this->assert_equal($user->name, 'Test Name');
-		$this->assert_equal($user->openid, 'testid@example.com');
+		$this->assert_equal($user->email, 'testid@example.com');
+		$this->assert_true($user->password_equals('password'));
 		$this->assert_equal($user->permission_level, 2);
 		$this->assert_not_empty($user->visit_date);
 		$this->assert_equal($user->visit_date, '0000-00-00 00:00:00');
@@ -63,7 +68,7 @@ class UnitTest_Kwalbum_Model extends UnitTest_Case
 	{
 		$user = Model::factory('kwalbum_user');
 		$user->name = 'Test Name';
-		$user->openid = 'testid@example.com';
+		$user->email = 'testid@example.com';
 		$user->save();
 
 		$item = Model::factory('kwalbum_item');
@@ -557,8 +562,6 @@ class UnitTest_Kwalbum_Model extends UnitTest_Case
 	{
 		$db = Database::instance();
 		$sql = 'DELETE FROM `kwalbum_comments`';
-		$db->query(Database::DELETE, $sql);
-		$sql = 'DELETE FROM `kwalbum_favorites`';
 		$db->query(Database::DELETE, $sql);
 		$sql = 'DELETE FROM `kwalbum_items_tags`';
 		$db->query(Database::DELETE, $sql);

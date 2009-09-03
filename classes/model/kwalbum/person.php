@@ -125,4 +125,94 @@ class Model_Kwalbum_Person extends Kwalbum_Model
 	{
 		return $this->name;
 	}
+
+	static public function getNameArray($min_count = 1, $limit = 10, $offset = 0, $name = '', $order = 'name ASC')
+	{
+		$persons = array();
+
+		$name = trim($name);
+
+		if ( ! empty($name))
+		{
+			// Select almost exact (not case sensitive) match first
+			$result = DB::query(Database::SELECT,
+				'SELECT name
+				FROM kwalbum_persons
+				WHERE name = :name')
+				->param(':name', $name)
+				->execute();
+			if ($result->count() == 1)
+			{
+				$persons[] = $result[0]['name'];
+				$limit--;
+			}
+
+			// Select from starting matches
+			$partName = "$name%";
+			$query = 'AND name != :name';
+			$result = DB::query(Database::SELECT,
+				"SELECT name
+				FROM kwalbum_persons
+				WHERE name LIKE :partName $query AND count >= :min_count
+				ORDER BY $order
+				LIMIT :limit")
+				->param(':partName', $partName)
+				->param(':name', $name)
+				->param(':min_count', $min_count)
+				->param(':limit', $limit)
+				->execute();
+
+			if ($result->count() > 0)
+			{
+				foreach($result as $row)
+				{
+					$persons[] = $row['name'];
+					$query .= " AND name != '$row[name]'";
+				}
+				$limit -= $result->count();
+			}
+
+			// Select from any partial matches if the result limit hasn't been reached yet
+			if ($limit > 0)
+			{
+				$partName = "%$name%";
+				$result = DB::query(Database::SELECT,
+					"SELECT name
+					FROM kwalbum_persons
+					WHERE name LIKE :partName $query AND count >= :min_count
+					ORDER BY $order
+					LIMIT :limit")
+					->param(':partName', $partName)
+					->param(':name', $name)
+					->param(':min_count', $min_count)
+					->param(':limit', $limit)
+					->execute();
+
+				foreach($result as $row)
+				{
+					$persons[] = $row['name'];
+				}
+			}
+		}
+		else
+		{
+			$result = DB::query(Database::SELECT,
+				"SELECT name
+				FROM kwalbum_persons
+				WHERE count >= :min_count
+				ORDER BY $order"
+				.($limit ? ' LIMIT :offset,:limit' : null))
+				->param(':offset', $offset)
+				->param(':min_count', $min_count)
+				->param(':limit', $limit)
+				->execute();
+
+			foreach ($result as $row)
+			{
+				$persons[] = $row['name'];
+			}
+		}
+
+		return $persons;
+	}
 }

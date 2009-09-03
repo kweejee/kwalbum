@@ -42,7 +42,9 @@ class Controller_Install extends Controller_Kwalbum
 		$form = array
 		(
 			'name' => '',
-			'openid' => '',
+			'login_name' => '',
+			'email' => '',
+			'password' => '',
 		);
 
 		// Copy the form as errors so the errors will be stored with keys
@@ -51,11 +53,14 @@ class Controller_Install extends Controller_Kwalbum
 
 		if ($_POST)
 		{
+			// TODO: add rules for login_name, email, and password
 			$post = Validate::factory($_POST)
 				->filter(true, 'trim')
 				->filter(true, 'htmlspecialchars')
 				->rule('name', 'not_empty')
-				->rule('openid', 'not_empty')
+				->rule('login_name', 'not_empty')
+				->rule('email', 'not_empty')
+				->rule('password', 'not_empty')
 				->rule('name', 'min_length', array($this->_user['minNameLength']))
 				->rule('name', 'max_length', array($this->_user['maxNameLength']));
 
@@ -63,24 +68,39 @@ class Controller_Install extends Controller_Kwalbum
 			{
 				$data = $post->as_array();
 				$name = $data['name'];
-				$openid = $data['openid'];
+				$login_name = $data['login_name'];
+				$email = $data['email'];
+				$password = $data['password'];
 
 				try
 				{
 					$this->_create_tables();
 
+					// admin user
 					$user = Model::factory('kwalbum_user');
 					$user->name = $name;
-					$user->openid = $openid;
+					$user->login_name = $login_name;
+					$user->email = $email;
+					$user->password = $password;
 					$user->permission_level = 5;
 					$user->save();
+
+					// default owner of items once owned by a deleted user
 					$user->clear();
 					$user->name = 'Deleted User';
-					$user->openid = '';
-					$user->save();
+					$temp = '';
+					for ($i = 0; $i < 50; $i++)
+						$temp = chr(mt_rand(0,122));
+					$user->login_name = sha1($temp);
+					$temp = '';
+					for ($i = 0; $i < 50; $i++)
+						$temp = chr(mt_rand(0,122));
+					$user->password = sha1($temp);
 					// Normally, permission level should never be 0.
 					$user->permission_level = 0;
 					$user->save();
+
+					// default location
 					$location = Model::factory('kwalbum_location');
 					$location->name = 'Unknown Location';
 					$location->save();
@@ -124,8 +144,6 @@ class Controller_Install extends Controller_Kwalbum
 		// Drop order is arranged based on foreign key restraints.
 		$sql = 'DROP TABLE IF EXISTS `kwalbum_comments`';
 		$db->query(null, $sql);
-		$sql = 'DROP TABLE IF EXISTS `kwalbum_favorites`';
-		$db->query(null, $sql);
 		$sql = 'DROP TABLE IF EXISTS `kwalbum_items_tags`';
 		$db->query(null, $sql);
 		$sql = 'DROP TABLE IF EXISTS `kwalbum_items_persons`';
@@ -159,11 +177,15 @@ class Controller_Install extends Controller_Kwalbum
 		$sql = 'CREATE  TABLE IF NOT EXISTS `kwalbum_users`(
 		          `id` SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT ,
 		          `name` TINYTEXT NOT NULL ,
-		          `openid` TINYTEXT NOT NULL ,
+				  `login_name` CHAR(40) NOT NULL ,
+				  `email` TINYTEXT NOT NULL ,
+				  `password` CHAR(40) NOT NULL ,
 		          `visit_dt` DATETIME NOT NULL ,
 		          `permission_level` TINYINT UNSIGNED NOT NULL DEFAULT 0 ,
-  		          INDEX `title` (`name` (10) ASC) ,
-		          PRIMARY KEY (`id`)
+				  `token` CHAR(40) NOT NULL ,
+				  INDEX `login` (`login_name` ASC, `password` ASC) ,
+				  INDEX `token` (`token` ASC) ,
+				  PRIMARY KEY (`id`)
 		        ) ENGINE = InnoDB
 		        DEFAULT CHARACTER SET = utf8
 		        PACK_KEYS = DEFAULT;';
@@ -295,27 +317,6 @@ class Controller_Install extends Controller_Kwalbum
 		          CONSTRAINT `person_id`
 		            FOREIGN KEY (`person_id` )
 		            REFERENCES `kwalbum_persons` (`id` )
-		            ON DELETE CASCADE
-		            ON UPDATE CASCADE
-		        ) ENGINE = InnoDB
-		        DEFAULT CHARACTER SET = utf8;';
-		$db->query(null, $sql);
-
-		// Favorites, relationship between Items and Users
-		$sql = 'CREATE  TABLE IF NOT EXISTS `kwalbum_favorites`(
-		          `user_id` SMALLINT UNSIGNED NOT NULL ,
-		          `item_id` MEDIUMINT UNSIGNED NOT NULL ,
-		          `add_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
-		          INDEX `add_ts` (`add_ts` ASC) ,
-		          PRIMARY KEY (`user_id`, `item_id`) ,
-		          CONSTRAINT `user_id_f`
-		            FOREIGN KEY (`user_id`)
-		            REFERENCES `kwalbum_users` (`id`)
-		            ON DELETE CASCADE
-		            ON UPDATE CASCADE,
-		          CONSTRAINT `item_id_f`
-		            FOREIGN KEY (`item_id`)
-		            REFERENCES `kwalbum_items` (`id`)
 		            ON DELETE CASCADE
 		            ON UPDATE CASCADE
 		        ) ENGINE = InnoDB

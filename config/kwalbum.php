@@ -5,14 +5,21 @@ return array
 	 * Title for the Kwalbum section of your website
 	 */
 	'title' => 'Kwalbum',
+
 	/**
 	 * String to put between subsections in the title
 	 */
 	'title_separator' => ' - ',
+
 	/**
 	 * Item upload directory.
 	 */
 	'item_path' => APPPATH.'items/',
+
+	/**
+	 * Thumbnails per page when browsing.
+	 */
+	'items_per_page' => 20,
 
 	/**
 	 * Secret key for remote sites to get data about your items

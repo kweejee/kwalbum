@@ -1,7 +1,17 @@
 <?php defined('SYSPATH') or die('No direct access allowed.');
 return array
 (
-	'openid' => array
+	'login_name' => array
+	(
+		'not_empty' => 'required',
+		'default' => 'Invalid Input.',
+	),
+	'email' => array
+	(
+		'not_empty' => 'required',
+		'default' => 'Invalid Input.',
+	),
+	'password' => array
 	(
 		'not_empty' => 'required',
 		'default' => 'Invalid Input.',

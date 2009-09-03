@@ -229,7 +229,6 @@ class Model_Kwalbum_Location extends Kwalbum_Model
 				->param(':limit', $limit)
 				->execute();
 
-			$locations = array();
 			foreach ($result as $row)
 			{
 				$locations[] = $row['name'];

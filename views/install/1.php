@@ -17,10 +17,21 @@
 	echo (empty($errors['db'])) ? '' : '<div class="errors">'.$errors['db'].'</div>';
 
 	echo form::open();
-	echo form::label('openid', 'OpenId for Administrator');
-	echo form::input('openid', ($form['openid']));
-	echo (empty($errors['openid'])) ? '' : $errors['openid'];
+	echo form::label('login_name', 'Login Name for main account (administrator)');
+	echo form::input('login_name', ($form['login_name']));
+	echo (empty($errors['login_name'])) ? '' : $errors['login_name'];
 	echo '<br/>';
+
+	echo form::label('password', 'Password');
+	echo form::input('password', ($form['password']));
+	echo (empty($errors['password'])) ? '' : $errors['password'];
+	echo '<br/>';
+
+	echo form::label('email', 'Email Address in case of lost password');
+	echo form::input('email', ($form['login_name']));
+	echo (empty($errors['email'])) ? '' : $errors['email'];
+	echo '<br/>';
+
 	echo form::label('name', 'Name to Display');
 	echo form::input('name', ($form['name']));
 	echo $_user['minNameLength'].' to '.$_user['maxNameLength'].' characters long';

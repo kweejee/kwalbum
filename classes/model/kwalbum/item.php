@@ -373,12 +373,6 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 			->param(':location_id', $location_id)
 			->execute();
 
-		// Delete favorites of the item
-		DB::query(Database::DELETE, 'DELETE FROM kwalbum_favorites
-			WHERE item_id = :id')
-			->param(':id', $id)
-			->execute();
-
 		// Delete relation between item and external site if it exists
 		DB::query(Database::DELETE, "DELETE FROM kwalbum_items_sites
 			WHERE item_id = :id")
@@ -790,5 +784,19 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 		}
 
 		return $items;
+	}
+
+	static public function get_total_items($where_query = '')
+	{
+		$query = 'SELECT count(*)
+			FROM kwalbum_items '.$where_query;
+		$result = DB::query(Database::SELECT, $query)
+			->execute();
+		return (int)$result[0]['count(*)'];
+	}
+
+	static public function get_total_pages($total_items)
+	{
+		return ceil($total_items/Kohana::config('kwalbum.items_per_page'));
 	}
 }

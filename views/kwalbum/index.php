@@ -16,11 +16,12 @@ From here you can <?php echo html::anchor($kwalbum_url.'/~browse', 'browse all t
 </p>
 
 <p>
-<form method='get' action='<?php echo $kwalbum_url;?>'>
+<form method='get' action='<?php echo $kwalbum_url.'/~browse/';?>'>
 <table><tr>
 <td>
 Location:<br/>
-<select name="location" size="3">
+<select name="location" size="5">
+<option value='' selected></option>
 <?php
 $locations = Model_Kwalbum_Location::getNameArray();
 foreach ($locations as $name)
@@ -29,11 +30,26 @@ foreach ($locations as $name)
 </td>
 <td>
 Tags:<br/>
-<select name="tags" multiple size="3">
+<select name="tags" multiple size="5">
+<option value='' selected></option>
 <?php
 $tags = Model_Kwalbum_Tag::getNameArray();
 foreach ($tags as $name)
 	echo "<option value='$name'>$name</option>";
+?>
+</select>
+</td>
+<td>
+People:<br/>
+<select name="people" multiple size="5">
+<option value='' selected></option>
+<?php
+$tags = Model_Kwalbum_Person::getNameArray();
+foreach ($people as $name)
+{
+	$name = explode(' ', $name);
+	echo "<option value='$name[0]'>$name[0]</option>";
+}
 ?>
 </select>
 </td>
