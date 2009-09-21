@@ -135,7 +135,7 @@ class Kwalbum_ItemAdder
         {
 	        $i = 1;
 	        $name = pathinfo($item->filename, PATHINFO_FILENAME);
-			$extension = strtolower(pathinfo($item->filename, PATHINFO_EXTENSION));
+			$extension = pathinfo($item->filename, PATHINFO_EXTENSION);
 			do
 			{
 				$item->filename = "{$name}_$i.$extension";
@@ -158,11 +158,17 @@ class Kwalbum_ItemAdder
     {
         $item = $this->_item;
 
-		// TODO: check if filename matches existing file
+		// TODO: get path
+		// $item->path = ???
+
+		// Do not add/save again if the file is already in the database
+        if ( ! Model_Kwalbum_Item::check_unique_filename($item->path, $item->filename))
+        {
+        	return false;
+        }
 
 		$item->type = $this->get_filetype($item->filename);
 
-		// TODO: get full path
 
         return $this->save();
     }
@@ -175,7 +181,7 @@ class Kwalbum_ItemAdder
 	 */
 	private function get_filetype($filename)
 	{
-        $type = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+        $type = pathinfo($filename, PATHINFO_EXTENSION);
         if ($type == 'jpg' or $type == 'jpe')
             $type = 'jpeg';
         if (in_array($type, Model_Kwalbum_Item :: $types))
@@ -187,6 +193,8 @@ class Kwalbum_ItemAdder
 	}
     /**
      * Remove characters that may cause errors when resizing.
+     *
+     * Also convert file extension to all lowercase.
      * @param string $oldName original filename submitted by the
      * user
      * @return string modified filename with characters replaced
@@ -208,7 +216,8 @@ class Kwalbum_ItemAdder
             '!' => '_',
             '*' => '_',
             '(' => '-',
-            ')' => '-'
+            ')' => '-',
+        	pathinfo($oldName, PATHINFO_EXTENSION) => strtolower(pathinfo($oldName, PATHINFO_EXTENSION))
         ));
     }
 

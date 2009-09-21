@@ -10,6 +10,11 @@
  * @since 3.0 Jun 30, 2009
  */
 
+echo 'item ';
+echo Model_Kwalbum_Item::get_index($item->id, $item->sort_date);
+echo ' of ';
+echo $count = Model_Kwalbum_Item::get_total_items('');
+
 ?>
 <div class="box">
 	<?php

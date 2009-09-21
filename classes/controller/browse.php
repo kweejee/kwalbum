@@ -12,11 +12,6 @@
 
 class Controller_Browse extends Controller_Kwalbum
 {
-	public function action_welcome()
-	{
-
-	}
-
 	public function action_index()
 	{
 
@@ -29,9 +24,27 @@ class Controller_Browse extends Controller_Kwalbum
 
 		//echo $this->request->route->uri(array('tags' => 'a,b', 'location' => 'd'));
 		$view = new View('kwalbum/browse/index');
-		$view->items = Model_Kwalbum_Item::get_thumbnails();
+		$view->items = Model_Kwalbum_Item::get_thumbnails($this->page_number);
 		$this->template->content = $view;
 		$this->template->title = 'browsing all';
 
 	}
+
+	public function action_newest()
+	{
+
+		//echo Kohana::debug($this);
+		if ( $this->request->uri == 'kwalbum' and ! ($this->location or $this->date or count($this->tags) > 0))
+		{
+			$this->template->content = new View('kwalbum/index');
+			return;
+		}
+
+		$view = new View('kwalbum/browse/index');
+		Model_Kwalbum_Item::set_sort_direction('DESC');
+		$view->items = Model_Kwalbum_Item::get_thumbnails($this->page_number);
+		$this->template->content = $view;
+		$this->template->title = 'browsing all';
+
 	}
+}

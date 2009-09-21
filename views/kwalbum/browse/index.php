@@ -10,8 +10,13 @@
  * @since 3.0 Jun 30, 2009
  */
 
+echo 'page '.$page_number.' of ';
+echo Model_Kwalbum_Item::get_page_number(Model_Kwalbum_Item::get_total_items());
+
+
 if (count($items) == 0)
 	echo '<div class="kwalbumBox"><h2>No items were found that match your search.</h2></div>';
+
 foreach ($items as $item)
 {
 	$thumbview = new View('kwalbum/item/thumbnail');

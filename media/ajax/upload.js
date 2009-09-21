@@ -12,7 +12,7 @@ $(document).ready(function(){
 		'script':'KWALBUM_URL/~ajax/upload.php',
 		'multi':true,
 		'buttonText':'Browse Files',
-		'fileExt':'*.jpg;*.png;*.gif','fileDesc':'Image Files Only'
+		'fileExt':'*.jpg;*.JPG;*.png;*.gif','fileDesc':'Image Files Only'
 	});
 });
 function kwalbumUpload()

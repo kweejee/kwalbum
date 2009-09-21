@@ -40,6 +40,9 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 			255 => 'description only'
 		);
 	static private $_where = array();
+	static private $_sort_field = 'sort_dt';
+	static private $_sort_direction = 'ASC';
+	static private $_gtlt = '<';
 
 	public function load($id = null, $field = 'id')
 	{
@@ -766,12 +769,15 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 
 	static public function get_thumbnails($page_number = 1)
 	{
+		$sort_field = Model_Kwalbum_Item::$_sort_field;
+		$sort_direction = Model_Kwalbum_Item::$_sort_direction;
 		$query = 'SELECT kwalbum_items.id AS id
 			FROM kwalbum_items'.Model_Kwalbum_Item::get_where_query()
-			.' ORDER BY sort_dt';
+			." ORDER BY $sort_field $sort_direction
+			LIMIT :offset,:limit";
 
-		$offset = 0;
-		$limit = 100;
+		$limit = Kohana::config('kwalbum.items_per_page');
+		$offset = ($page_number-1)*$limit;
 		$result = DB::query(Database::SELECT, $query)
 			->param(':offset', $offset)
 			->param(':limit', $limit)
@@ -786,17 +792,65 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 		return $items;
 	}
 
-	static public function get_total_items($where_query = '')
+	static public function get_total_items()
 	{
 		$query = 'SELECT count(*)
-			FROM kwalbum_items '.$where_query;
+			FROM kwalbum_items '.Model_Kwalbum_Item::get_where_query();
 		$result = DB::query(Database::SELECT, $query)
 			->execute();
 		return (int)$result[0]['count(*)'];
 	}
 
-	static public function get_total_pages($total_items)
+	static public function set_sort_field($sort_field)
 	{
-		return ceil($total_items/Kohana::config('kwalbum.items_per_page'));
+		switch ($sort_field)
+		{
+			case 'update': $sort_field = 'update_dt'; break;
+			case 'create': $sort_field = 'create_dt'; break;
+			case 'count': $sort_field = 'count'; break;
+			default: $sort_field = 'sort_dt';
+		}
+		Model_Kwalbum_Item::$_sort_field = $sort_field;
+	}
+
+	static public function set_sort_direction($sort_direction)
+	{
+		if ($sort_direction == 'ASC')
+		{
+			Model_Kwalbum_Item::$_sort_direction = 'ASC';
+			Model_Kwalbum_Item::$_gtlt = '<';
+		}
+		else
+		{
+			Model_Kwalbum_Item::$_sort_direction = 'DESC';
+			Model_Kwalbum_Item::$_gtlt = '>';
+		}
+	}
+	static public function get_index($id, $sort_value)
+	{
+		$where_query = Model_Kwalbum_Item::get_where_query();
+		if ( ! $where_query)
+			$where_query = ' WHERE ';
+		else
+			$where_query .= ' AND ';
+
+		$sort_field = Model_Kwalbum_Item::$_sort_field;
+		$sort_direction = Model_Kwalbum_Item::$_sort_direction;
+		$gtlt = Model_Kwalbum_Item::$_gtlt;
+		$query = "SELECT count(*)
+			FROM kwalbum_items $where_query
+			($sort_field $gtlt :sort_value
+				OR ($sort_field = :sort_value AND id $gtlt :id))
+			ORDER BY $sort_field $sort_direction, id $sort_direction";
+		$result = DB::query(Database::SELECT, $query)
+			->param(':sort_value', $sort_value)
+			->param(':id', $id)
+			->execute();
+		return (int)$result[0]['count(*)']+1;
+	}
+
+	static public function get_page_number($index)
+	{
+		return ceil($index/Kohana::config('kwalbum.items_per_page'));
 	}
 }

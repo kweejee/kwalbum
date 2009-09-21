@@ -9,6 +9,7 @@
  * @since Aug 24, 2009
  */
 ?>
+<div class="box">
 <form action="<?php echo URL ?>~user/upload" method="post" enctype="multipart/form-data" autocomplete="off">
 <input type='hidden' name='overLimit' value='no'/>
 	<p>
@@ -46,3 +47,4 @@
 		<a href="javascript:kwalbumUpload();">Upload Files</a> | <a href="javascript:$('#fileInput').uploadifyClearQueue();">Clear Queue</a>
 	</p>
 </form>
+</div>

@@ -97,9 +97,17 @@ class Controller_Kwalbum extends Controller_Template
 			.($_GET['people'] ? 'people/'.$_GET['people'].'/' : null);
 		$this->template->set_global('kwalbum_url_params', $this->params);
 
-//		echo $count = Model_Kwalbum_Item::get_total_items('');
-//		echo '-';
-//		echo Model_Kwalbum_Item::get_total_pages($count);
+		$page_number = (int)$this->request->param('page');
+		if ($page_number < 1)
+		{
+			$page_number = 1;
+			if ($this->item)
+			{
+				$page_number = Model_Kwalbum_Item::get_page_number(Model_Kwalbum_Item::get_index($this->item->id, $this->item->sort_date));
+			}
+		}
+		$this->page_number = $page_number;
+		$this->template->set_global('page_number', $this->page_number);
 	}
 
 	public function action_media($file)

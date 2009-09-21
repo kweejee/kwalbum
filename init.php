@@ -8,7 +8,7 @@ Route::set('kwalbum_media', 'kwalbum/media/<file>', array(
 		'action'     => 'media',
 	));
 
-Route::set('kwalbum_item', 'kwalbum/~<id>(/<year>(/<month>(/<day>)))(/<location>)(/tags/<tags>)(/people/<people>)(/~<controller>(/<action>(<ext>)))(/~<page>)', array(
+Route::set('kwalbum_item', 'kwalbum/~<id>(/<year>(/<month>(/<day>)))(/<location>)(/tags/<tags>)(/people/<people>)(/~<controller>(/<action>(<ext>)))(/page/<page>)', array(
 		'id' => '[0-9]+',
 		'controller'   => '[a-zA-Z]+?',
 		'action'   => '[a-zA-Z0-9]+?',
@@ -26,7 +26,7 @@ Route::set('kwalbum_item', 'kwalbum/~<id>(/<year>(/<month>(/<day>)))(/<location>
 		'action'     => 'index',
 	));
 
-Route::set('kwalbum_browse', 'kwalbum(/<year>(/<month>(/<day>)))(/<location>)(/tags/<tags>)(/people/<people>)(/~<controller>(/<action>(<ext>)))(/~<page>)', array(
+Route::set('kwalbum_browse', 'kwalbum(/<year>(/<month>(/<day>)))(/<location>)(/tags/<tags>)(/people/<people>)(/~<controller>(/<action>(<ext>)))(/page/<page>)', array(
 		'controller'   => '[a-zA-Z]+?',
 		'action'   => '[a-zA-Z0-9]+?',
 		'ext' => '\.\w+',
