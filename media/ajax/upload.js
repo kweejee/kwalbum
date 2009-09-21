@@ -12,7 +12,8 @@ $(document).ready(function(){
 		'script':'KWALBUM_URL/~ajax/upload.php',
 		'multi':true,
 		'buttonText':'Browse Files',
-		'fileExt':'*.jpg;*.JPG;*.png;*.gif','fileDesc':'Image Files Only'
+		'fileExt':'*.jpg;*.JPG;*.jpe;*.JPE;*.jpeg;*.JPEG;*.png;*.PNG;*.gif;*.GIF',
+		'fileDesc':'Image Files Only'
 	});
 });
 function kwalbumUpload()

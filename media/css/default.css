@@ -21,3 +21,11 @@ img{border-style:hidden;}
 	margin:5px;
 	padding:5px;
 }
+.kwalbumCurrentIndex{
+	font-size:1.4em;
+	font-weight:bold;
+}
+.kwalbumPageNumbers{
+	clear:both;
+	text-align: left;
+}

@@ -10,11 +10,12 @@
  * @since 3.0 Jun 30, 2009
  */
 
-echo 'item ';
-echo Model_Kwalbum_Item::get_index($item->id, $item->sort_date);
-echo ' of ';
-echo $count = Model_Kwalbum_Item::get_total_items('');
-
+echo 'item '.$item_index.' of '.$total_items;
+echo '<br>';
+echo html::anchor($kwalbum_url.'/'
+	.$kwalbum_url_params
+	.($page_number > 1 ? 'page/'.$page_number.'/' : null),
+	'back to browsing');
 ?>
 <div class="box">
 	<?php

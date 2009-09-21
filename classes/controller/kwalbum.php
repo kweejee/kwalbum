@@ -17,6 +17,7 @@ class Controller_Kwalbum extends Controller_Template
 
 	public $location, $date, $tags, $people, $params;
 	public $user, $item;
+	public $total_items, $total_pages, $item_index, $page_number;
 
 	public function before()
 	{
@@ -34,6 +35,7 @@ class Controller_Kwalbum extends Controller_Template
 			$this->location = Security::xss_clean($_GET['location']);
 			Model_Kwalbum_Item::append_where('location', $this->location);
 		}
+		$this->template->set_global('location', $this->location);
 
 
 		// date
@@ -97,16 +99,25 @@ class Controller_Kwalbum extends Controller_Template
 			.($_GET['people'] ? 'people/'.$_GET['people'].'/' : null);
 		$this->template->set_global('kwalbum_url_params', $this->params);
 
+		$this->total_items = Model_Kwalbum_Item::get_total_items();
+		$this->total_pages = Model_Kwalbum_Item::get_page_number($this->total_items);
+		$this->item_index = 0;
 		$page_number = (int)$this->request->param('page');
-		if ($page_number < 1)
+
+		if ($page_number < 1 or $page_number > $this->total_pages)
 		{
 			$page_number = 1;
 			if ($this->item)
 			{
-				$page_number = Model_Kwalbum_Item::get_page_number(Model_Kwalbum_Item::get_index($this->item->id, $this->item->sort_date));
+				$this->item_index = Model_Kwalbum_Item::get_index($this->item->id, $this->item->sort_date);
+				$page_number = Model_Kwalbum_Item::get_page_number($this->item_index);
 			}
 		}
+
 		$this->page_number = $page_number;
+		$this->template->set_global('total_items', $this->total_items);
+		$this->template->set_global('total_pages', $this->total_pages);
+		$this->template->set_global('item_index', $this->item_index);
 		$this->template->set_global('page_number', $this->page_number);
 	}
 

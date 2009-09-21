@@ -10,9 +10,25 @@
  * @since 3.0 Jun 30, 2009
  */
 
-echo 'page '.$page_number.' of ';
-echo Model_Kwalbum_Item::get_page_number(Model_Kwalbum_Item::get_total_items());
+// create page links
+$page_links = '';
+for($i = 1; $i <= $total_pages; $i++)
+{
+	if ($i == $page_number)
+		$page_links .= "<span class='kwalbumCurrentIndex'>$i</span> ";
+	else
+		$page_links .= html::anchor($kwalbum_url.'/'
+			.$kwalbum_url_params.
+			'page/'.$i,
+			$i).' ';
+}
+$page_links = "<div class='kwalbumPageNumbers'>pages: $page_links</div>";
 
+
+// show page
+echo $location.'<hr>';
+
+echo $page_links;
 
 if (count($items) == 0)
 	echo '<div class="kwalbumBox"><h2>No items were found that match your search.</h2></div>';
@@ -23,3 +39,5 @@ foreach ($items as $item)
 	$thumbview->item = $item;
 	echo $thumbview->render();
 }
+
+echo $page_links;
