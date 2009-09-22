@@ -18,7 +18,12 @@ class Controller_User extends Controller_Kwalbum
 	{
 		$this->template->content = new View('kwalbum/user/login');
 		$this->template->title = 'Logging In';
+	}
 
+	function action_login()
+	{
+		$this->template->content = new View('kwalbum/user/logout');
+		$this->template->title = 'Logged Out';
 	}
 
 	function action_upload()

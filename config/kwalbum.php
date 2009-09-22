@@ -9,7 +9,7 @@ return array
 	/**
 	 * String to put between subsections in the title
 	 */
-	'title_separator' => ' - ',
+	'title_separator' => ' : ',
 
 	/**
 	 * Item upload directory.

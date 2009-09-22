@@ -26,7 +26,6 @@ $page_links = "<div class='kwalbumPageNumbers'>pages: $page_links</div>";
 
 
 // show page
-echo $location.'<hr>';
 
 echo $page_links;
 

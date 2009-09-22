@@ -12,6 +12,33 @@
  */
 
 $config = Kohana::config('kwalbum', true);
+$summary = '';
+if ($date)
+{
+	$summary .= $date;
+}
+if ($location)
+{
+	if ($summary)
+		$summary .= $config->title_separator;
+	$summary .= $location;
+}
+if ($tags)
+{
+	if ($summary)
+		$summary .= $config->title_separator;
+	$summary .= implode(' + ', $tags);
+}
+if ($people)
+{
+	if ($summary)
+		$summary .= $config->title_separator;
+	$summary .= implode(' + ', $people);
+}
+
+if ($summary)
+	$title = $summary;
+
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
@@ -30,6 +57,8 @@ $config = Kohana::config('kwalbum', true);
 <body>
 <?php
 echo View::factory('kwalbum/mainmenu')->render();
+echo $summary;
+echo '<hr>';
 echo $content
 ?>
 

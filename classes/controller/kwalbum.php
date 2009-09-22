@@ -53,6 +53,7 @@ class Controller_Kwalbum extends Controller_Template
 			$this->date = ((int)@$date[0] ? abs($date[0]) : '0000').'-'.((int)@$date[1] ? abs($date[1]) : '00').'-'.((int)@$date[2] ? abs($date[2]) : '00');
 			Model_Kwalbum_Item::append_where('date', $this->date);
 		}
+		$this->template->set_global('date', $this->date);
 
 		// tags
 		$this->tags = explode(',', Security::xss_clean($this->request->param('tags')));
@@ -67,6 +68,7 @@ class Controller_Kwalbum extends Controller_Template
 		}
 		else
 			$this->tags = null;
+		$this->template->set_global('tags', $this->tags);
 
 		// people names
 		$this->people = explode(',', Security::xss_clean($this->request->param('people')));
@@ -76,6 +78,7 @@ class Controller_Kwalbum extends Controller_Template
 		}
 		else
 			$this->people = null;
+		$this->template->set_global('people', $this->people);
 
 		// item id
 		if (0 < $this->request->param('id'))
