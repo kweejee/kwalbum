@@ -12,5 +12,5 @@
 
 ?>
 <div class="box">
-	Installation is complete.  You should now delete <strong>modules/kwalbum/classes/controller/install.php</strong>.
+	Installation is complete.
 </div>

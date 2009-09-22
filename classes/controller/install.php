@@ -1,4 +1,4 @@
-<?php
+<?php defined('SYSPATH') or die('No direct script access.');
 /**
  * Controller for first time installing.
  *
@@ -30,7 +30,7 @@ class Controller_Install extends Controller_Kwalbum
 			$user = Model::factory('kwalbum_user');
 			if ($user->load(1)->loaded == true)
 			{
-				$view = View::factory('install/2');
+				$view = View::factory('kwalbum/install/2');
 				$this->template->bind('content', $view);
 				return;
 			}
@@ -124,7 +124,7 @@ class Controller_Install extends Controller_Kwalbum
 			}
 		}
 
-		$view = new View('install/1');
+		$view = new View('kwalbum/install/1');
 		$view->_user = $this->_user;
 		$view->form = $form;
 		$view->errors = $errors;

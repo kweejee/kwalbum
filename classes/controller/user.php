@@ -20,7 +20,7 @@ class Controller_User extends Controller_Kwalbum
 		$this->template->title = 'Logging In';
 	}
 
-	function action_login()
+	function action_logout()
 	{
 		$this->template->content = new View('kwalbum/user/logout');
 		$this->template->title = 'Logged Out';

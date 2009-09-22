@@ -23,7 +23,7 @@ class Controller_Kwalbum extends Controller_Template
 	{
 		$this->template = new View('kwalbum/template');
 		$this->url = Kohana::$base_url.'kwalbum';
-
+//echo Kohana::debug($this);exit;
 		// get location from URL
 		if ( $this->request->param('location'))
 		{
@@ -102,26 +102,29 @@ class Controller_Kwalbum extends Controller_Template
 			.($_GET['people'] ? 'people/'.$_GET['people'].'/' : null);
 		$this->template->set_global('kwalbum_url_params', $this->params);
 
-		$this->total_items = Model_Kwalbum_Item::get_total_items();
-		$this->total_pages = Model_Kwalbum_Item::get_page_number($this->total_items);
-		$this->item_index = 0;
-		$page_number = (int)$this->request->param('page');
-
-		if ($page_number < 1 or $page_number > $this->total_pages)
+		if ($this->request->action != 'media' and $this->request->controller != 'install')
 		{
-			$page_number = 1;
-			if ($this->item)
-			{
-				$this->item_index = Model_Kwalbum_Item::get_index($this->item->id, $this->item->sort_date);
-				$page_number = Model_Kwalbum_Item::get_page_number($this->item_index);
-			}
-		}
+			$this->total_items = Model_Kwalbum_Item::get_total_items();
+			$this->total_pages = Model_Kwalbum_Item::get_page_number($this->total_items);
+			$this->item_index = 0;
+			$page_number = (int)$this->request->param('page');
 
-		$this->page_number = $page_number;
-		$this->template->set_global('total_items', $this->total_items);
-		$this->template->set_global('total_pages', $this->total_pages);
-		$this->template->set_global('item_index', $this->item_index);
-		$this->template->set_global('page_number', $this->page_number);
+			if ($page_number < 1 or $page_number > $this->total_pages)
+			{
+				$page_number = 1;
+				if ($this->item)
+				{
+					$this->item_index = Model_Kwalbum_Item::get_index($this->item->id, $this->item->sort_date);
+					$page_number = Model_Kwalbum_Item::get_page_number($this->item_index);
+				}
+			}
+
+			$this->page_number = $page_number;
+			$this->template->set_global('total_items', $this->total_items);
+			$this->template->set_global('total_pages', $this->total_pages);
+			$this->template->set_global('item_index', $this->item_index);
+			$this->template->set_global('page_number', $this->page_number);
+		}
 	}
 
 	public function action_media($file)
