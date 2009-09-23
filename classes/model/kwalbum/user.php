@@ -154,6 +154,50 @@ class Model_Kwalbum_User extends Kwalbum_Model
 		return (sha1($password_to_check) === $this->_password);
 	}
 
+	public function load_from_cookie($action)
+	{
+		session_start();
+		if ($action == 'logout')
+		{
+			$this->_clear_cookies();
+			return $this->clear();
+		}
+
+		if ( ! empty($_SESSION['kwalbum_id']))
+		{
+			$id = (int)$_SESSION['kwalbum_id'];
+			$this->load($id);
+		}
+		elseif (isset ($_COOKIE['kwalbum']))
+		{
+			$temp = array ();
+			$temp = explode(':', $_COOKIE['kwalbum']);
+			$this->load((int)($temp[0]));
+			if ($this->token == $temp[1])
+			{
+				$this->visit_date = date('Y-m-d H:i:s');
+				$this->save();
+			}
+			else
+			{
+				$this->_clear_cookies();
+				return $this->clear();
+			}
+		}
+		$_SESSION['kwalbum_id'] = $this->id;
+		session_write_close();
+
+		return $this;
+	}
+
+	private function _clear_cookies()
+	{
+		session_start();
+		unset($_SESSION['kwalbum_id']);
+		setcookie('kwalbum', '', time() - 36000, '/');
+		session_write_close();
+	}
+
 	public function clear()
 	{
 		$this->id = $this->permission_level = 0;

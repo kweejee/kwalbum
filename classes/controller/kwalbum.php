@@ -23,7 +23,7 @@ class Controller_Kwalbum extends Controller_Template
 	{
 		$this->template = new View('kwalbum/template');
 		$this->url = Kohana::$base_url.'kwalbum';
-//echo Kohana::debug($this);exit;
+
 		// get location from URL
 		if ( $this->request->param('location'))
 		{
@@ -86,8 +86,8 @@ class Controller_Kwalbum extends Controller_Template
 			$this->item = Model::factory('kwalbum_item')->load((int)$this->request->param('id'));
 		}
 
-		// Set up test user
-		$this->user = Model::factory('kwalbum_user')->load(1);
+		// Set up user if logged in
+		$this->user = Model::factory('kwalbum_user')->load_from_cookie($this->request->action);
 
 		$this->template->set_global('user', $this->user);
 		$this->template->set_global('kwalbum_url', $this->url);

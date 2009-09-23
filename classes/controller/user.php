@@ -17,6 +17,40 @@ class Controller_User extends Controller_Kwalbum
 	function action_login()
 	{
 		$this->template->content = new View('kwalbum/user/login');
+
+		if (isset($_POST['act']))
+		{
+			$user = Model::factory('kwalbum_user')
+				->load($_POST['name'], 'login_name');
+
+			if ($user->password_equals($_POST['password']))
+			{
+				$loginLength = (int)$_POST['length'];
+				$user->visit_date = date('Y-m-d H:i:s');
+				$user->token = 1;
+				$user->save();
+
+				if ($loginLength != 0)
+					setcookie('kwalbum',
+						$user->id.':'.$user->token,
+						time() + $loginLength,
+						'/');
+
+				session_start();
+				$_SESSION['kwalbum_id'] = $user->id;
+				session_write_close();
+
+				$this->template->content->success = true;
+				$this->user = $user;
+				$this->template->set_global('user', $this->user);
+			}
+			else
+			{
+				$this->clear_cookies();
+				$this->template->content->error = '<p class="error">You\'re login name or password was wrong.</p>';
+			}
+		}
+
 		$this->template->title = 'Logging In';
 	}
 
@@ -59,5 +93,4 @@ class Controller_User extends Controller_Kwalbum
 			.html::script('kwalbum/media/ajax/upload.js')
 		;
 	}
-
 }
