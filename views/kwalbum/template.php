@@ -12,6 +12,8 @@
  */
 
 $config = Kohana::config('kwalbum', true);
+
+// create summary of location, tags, and people being searched for
 $summary = '';
 if ($date)
 {
@@ -50,6 +52,7 @@ if ($summary)
 
 	<?php
 		echo html::style('kwalbum/media/css/default.css');
+		echo html::script('kwalbum/media/ajax/jquery.js');
 		echo isset($head) ? $head : null;
 	?>
 
@@ -57,8 +60,10 @@ if ($summary)
 <body>
 <?php
 echo View::factory('kwalbum/mainmenu')->render();
+if ($in_edit_mode)
+	echo '<strong>!!! In Edit Mode !!!&nbsp;&nbsp;&nbsp;</strong>';
 echo $summary;
-echo '<hr>';
+echo '<hr/>';
 echo $content
 ?>
 

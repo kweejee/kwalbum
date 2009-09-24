@@ -16,12 +16,13 @@ class Controller_Ajax extends Controller_Kwalbum
 		session_id($_POST['session_id']);
 		//session_name(Kohana::config('session.name'));
 
+		$this->auto_render = false;
+
 		parent::before();
 	}
 
 	function action_GetInputLocations()
 	{
-		$this->auto_render = false;
 		$userInput = trim(@$_GET['q']);
 		$locations = Model_Kwalbum_Location::getNameArray(0, 10, 0, $userInput, 'count DESC');
 
@@ -32,7 +33,6 @@ class Controller_Ajax extends Controller_Kwalbum
 	}
 	function action_GetInputTags()
 	{
-		$this->auto_render = false;
 		$userInput = trim(@$_GET['q']);
 		$tags = Model_Kwalbum_Tag::getNameArray(0, 10, 0, $userInput, 'count DESC');
 
@@ -42,10 +42,18 @@ class Controller_Ajax extends Controller_Kwalbum
 		}
 	}
 
+	function action_SetEditMode()
+	{
+		if ( ! $this->user->can_edit)
+			$_POST['edit'] = false;
+		session_start();
+		$_SESSION['kwalbum_edit'] = (bool)$_POST['edit'];
+		session_write_close();
+		echo 1;
+	}
+
 	function action_upload()
 	{
-		$this->auto_render = false;
-
 		if ( ! $this->user->can_add)
 		{
 			$this->request->status = 400;

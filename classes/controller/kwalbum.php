@@ -18,6 +18,7 @@ class Controller_Kwalbum extends Controller_Template
 	public $location, $date, $tags, $people, $params;
 	public $user, $item;
 	public $total_items, $total_pages, $item_index, $page_number;
+	public $in_edit_mode;
 
 	public function before()
 	{
@@ -124,6 +125,10 @@ class Controller_Kwalbum extends Controller_Template
 			$this->template->set_global('total_pages', $this->total_pages);
 			$this->template->set_global('item_index', $this->item_index);
 			$this->template->set_global('page_number', $this->page_number);
+
+			$this->in_edit_mode = (bool)$_SESSION['kwalbum_edit'];
+			$this->template->set_global('in_edit_mode', $this->in_edit_mode);
+			$this->template->set_global('head', html::script('kwalbum/media/ajax/toggle.edit.js'));
 		}
 	}
 

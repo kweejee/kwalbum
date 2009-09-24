@@ -87,8 +87,7 @@ class Controller_User extends Controller_Kwalbum
 		$template = $this->template;
 		$template->content = $content;
 		$template->title = 'Upload';
-		$template->head = html::script('kwalbum/media/ajax/jquery.js')
-			.html::style('kwalbum/media/ajax/jqueryautocomplete/jquery.autocomplete.min.css')
+		$template->head .= html::style('kwalbum/media/ajax/jqueryautocomplete/jquery.autocomplete.min.css')
 			.html::script('kwalbum/media/ajax/jqueryautocomplete/jquery.autocomplete.pack.js')
 			.html::script('kwalbum/media/ajax/uploadify/swfobject.js')
 		//	.html::script('http://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject_src.js')
