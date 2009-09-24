@@ -88,14 +88,19 @@ class Controller_Install extends Controller_Kwalbum
 					// default owner of items once owned by a deleted user
 					$user->clear();
 					$user->name = 'Deleted User';
+
 					$temp = '';
-					for ($i = 0; $i < 50; $i++)
+					$length = mt_rand(40,60);
+					for ($i = 0; $i < $length; $i++)
 						$temp = chr(mt_rand(0,122));
 					$user->login_name = sha1($temp);
+
 					$temp = '';
-					for ($i = 0; $i < 50; $i++)
+					$length = mt_rand(50,100);
+					for ($i = 0; $i < $length; $i++)
 						$temp = chr(mt_rand(0,122));
 					$user->password = sha1($temp);
+
 					// Normally, permission level should never be 0.
 					$user->permission_level = 0;
 					$user->save();

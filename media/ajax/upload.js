@@ -13,7 +13,7 @@ $(document).ready(function(){
 		'multi':true,
 		'buttonText':'Browse Files',
 		'fileExt':'*.jpg;*.JPG;*.jpe;*.JPE;*.jpeg;*.JPEG;*.png;*.PNG;*.gif;*.GIF',
-		'fileDesc':'Image Files Only'
+		'fileDesc':'Image Files Only',
 	});
 });
 function kwalbumUpload()
@@ -22,7 +22,8 @@ function kwalbumUpload()
 		'loc':$("#loc").val(),
 		'tags':$("#tags").val(),
 		'vis':$('#vis').val(),
-		'date':$('#date').val()
+		'date':$('#date').val(),
+		'session_id':'SESSION_ID',
 	});
 	$('#fileInput').uploadifyUpload();
 }

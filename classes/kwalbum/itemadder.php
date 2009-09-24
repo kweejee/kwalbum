@@ -117,6 +117,7 @@ class Kwalbum_ItemAdder
 		}
 
         $item->save();
+        return true;
     }
 
 	/**
@@ -144,9 +145,8 @@ class Kwalbum_ItemAdder
         }
 		$item->type = $this->get_filetype($item->filename);
 
-
-        if (!Upload :: save($_FILES['Filedata'], $item->filename, $item->path))
-            return false;
+        if ( ! Upload :: save($_FILES['Filedata'], $item->filename, $item->path))
+	        throw new Kohana_Exception('upload could not be saved');
 
         return $this->save();
     }
@@ -346,18 +346,17 @@ class Kwalbum_ItemAdder
      *
      * @param string $path
      * @param string $filename
-     * @return bool if both the thumbnail and resized versions now
-     * exist
      * @since 2.1.1
      */
     private function ResizeImage($path, $filename)
     {
     	$image = Image::factory($path.$filename);
 		$image->resize(null, 480);
-		$image->save($path.'r/'.$filename, 80);
+		if ( ! $image->save($path.'r/'.$filename, 80))
+	        throw new Kohana_Exception('Could not resize image to "resized" version');
 		$image->resize(null, 112);
-		$image->save($path.'t/'.$filename, 80);
-        return true;
+		if ( ! $image->save($path.'t/'.$filename, 80))
+	        throw new Kohana_Exception('Could not resize image to "thumbnail" version');
     }
 }
 ?>

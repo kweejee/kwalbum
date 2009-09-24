@@ -27,7 +27,11 @@ class Controller_User extends Controller_Kwalbum
 			{
 				$loginLength = (int)$_POST['length'];
 				$user->visit_date = date('Y-m-d H:i:s');
-				$user->token = 1;
+				$token = '';
+				$length = mt_rand(50,100);
+				for ($i = 0; $i < $length; $i++)
+					$token = chr(mt_rand(0,122));
+				$user->token = sha1($token);
 				$user->save();
 
 				if ($loginLength != 0)

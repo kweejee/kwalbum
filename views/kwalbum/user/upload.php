@@ -41,7 +41,8 @@
 		<a href="http://filext.com/file-extension/mp4" target='_blank'>mp4</a>,txt, html,
 		<a href="http://filext.com/file-extension/gpx" target='_blank'>gpx</a>, xml, zip, mp3,
 		wav, <a href="http://filext.com/file-extension/odt" target='_blank'>odt</a>, ods,
-		<a href="http://filext.com/file-extension/ogg">ogg</a>, doc, and <a href="http://filext.com/file-extension/flv">flv</a>*/?></small><br/>
+		<a href="http://filext.com/file-extension/ogg">ogg</a>, doc, and <a href="http://filext.com/file-extension/flv">flv</a>*/?>
+		. Files larger than <?php echo (ini_get('memory_limit') / 10); ?>M may not upload correctly.</small><br/>
 
 		<input type="file" name="fileInput" id="fileInput" />
 		<a href="javascript:kwalbumUpload();">Upload Files</a> | <a href="javascript:$('#fileInput').uploadifyClearQueue();">Clear Queue</a>

@@ -141,6 +141,7 @@ class Controller_Kwalbum extends Controller_Template
 		{
 			// Send the file content as the response
 			$this->request->response = str_replace('KWALBUM_URL', $this->url, file_get_contents($file));
+			$this->request->response = str_replace('SESSION_ID', session_id(), $this->request->response);
 		}
 		else
 		{

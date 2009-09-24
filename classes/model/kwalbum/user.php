@@ -201,7 +201,7 @@ class Model_Kwalbum_User extends Kwalbum_Model
 	public function clear()
 	{
 		$this->id = $this->permission_level = 0;
-		$this->name = $this->login_name = $this->email = $this->password
+		$this->name = $this->login_name = $this->email = $this->_password
 			= $this->token = $this->visit_date = '';
 		$this->loaded = false;
 	}

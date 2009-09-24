@@ -11,6 +11,14 @@
 
 class Controller_Ajax extends Controller_Kwalbum
 {
+	function before()
+	{
+		session_id($_POST['session_id']);
+		//session_name(Kohana::config('session.name'));
+
+		parent::before();
+	}
+
 	function action_GetInputLocations()
 	{
 		$this->auto_render = false;
@@ -36,22 +44,31 @@ class Controller_Ajax extends Controller_Kwalbum
 
 	function action_upload()
 	{
-		$user = $this->user;
-		if ( ! $user->can_add)
+		$this->auto_render = false;
+
+		if ( ! $this->user->can_add)
 		{
-			$this->template->content = new View('kwalbum/invalidpermission');
+			$this->request->status = 400;
+			Kohana::$log->add('~ajax/upload', 'invalid permission');
 			return;
 		}
 
-		$this->auto_render = false;
 		if ( ! empty($_FILES))
 		{
-			$adder = new Kwalbum_ItemAdder($user);
+			$adder = new Kwalbum_ItemAdder($this->user);
 			if ($adder->save_upload())
-				echo 1;
+			{
+				echo 'success';
+				return;
+			}
 			else
-				echo 'ItemAdder failed to save the new item';
+			{
+				$this->request->status = 400;
+				Kohana::$log->add('~ajax/upload', 'ItemAdder failed to save the new item');
+				return;
+			}
 		}
-		echo 'empty FILES sent';
+		$this->request->status = 400;
+		Kohana::$log->add('~ajax/upload', 'empty FILES sent');
 	}
 }
