@@ -3,7 +3,7 @@ $(document).ready(function(){
 	$("#loc").focus().autocomplete('KWALBUM_URL/~ajax/getInputLocations',{
 		max:10,cacheLength:10
 	});
-	$("#tags").focus().autocomplete('KWALBUM_URL/~ajax/getInputTags',{
+	$("#tags").autocomplete('KWALBUM_URL/~ajax/getInputTags',{
 		max:10,cacheLength:10
 	});
 	$('#fileInput').uploadify({
@@ -13,7 +13,7 @@ $(document).ready(function(){
 		'multi':true,
 		'buttonText':'Browse Files',
 		'fileExt':'*.jpg;*.JPG;*.jpe;*.JPE;*.jpeg;*.JPEG;*.png;*.PNG;*.gif;*.GIF',
-		'fileDesc':'Image Files Only',
+		'fileDesc':'Image Files Only'
 	});
 });
 function kwalbumUpload()
@@ -23,7 +23,7 @@ function kwalbumUpload()
 		'tags':$("#tags").val(),
 		'vis':$('#vis').val(),
 		'date':$('#date').val(),
-		'session_id':'SESSION_ID',
+		'session_id':'SESSION_ID'
 	});
 	$('#fileInput').uploadifyUpload();
 }

@@ -127,19 +127,30 @@ class Model_Kwalbum_Tag extends Kwalbum_Model
 	}
 
 
-	static public function getNameArray($min_count = 1, $limit = 10, $offset = 0, $name = '', $order = 'name ASC')
+	static public function getNameArray($min_count = 1, $limit = 10, $offset = 0,
+		$name = '', $order = 'name ASC', $not_included = array())
 	{
-		$tags = array();
-
 		$name = trim($name);
+		$tags = array();
+		$query = '';
+		$db = Database::instance();
 
-		if ( ! empty($name))
+		if (count($not_included) > 0)
 		{
+			foreach($not_included as $word)
+			{
+				$query .= " AND name != ".$db->escape($word);
+			}
+		}
+
+		if ($name)
+		{
+
 			// Select almost exact (not case sensitive) match first
 			$result = DB::query(Database::SELECT,
 				'SELECT name
 				FROM kwalbum_tags
-				WHERE name = :name')
+				WHERE name = :name '.$query)
 				->param(':name', $name)
 				->execute();
 			if ($result->count() == 1)
@@ -150,12 +161,12 @@ class Model_Kwalbum_Tag extends Kwalbum_Model
 
 			// Select from starting matches
 			$partName = "$name%";
-			$query = 'AND name != :name';
+			$query .= ' AND name != :name';
 			$result = DB::query(Database::SELECT,
 				"SELECT name
-				FROM kwalbum_tags"
-				.( ! empty($name) ? " WHERE name LIKE :partName $query" : null)
-				." ORDER BY $order
+				FROM kwalbum_tags
+				WHERE name LIKE :partName $query
+				ORDER BY $order
 				LIMIT :limit")
 				->param(':partName', $partName)
 				->param(':name', $name)
@@ -167,7 +178,7 @@ class Model_Kwalbum_Tag extends Kwalbum_Model
 				foreach($result as $row)
 				{
 					$tags[] = $row['name'];
-					$query .= " AND name != '$row[name]'";
+					$query .= " AND name != ".$db->escape($row['name']);
 				}
 				$limit -= $result->count();
 			}

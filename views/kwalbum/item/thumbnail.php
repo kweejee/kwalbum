@@ -12,18 +12,20 @@
 <div class='kwalbumBox'>
 
 <?php
-echo $item->visible_date.'<br/>';
+echo $item->pretty_date.'<br/>';
 // show thumbnail based on file type
 if ($item->type == 'jpeg' or $item->type == 'gif' or $item->type == 'png')
 {
 	echo html::anchor($kwalbum_url.'/~'.$item->id.'/'.$kwalbum_url_params,
 		"<img src='$kwalbum_url/~$item->id/~item/thumbnail' title='$item->filename'/>")."\n";
+	echo substr($item->description, 0, 50)
+		.(strlen($item->description) > 50 ? '...' : null);
 }
 else if ($item->type == 'description only')
 {
-	echo 'Description<br/>Only';
+	echo substr($item->description, 0, 200)
+		.(strlen($item->description) > 200 ? '...' : null);
 }
 
-echo '<br/>'.$item->location;
 ?>
 </div>

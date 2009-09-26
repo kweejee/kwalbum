@@ -15,13 +15,17 @@ class Controller_Item extends Controller_Kwalbum
 {
 	function action_index()
 	{
-		$view = new View('kwalbum/item/single');
+		if ($this->in_edit_mode)
+		{
+			$view = new View('kwalbum/item/single.edit');
+		}
+		else
+		{
+			$view = new View('kwalbum/item/single.view');
+		}
 		$view->item = $this->item;
 		$this->template->content = $view;
-		$this->template->title = 'single item';
-
-		$view->description = 'description stuff';
-
+		//$this->template->title = 'single item';
 	}
 
 	function action_thumbnail()

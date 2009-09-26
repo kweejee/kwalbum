@@ -2,10 +2,11 @@ html { background: #83c018; }
 body {margin: 1em; font-size: 76%; font-family: Arial, sans-serif; color: #273907; line-height: 1.5; }
 h1 { font-size: 3em; font-weight: normal; color: #fff; }
 ul { list-style: none; padding: 2em 0; }
-ul li { display: inline; padding-right: 1em;}
 ul li a { padding: 0.5em 1em; background: #69ad0f; border: 1px solid #569f09; color: #fff; text-decoration: none; }
 ul li a:hover { background: #569f09; }
-.box { padding: 2em; background: #98cc2b; border: 1px solid #569f09; text-align: left;}
+.box { padding: 2em; background:#98cc2b;border:1px solid #569f09;text-align:left;float:left;}
+.box-right {width:300px;}
+
 .copyright {clear:both;padding:0;text-align:center;font-size:0.7em;color:#557d10;}
 
 a{color: inherit;text-decoration:none;}

@@ -17,7 +17,5 @@ if ($item->type == 'jpeg' or $item->type == 'gif' or $item->type == 'png')
 }
 else if ($item->type == 'description only')
 {
-?>
-description
-<?php
+	echo $item->description;
 }

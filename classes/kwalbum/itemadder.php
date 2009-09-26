@@ -43,13 +43,13 @@ class Kwalbum_ItemAdder
         $item->location = trim(Security :: xss_clean(@ $_POST['loc']));
 
         $tags = explode(',', Security :: xss_clean(@ $_POST['tags']));
-        for ($i = sizeof($tags) - 1; $i >= 0; $i--)
-        {
-            $tags[$i] = trim($tags[$i]);
-        }
+		for ($i = 0; $i < count($tags); $i++)
+		{
+			$tags[$i] = trim($tags[$i]);
+		}
         $item->tags = $tags;
 
-        $item->visible_date = $item->sort_date = $this->replace_bad_date(@ $_POST['date']);
+        $item->visible_date = $item->sort_date = Kwalbum_Helper :: replaceBadDate(@ $_POST['date']);
 
         $this->_item = $item;
     }
@@ -219,24 +219,6 @@ class Kwalbum_ItemAdder
             ')' => '-',
         	pathinfo($oldName, PATHINFO_EXTENSION) => strtolower(pathinfo($oldName, PATHINFO_EXTENSION))
         ));
-    }
-
-    /**
-     * Replace a date with the current time if it is not real.
-     * @param string $date original 'yyyy-mm-dd hh:mm:ss' datetime
-     * submitted by the user
-     * @return string valid datetime that can be inserted into the
-     * database
-     * @since 2.0
-     */
-    private function replace_bad_date($date)
-    {
-
-        if (empty ($date) or ($time = @ strtotime($date)) < 1)
-            $date = '0000-00-00 00:00:00';
-        else
-            $date = date('Y-m-d H:i:s', $time);
-        return $date;
     }
 
     /**

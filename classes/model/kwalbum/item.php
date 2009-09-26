@@ -251,14 +251,14 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 		// Set tags, persons, and external site once we know we have
 		// an item_id for the relationship.
 
-		// Remove old item-person and item-tag relations
-		$this->_delete_person_relations();
-		$this->_delete_tag_relations();
-
 		// Remove duplicates of new person and tags
 		// Use __get to make sure the array exists
 		$this->_persons = array_filter(array_unique($this->persons));
 		$this->_tags = array_filter(array_unique($this->tags));
+
+		// Remove old item-person and item-tag relations
+		$this->_delete_person_relations();
+		$this->_delete_tag_relations();
 
 		// Create new item-person and item-tag relations
 		$person = Model::factory('kwalbum_person');
@@ -425,7 +425,8 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 					"SELECT name
 					FROM kwalbum_items_tags
 						LEFT JOIN kwalbum_tags ON tag_id = id
-					WHERE item_id = :id")
+					WHERE item_id = :id
+					ORDER BY name")
 					->param(':id', $this->id)
 					->execute();
 				foreach($result as $row)
@@ -445,7 +446,8 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 					"SELECT name
 					FROM kwalbum_items_persons
 						LEFT JOIN kwalbum_persons ON person_id = id
-					WHERE item_id = :id")
+					WHERE item_id = :id
+					ORDER BY name")
 					->param(':id', $this->id)
 					->execute();
 				foreach($result as $row)
@@ -463,6 +465,37 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 				$this->_comments = $this->_load_comments($this->id);
 			}
 			return $this->_comments;
+		}
+		else if ($id == 'pretty_date')
+		{
+			$date = explode(' ', $this->visible_date);
+			$time = explode(':', $date[1]);
+			$date = explode('-', $date[0]);
+			$year = $date[0];
+			$month = $date[1];
+			$day = $date[2];
+			$hour = $time[0];
+			$minute = $time[1];
+
+			if (0 == $month)
+			{
+				$pretty_date = $year;
+			}
+			else if (0 == $day)
+			{
+				$pretty_date = date('F Y', strtotime("$year-$month-1"));
+			}
+			else
+			{
+				$pretty_date = date('F j, Y', strtotime($this->visible_date));
+			}
+
+			if ($hour != '00' or $minute != '00')
+			{
+				$pretty_date .= " $hour:$minute";
+			}
+
+			return $pretty_date;
 		}
 		else if ($id == 'user_name')
 		{
@@ -759,8 +792,8 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 				$query .= ($query ? ' AND ' : null).
 					(string)DB::query(null, " 0 < (SELECT count(*) FROM kwalbum_items_persons
 					LEFT JOIN kwalbum_persons ON kwalbum_items_persons.person_id = kwalbum_persons.id
-					WHERE kwalbum_persons.name=:tag AND kwalbum_items_persons.item_id=kwalbum_items.id)")
-					->param(':tag', $tag);
+					WHERE kwalbum_persons.name LIKE :tag AND kwalbum_items_persons.item_id=kwalbum_items.id)")
+					->param(':tag', $tag.'%');
 			}
 		}
 
