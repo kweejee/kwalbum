@@ -16,16 +16,19 @@ echo $item->pretty_date.'<br/>';
 // show thumbnail based on file type
 if ($item->type == 'jpeg' or $item->type == 'gif' or $item->type == 'png')
 {
-	echo html::anchor($kwalbum_url.'/~'.$item->id.'/'.$kwalbum_url_params,
-		"<img src='$kwalbum_url/~$item->id/~item/thumbnail' title='$item->filename'/>")."\n";
-	echo substr($item->description, 0, 50)
+	$link_text = "<img src='$kwalbum_url/~$item->id/~item/thumbnail' title='$item->filename'/>";
+	$description = substr($item->description, 0, 50)
 		.(strlen($item->description) > 50 ? '...' : null);
 }
 else if ($item->type == 'description only')
 {
-	echo substr($item->description, 0, 200)
+	$link_text = "[view full description]";
+	$description = substr($item->description, 0, 200)
 		.(strlen($item->description) > 200 ? '...' : null);
 }
 
+echo html::anchor($kwalbum_url.'/~'.$item->id.'/'.$kwalbum_url_params, $link_text)
+	."<br/>\n"
+	.$description;
 ?>
 </div>

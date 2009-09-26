@@ -145,7 +145,6 @@ class Model_Kwalbum_Tag extends Kwalbum_Model
 
 		if ($name)
 		{
-
 			// Select almost exact (not case sensitive) match first
 			$result = DB::query(Database::SELECT,
 				'SELECT name
@@ -165,10 +164,11 @@ class Model_Kwalbum_Tag extends Kwalbum_Model
 			$result = DB::query(Database::SELECT,
 				"SELECT name
 				FROM kwalbum_tags
-				WHERE name LIKE :partName $query
+				WHERE name LIKE :partName AND count >= :min_count $query
 				ORDER BY $order
 				LIMIT :limit")
 				->param(':partName', $partName)
+					->param(':min_count', $min_count)
 				->param(':name', $name)
 				->param(':limit', $limit)
 				->execute();
@@ -190,10 +190,11 @@ class Model_Kwalbum_Tag extends Kwalbum_Model
 				$result = DB::query(Database::SELECT,
 					"SELECT name
 					FROM kwalbum_tags
-					WHERE name LIKE :partName $query"
+					WHERE name LIKE :partName AND count >= :min_count $query"
 					." ORDER BY $order
 					LIMIT :limit")
 					->param(':partName', $partName)
+					->param(':min_count', $min_count)
 					->param(':name', $name)
 					->param(':limit', $limit)
 					->execute();
@@ -209,9 +210,11 @@ class Model_Kwalbum_Tag extends Kwalbum_Model
 			$result = DB::query(Database::SELECT,
 				"SELECT name
 				FROM kwalbum_tags
+				WHERE count >= :min_count
 				ORDER BY $order"
 				.($limit ? ' LIMIT :offset,:limit' : null))
 				->param(':offset', $offset)
+				->param(':min_count', $min_count)
 				->param(':limit', $limit)
 				->execute();
 

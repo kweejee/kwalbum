@@ -127,8 +127,10 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 		}
 
 		// If there is no location id set then there is a change so get id for new location name
-		if (!isset($location_id))
+		if ( ! isset($location_id))
 		{
+			$this->location = trim($this->location);
+
 			// The location name is unknown so use default unknown id and name
 			if (empty($this->location))
 			{
@@ -264,34 +266,42 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 		$person = Model::factory('kwalbum_person');
 		foreach($this->_persons as $name)
 		{
-			$person->clear();
-			$person->name = $name;
-			$person->save();
-			DB::query(Database::INSERT,
-				"INSERT INTO kwalbum_items_persons
-				(item_id, person_id)
-				VALUES (:item_id, :person_id)")
-				->param(':item_id', $this->id)
-				->param(':person_id', $person->id)
-				->execute();;
-			$person->count = $person->count+1;
-			$person->save();
+			$name = trim($name);
+			if ($name != '')
+			{
+				$person->clear();
+				$person->name = $name;
+				$person->save();
+				DB::query(Database::INSERT,
+					"INSERT INTO kwalbum_items_persons
+					(item_id, person_id)
+					VALUES (:item_id, :person_id)")
+					->param(':item_id', $this->id)
+					->param(':person_id', $person->id)
+					->execute();
+				$person->count = $person->count+1;
+				$person->save();
+			}
 		}
 		$tag = Model::factory('kwalbum_tag');
 		foreach($this->_tags as $name)
 		{
-			$tag->clear();
-			$tag->name = $name;
-			$tag->save();
-			DB::query(Database::INSERT,
-				"INSERT INTO kwalbum_items_tags
-				(item_id, tag_id)
-				VALUES (:item_id, :tag_id)")
-				->param(':item_id', $this->id)
-				->param(':tag_id', $tag->id)
-				->execute();
-			$tag->count = $tag->count+1;
-			$tag->save();
+			$name = trim($name);
+			if ($name != '')
+			{
+				$tag->clear();
+				$tag->name = $name;
+				$tag->save();
+				DB::query(Database::INSERT,
+					"INSERT INTO kwalbum_items_tags
+					(item_id, tag_id)
+					VALUES (:item_id, :tag_id)")
+					->param(':item_id', $this->id)
+					->param(':tag_id', $tag->id)
+					->execute();
+				$tag->count = $tag->count+1;
+				$tag->save();
+			}
 		}
 
 		if ($this->_external_site_is_changed)
@@ -859,6 +869,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 			Model_Kwalbum_Item::$_gtlt = '>';
 		}
 	}
+
 	static public function get_index($id, $sort_value)
 	{
 		$where_query = Model_Kwalbum_Item::get_where_query();
@@ -880,6 +891,57 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 			->param(':id', $id)
 			->execute();
 		return (int)$result[0]['count(*)']+1;
+	}
+
+	static public function get_previous_item($id, $sort_value)
+	{
+		$where_query = Model_Kwalbum_Item::get_where_query();
+		if ( ! $where_query)
+			$where_query = ' WHERE ';
+		else
+			$where_query .= ' AND ';
+
+		$sort_field = Model_Kwalbum_Item::$_sort_field;
+		$sort_direction = Model_Kwalbum_Item::$_sort_direction;
+		$sort_direction = ($sort_direction == 'ASC' ? 'DESC' : 'ASC');
+		$gtlt = Model_Kwalbum_Item::$_gtlt;
+
+		$query = "SELECT id
+			FROM kwalbum_items $where_query
+			($sort_field $gtlt :sort_value
+				OR ($sort_field = :sort_value AND id $gtlt :id))
+			ORDER BY $sort_field $sort_direction, id $sort_direction
+			LIMIT 1";
+		$result = DB::query(Database::SELECT, $query)
+			->param(':sort_value', $sort_value)
+			->param(':id', $id)
+			->execute();
+		return Model::factory('kwalbum_item')->load((int)$result[0]['id']);
+	}
+
+	static public function get_next_item($id, $sort_value)
+	{
+		$where_query = Model_Kwalbum_Item::get_where_query();
+		if ( ! $where_query)
+			$where_query = ' WHERE ';
+		else
+			$where_query .= ' AND ';
+
+		$sort_field = Model_Kwalbum_Item::$_sort_field;
+		$sort_direction = Model_Kwalbum_Item::$_sort_direction;
+		$gtlt = (Model_Kwalbum_Item::$_gtlt == '<' ? '>' : '<');
+
+		$query = "SELECT id
+			FROM kwalbum_items $where_query
+			($sort_field $gtlt :sort_value
+				OR ($sort_field = :sort_value AND id $gtlt :id))
+			ORDER BY $sort_field $sort_direction, id $sort_direction
+			LIMIT 1";
+		$result = DB::query(Database::SELECT, $query)
+			->param(':sort_value', $sort_value)
+			->param(':id', $id)
+			->execute();
+		return Model::factory('kwalbum_item')->load((int)$result[0]['id']);
 	}
 
 	static public function get_page_number($index)

@@ -28,4 +28,21 @@ class Kwalbum_Helper
             $date = date('Y-m-d H:i:s', $time);
         return $date;
     }
+
+    /**
+     * get "thumbnail" image/text link to item page
+     * @param Model_Kwalbum_Item item to get information from
+     * @param string root URL of kwalbum
+     * @return string html
+     * @since 3.0
+     */
+    public static function getThumbnailLink($item, $kwalbum_url, $kwalbum_url_params)
+    {
+		if ($item->type == 'jpeg' or $item->type == 'gif' or $item->type == 'png')
+			$text = "<img src='$kwalbum_url/~$item->id/~item/thumbnail' title='$item->filename' width='100px'/>";
+		else if ($item->type == 'description only')
+			$text = "Item is only text.";
+
+		return html::anchor($kwalbum_url.'/~'.$item->id.'/'.$kwalbum_url_params, $text);
+    }
 }

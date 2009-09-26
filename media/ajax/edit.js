@@ -3,7 +3,9 @@ $(document).ready(function(){
 	$.editable.addInputType('autocomplete', {
 		element:$.editable.types.text.element,
 		plugin:function(settings, original) {
-			$('input', this).autocomplete(settings.autocomplete.data);
+			$('input', this).autocomplete(settings.autocomplete.data, {
+				max:10,cacheLength:1,matchSubset:false,
+				autoFill:true});
 		}
 	});
   
@@ -16,10 +18,7 @@ $(document).ready(function(){
          onblur:"submit",
          width:200, 
          submitdata:{item:$('#item_id').text()},
-         autocomplete: {
-         	data: 'KWALBUM_URL/~ajax/GetInputLocations',
-			max:10,cacheLength:10
-         }
+         autocomplete: {data: 'KWALBUM_URL/~ajax/GetInputLocations'}
 	});
 	
   	$('#description_label').click(function(){$('#description').click();});
@@ -45,11 +44,9 @@ $(document).ready(function(){
          onblur:"submit",
          width:200, 
          submitdata:{item:$('#item_id').text()},
-         autocomplete: {
-         	data: 'KWALBUM_URL/~ajax/GetInputTags',
-			max:10,cacheLength:10
-         }
+         autocomplete: {data: 'KWALBUM_URL/~ajax/GetInputTags'}
 	})
+	
   	$('#persons_label').click(function(){$('#persons').click();});
 	$('#persons').editable( 'KWALBUM_URL/~ajax/SetPersons',
 	{
@@ -59,9 +56,6 @@ $(document).ready(function(){
          onblur:"submit",
          width:200, 
          submitdata:{item:$('#item_id').text()},
-         autocomplete: {
-         	data: 'KWALBUM_URL/~ajax/GetInputPersons',
-			max:10,cacheLength:10
-         }
+         autocomplete: {data: 'KWALBUM_URL/~ajax/GetInputPersons'}
 	})
 });

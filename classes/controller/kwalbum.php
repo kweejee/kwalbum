@@ -16,7 +16,7 @@ class Controller_Kwalbum extends Controller_Template
 	const ALLOW_PRODUCTION = true;
 
 	public $location, $date, $tags, $people, $params;
-	public $user, $item;
+	public $user, $item, $previous_item, $next_item;
 	public $total_items, $total_pages, $item_index, $page_number;
 	public $in_edit_mode;
 
@@ -124,6 +124,10 @@ class Controller_Kwalbum extends Controller_Template
 				{
 					$this->item_index = Model_Kwalbum_Item::get_index($this->item->id, $this->item->sort_date);
 					$page_number = Model_Kwalbum_Item::get_page_number($this->item_index);
+					$this->next_item = Model_Kwalbum_Item::get_next_item($this->item->id, $this->item->sort_date);
+					$this->template->set_global('next_item', $this->next_item);
+					$this->previous_item = Model_Kwalbum_Item::get_previous_item($this->item->id, $this->item->sort_date);
+					$this->template->set_global('previous_item', $this->previous_item);
 				}
 			}
 

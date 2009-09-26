@@ -25,6 +25,27 @@ echo html::anchor($kwalbum_url.'/'
 	?>
 </div>
 
+<div class="box box-right">
+	<div class="box box-thumbnail">
+	Previous Item:<br/>
+	<?php
+	if ($previous_item->id)
+		echo Kwalbum_Helper::getThumbnailLink($previous_item, $kwalbum_url, $kwalbum_url_params);
+	else
+		echo 'Viewing First Item';
+	?>
+	</div>
+	<div class="box box-thumbnail">
+	Next Item:<br/>
+	<?php
+
+	if ($next_item->id)
+		echo Kwalbum_Helper::getThumbnailLink($next_item, $kwalbum_url, $kwalbum_url_params);
+	else
+		echo 'Viewing Last Item';
+	?>
+	</div>
+</div>
 
 <div class="box box-right">
 	<?php

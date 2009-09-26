@@ -4,8 +4,9 @@ h1 { font-size: 3em; font-weight: normal; color: #fff; }
 ul { list-style: none; padding: 2em 0; }
 ul li a { padding: 0.5em 1em; background: #69ad0f; border: 1px solid #569f09; color: #fff; text-decoration: none; }
 ul li a:hover { background: #569f09; }
-.box { padding: 2em; background:#98cc2b;border:1px solid #569f09;text-align:left;float:left;}
-.box-right {width:300px;}
+.box { padding: 1em; background:#98cc2b;border:1px solid #569f09;text-align:left;float:left;margin:5px;}
+.box-right{border:0px;width:300px;}
+.box-thumbnail{border:0px;padding:2px;}
 
 .copyright {clear:both;padding:0;text-align:center;font-size:0.7em;color:#557d10;}
 

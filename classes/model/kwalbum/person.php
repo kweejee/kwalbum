@@ -164,7 +164,7 @@ class Model_Kwalbum_Person extends Kwalbum_Model
 			$result = DB::query(Database::SELECT,
 				"SELECT name
 				FROM kwalbum_persons
-				WHERE name LIKE :partName $query AND count >= :min_count
+				WHERE name LIKE :partName AND count >= :min_count $query
 				ORDER BY $order
 				LIMIT :limit")
 				->param(':partName', $partName)
@@ -190,7 +190,7 @@ class Model_Kwalbum_Person extends Kwalbum_Model
 				$result = DB::query(Database::SELECT,
 					"SELECT name
 					FROM kwalbum_persons
-					WHERE name LIKE :partName $query AND count >= :min_count"
+					WHERE name LIKE :partName AND count >= :min_count $query"
 					." ORDER BY $order
 					LIMIT :limit")
 					->param(':partName', $partName)
