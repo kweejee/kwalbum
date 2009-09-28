@@ -59,6 +59,39 @@ class Controller_Ajax extends Controller_Kwalbum
 		echo $item->description;
 	}
 
+	function action_GetVisibility()
+	{
+		$item = Model :: factory('kwalbum_item')->load((int)$_GET['item']);
+		$this->_testPermission($item);
+		$vis = array('Public', 'Members Only', 'Privileged Only');
+		if ($this->user->is_admin)
+			$vis[] = 'Admin Only';
+		$vis['selected'] = $item->hide_level;
+		echo json_encode($vis);
+	}
+
+	function action_SetVisibility()
+	{
+		$item = Model :: factory('kwalbum_item')->load((int)$_POST['item']);
+		$this->_testPermission($item);
+        $visibility = (int) (@ $_POST['value']);
+//        if ($visibility < 0)
+//        {
+//            $visibility = 0;
+//        } else
+//            if ($visibility > 2)
+//            {
+//                if ($this->user->is_admin)
+//                    $visibility = 3;
+//                else
+//                    $visibility = 2;
+//            }
+        $item->hide_level = $visibility;
+		$item->save();
+		$vis = array('Public', 'Members Only', 'Privileged Only', 'Admin Only');
+		echo $vis[$item->hide_level];
+	}
+
 	function action_GetInputTags()
 	{
 		$this->_getInputList('Model_Kwalbum_Tag::getNameArray');

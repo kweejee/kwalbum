@@ -13,8 +13,9 @@
 echo 'item '.$item_index.' of '.$total_items;
 echo ' - ';
 echo html::anchor($kwalbum_url.'/'
-	.$kwalbum_url_params
-	.($page_number > 1 ? 'page/'.$page_number.'/' : null),
+	.($kwalbum_url_params ? $kwalbum_url_params : null)
+	.($page_number > 1 ? 'page/'.$page_number.'/' : null)
+	.(($kwalbum_url_params or $page_number > 1) ? null : '~browse/'),
 	'back to browsing');
 ?>
 <div class="box">
@@ -50,6 +51,7 @@ echo html::anchor($kwalbum_url.'/'
 <div class="box box-right">
 	<?php
 		echo "<strong>Item #</strong><span id='item_id'>$item->id</span>";
+
 		echo '<br/><strong id="location_label">Location:</strong> ';
 		echo '<span id="location">'.$item->location.'</span>';
 
@@ -70,6 +72,10 @@ echo html::anchor($kwalbum_url.'/'
 		$persons = $item->persons;
 		echo implode(',', $persons);
 		echo '</span>';
+
+		$vis = array('Public', 'Members Only', 'Privileged Only', 'Admin Only');
+		echo '<br/><strong id="visibility_label">Visibility:</strong> ';
+		echo '<span id="visibility">'.$vis[$item->hide_level].'</span>';
 
 	echo html::style('kwalbum/media/ajax/jqueryautocomplete/jquery.autocomplete.min.css')
 		.html::script('kwalbum/media/ajax/jqueryautocomplete/jquery.autocomplete.pack.js')

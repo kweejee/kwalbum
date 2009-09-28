@@ -60,6 +60,10 @@ class Controller_User extends Controller_Kwalbum
 
 	function action_logout()
 	{
+		/* Cookie and session clearing is done in Model_Kwalbum_User, mostly
+		 * in_clear_cookies(). This is so that all session checking and clearing
+		 * can be taken care of in one place as the user is being loaded.
+		 */
 		$this->template->content = new View('kwalbum/user/logout');
 		$this->template->title = 'Logged Out';
 	}

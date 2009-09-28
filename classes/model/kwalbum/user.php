@@ -194,6 +194,7 @@ class Model_Kwalbum_User extends Kwalbum_Model
 	{
 		session_start();
 		unset($_SESSION['kwalbum_id']);
+		unset($_SESSION['kwalbum_edit']);
 		setcookie('kwalbum', '', time() - 36000, '/');
 		session_write_close();
 	}

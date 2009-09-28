@@ -13,8 +13,9 @@
 echo 'item '.$item_index.' of '.$total_items;
 echo ' - ';
 echo html::anchor($kwalbum_url.'/'
-	.$kwalbum_url_params
-	.($page_number > 1 ? 'page/'.$page_number.'/' : null),
+	.($kwalbum_url_params ? $kwalbum_url_params : null)
+	.($page_number > 1 ? 'page/'.$page_number.'/' : null)
+	.(($kwalbum_url_params or $page_number > 1) ? null : '~browse/'),
 	'back to browsing');
 ?>
 <div class="box">
