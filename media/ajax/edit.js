@@ -51,6 +51,26 @@ $(document).ready(function(){
 		submitdata:{item:$('#item_id').text()},
 		autocomplete: {data: 'KWALBUM_URL/~ajax/GetInputPersons'}
 	});
+	$('#date_label').click(function(){$('#date').click();});
+	$('#date').editable('KWALBUM_URL/~ajax/SetDate',
+	{
+		type:"text",
+		tooltip:"Click to edit...",
+		indicator:"Saving...",
+		onblur:"submit",
+		width:150, 
+		submitdata:{item:$('#item_id').text()},
+	});
+	$('#sortdate_label').click(function(){$('#sortdate').click();});
+	$('#sortdate').editable('KWALBUM_URL/~ajax/SetSortDate',
+	{
+		type:"text",
+		tooltip:"Click to edit...",
+		indicator:"Saving...",
+		onblur:"submit",
+		width:150, 
+		submitdata:{item:$('#item_id').text()},
+	});
 	$('#visibility_label').click(function(){$('#visibility').click();});
 	$('#visibility').editable('KWALBUM_URL/~ajax/SetVisibility',
 	{

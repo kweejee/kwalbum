@@ -43,6 +43,33 @@ class Controller_Ajax extends Controller_Kwalbum
 		echo $item->location;
 	}
 
+	function action_SetDate()
+	{
+		$item = Model :: factory('kwalbum_item')->load((int)$_POST['item']);
+		$this->_testPermission($item);
+		$date = Kwalbum_Helper :: replaceBadDate($_POST['value']);
+		if ($date != '0000-00-00 00:00:00')
+		{
+			if ($item->visible_date == $item->sort_date)
+				$item->sort_date = $date;
+			$item->visible_date = $date;
+			$item->save();
+		}
+		echo $item->visible_date;
+	}
+
+	function action_SetSortDate()
+	{
+		$item = Model :: factory('kwalbum_item')->load((int)$_POST['item']);
+		$this->_testPermission($item);
+		$date = Kwalbum_Helper :: replaceBadDate($_POST['value']);
+		if ($date != '0000-00-00 00:00:00')
+		{
+			$item->sort_date = $date;
+			$item->save();
+		}
+		echo $item->sort_date;
+	}
 	function action_GetRawDescription()
 	{
 		$item = Model :: factory('kwalbum_item')->load((int)$_GET['item']);

@@ -77,6 +77,9 @@ echo html::anchor($kwalbum_url.'/'
 		echo '<br/><strong id="visibility_label">Visibility:</strong> ';
 		echo '<span id="visibility">'.$vis[$item->hide_level].'</span>';
 
+		echo '<br/><strong id="sortdate_label">Sorting Datetime:</strong> ';
+		echo '<span id="sortdate">'.$item->sort_date.'</span>';
+
 	echo html::style('kwalbum/media/ajax/jqueryautocomplete/jquery.autocomplete.min.css')
 		.html::script('kwalbum/media/ajax/jqueryautocomplete/jquery.autocomplete.pack.js')
 		.html::script('kwalbum/media/ajax/jquery.jeditable.mini.js')
