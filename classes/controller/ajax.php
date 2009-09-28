@@ -161,7 +161,7 @@ class Controller_Ajax extends Controller_Kwalbum
 			else
 			{
 				$this->request->status = 400;
-				Kohana::$log->add('~ajax/upload', 'ItemAdder failed to save the new item');
+				Kohana::$log->add('~ajax/upload', 'ItemAdder failed to save_upload item');
 				return;
 			}
 		}

@@ -117,5 +117,34 @@ class Controller_User extends Controller_Kwalbum
 
 		$content = new View('kwalbum/user/write');
 		$content->user_is_admin = $user->is_admin;
+		$content->location = $this->location;
+		$content->tags = 'news,'.implode(',', $this->tags);
+		$content->date = $date;
+
+		if (isset($_POST['act']))
+		{
+			$adder = new Kwalbum_ItemAdder($this->user);
+			if ($id = $adder->save_write())
+			{
+				$content->message = "There has been success in saving your words!<br/><a href='$this->url/~$id'>Go read them now to make sure they are correct.</a>";
+			}
+			else
+			{
+				Kohana::$log->add('~user/write', 'ItemAdder failed to save_write item');
+				$content->message = 'Your words were not saved.  Try again or report the error and save your message somewhere else for now.';
+				$content->location = $_POST['loc'];
+				$content->tags = $_POST['tags'];
+				$content->date = $_POST['date'];
+				$content->description = $_POST['description'];
+			}
+		}
+
+		$template = $this->template;
+		$template->content = $content;
+		$template->title = 'Write';
+		$template->head .= html::style('kwalbum/media/ajax/jqueryautocomplete/jquery.autocomplete.min.css')
+			.html::script('kwalbum/media/ajax/jqueryautocomplete/jquery.autocomplete.pack.js')
+			.html::script('kwalbum/media/ajax/write.js')
+		;
 	}
 }

@@ -26,19 +26,7 @@ class Kwalbum_ItemAdder
         $item = Model :: factory('kwalbum_item');
         $item->user_id = $user->id;
 
-        $visibility = (int) (@ $_POST['vis']);
-        if ($visibility < 0)
-        {
-            $visibility = 0;
-        } else
-            if ($visibility > 2)
-            {
-                if ($user->is_admin)
-                    $visibility = 3;
-                else
-                    $visibility = 2;
-            }
-        $item->hide_level = $visibility;
+        $item->hide_level = Kwalbum_ItemAdder :: get_visibility($user);
 
         $item->location = trim(Security :: xss_clean(@ $_POST['loc']));
 
@@ -61,6 +49,8 @@ class Kwalbum_ItemAdder
      * based on the extension, move the file into the necessary directory,
      * create thumbnail and resized versions if necessary, then insert into the
      * database if there have not been any errors.
+     *
+     * Return the id of the new item if successful
      * @since 3.0
      */
     private function save()
@@ -117,7 +107,7 @@ class Kwalbum_ItemAdder
 		}
 
         $item->save();
-        return true;
+        return $item->id;
     }
 
 	/**
@@ -147,6 +137,22 @@ class Kwalbum_ItemAdder
 
         if ( ! Upload :: save($_FILES['Filedata'], $item->filename, $item->path))
 	        throw new Kohana_Exception('upload could not be saved');
+
+        return $this->save();
+    }
+
+	/**
+	 * Create description and save
+	 * @since 3.0
+	 */
+    public function save_write()
+    {
+        $item = $this->_item;
+
+        $item->description = Security :: xss_clean(trim($_POST['description']));
+        if (empty($item->description))
+        	return false;
+		$item->type = Model_Kwalbum_Item :: $types[255];
 
         return $this->save();
     }
@@ -339,6 +345,24 @@ class Kwalbum_ItemAdder
 		$image->resize(null, 112);
 		if ( ! $image->save($path.'t/'.$filename, 80))
 	        throw new Kohana_Exception('Could not resize image to "thumbnail" version');
+    }
+
+    static public function get_visibility($user)
+    {
+
+        $visibility = (int) (@ $_POST['vis']);
+        if ($visibility < 0)
+        {
+            $visibility = 0;
+        } else
+            if ($visibility > 2)
+            {
+                if ($user->is_admin)
+                    $visibility = 3;
+                else
+                    $visibility = 2;
+            }
+        return $visibility;
     }
 }
 ?>

@@ -10,7 +10,7 @@
  */
 ?>
 <div class="box">
-<form action="<?php echo URL ?>~user/upload" method="post" enctype="multipart/form-data" autocomplete="off">
+<form action="<?php echo $kwalbum_url.'/'.$kwalbum_url_params ?>~user/upload" method="post" enctype="multipart/form-data" autocomplete="off">
 <input type='hidden' name='overLimit' value='no'/>
 	<p>
 		<table>
@@ -32,7 +32,7 @@
 			<label>Tags:</label>
 			<input type="text" class="text" name="tags" id="tags" value="<?php echo $tags?>" size="20" />
 		</td>
-		<td>Date if not found on picture: <input type="text" class="text" name="date" id="date" value="<?php echo $date ?>" size="8" /></td>
+		<td>Date if not found on picture: <input type="text" class="text" name="date" id="date" value="<?php echo $date ?>" size="15" /></td>
 	</tr></table>
 	</p>
 	<p>
