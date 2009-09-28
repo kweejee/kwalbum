@@ -13,8 +13,19 @@
 
 class Controller_Item extends Controller_Kwalbum
 {
+	function before()
+	{
+		$this->auto_render = false;
+		parent::before();
+		if ($this->request->action != 'index' and $this->item->hide_level > $this->user->permission_level)
+		{
+			$this->request->action = 'hidden';
+		}
+	}
+
 	function action_index()
 	{
+		$this->auto_render = true;
 		if ($this->in_edit_mode)
 		{
 			$view = new View('kwalbum/item/single.edit');
@@ -28,9 +39,13 @@ class Controller_Item extends Controller_Kwalbum
 		//$this->template->title = 'single item';
 	}
 
+	function action_hidden()
+	{
+		$this->_send_file($this->item->path.$this->item->filename);
+	}
+
 	function action_thumbnail()
 	{
-		$this->auto_render = false;
 		$this->_send_file($this->item->path.'t/'.$this->item->filename, '_thumbnail');
 	}
 
@@ -41,38 +56,34 @@ class Controller_Item extends Controller_Kwalbum
 
 	function action_resized()
 	{
-		$this->auto_render = false;
 		$this->_send_file($this->item->path.'r/'.$this->item->filename, '_resized');
 	}
 
 	function action_original()
 	{
-		$this->auto_render = false;
 		$this->_send_file($this->item->path.$this->item->filename);
 	}
 
 	function action_download()
 	{
-		$this->auto_render = false;
 		$this->_send_file($this->item->path.$this->item->filename, '', true);
 	}
 
-	private function _send_file($filepath, $filename_addition = '', $download = false)
+	private function _send_file($filepathname, $filename_addition = '', $download = false)
 	{
 		$request = $this->request;
 
-		// Get the complete file path
-		$filepath = realpath($filepath);
+		if ( ! $filepath = realpath($filepathname))
+		{
+			// Return a 404 status
+			$request->status = 404;
+			Kohana::$log->add('~item/_send_file', '404: '.$filepathname);
+			return;
+		}
 
 		// Use the file name as the download file name
 		$filename = pathinfo($filepath, PATHINFO_FILENAME);
 
-		if ( ! is_file($filepath))
-		{
-			// Return a 404 status
-			$this->request->status = 404;
-			return;
-		}
 
 		// Get the file size
 		$size = filesize($filepath);

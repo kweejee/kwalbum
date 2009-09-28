@@ -8,8 +8,11 @@
  * @package kwalbum
  * @since Sep 1, 2009
  */
-
-if ($item->type == 'jpeg' or $item->type == 'gif' or $item->type == 'png')
+if ( ! $user->can_view_item($item))
+{
+	echo "<img src='$kwalbum_url/~$item->id/~item/resized' title='$item->filename'/>";
+}
+else if ($item->type == 'jpeg' or $item->type == 'gif' or $item->type == 'png')
 {
 	echo html::anchor($kwalbum_url.'/~'.$item->id.'/~item/original',
 		"<img src='$kwalbum_url/~$item->id/~item/resized' title='$item->filename'/>")
@@ -17,5 +20,5 @@ if ($item->type == 'jpeg' or $item->type == 'gif' or $item->type == 'png')
 }
 else if ($item->type == 'description only')
 {
-	echo $item->description;
+	echo "<div id='large_description'>$item->description</div>";
 }

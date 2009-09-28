@@ -20,9 +20,58 @@ echo html::anchor($kwalbum_url.'/'
 ?>
 <div class="box">
 	<?php
-		$resizedview = new View('kwalbum/item/resized');
-		$resizedview->item = $item;
-		echo $resizedview->render();
+		if ($item->type != 'description only')
+		{
+			$resizedview = new View('kwalbum/item/resized');
+			$resizedview->item = $item;
+			echo $resizedview->render();
+		}
+		else
+			echo "<div id='large_description'>$item->description</div>";
+	?>
+</div>
+
+<div class="box-right">
+<div class="box box-right">
+	<?php
+		echo "<strong>Item #</strong><span id='item_id'>$item->id</span>";
+
+		echo '<br/><strong id="location_label">Location:</strong> ';
+		echo '<span id="location">'.$item->location.'</span>';
+
+		echo '<br/><strong id="date_label">Date &amp; Time:</strong> ';
+		echo '<span id="date">'.$item->visible_date.'</span>';
+
+		if ($item->type != 'description only')
+			echo "<br/><strong id='description_label'>Description:</strong>
+				<div id='description'>$item->description</div>";
+		else
+			echo "<br/>";
+
+		echo '<strong id="tags_label">Tags:</strong> ';
+		echo '<span id="tags">';
+		$tags = $item->tags;
+		echo implode(',', $tags);
+		echo '</span>';
+
+		echo '<br/><strong id="persons_label">People:</strong> ';
+		echo '<span id="persons">';
+		$persons = $item->persons;
+		echo implode(',', $persons);
+		echo '</span>';
+
+		$vis = array('Public', 'Members Only', 'Privileged Only', 'Contributors Only', '', 'Admin Only');
+		echo '<br/><strong id="visibility_label">Visibility:</strong> ';
+		echo '<span id="visibility">'.$vis[$item->hide_level].'</span>';
+
+		echo '<br/><strong id="sortdate_label">Sorting Datetime:</strong> ';
+		echo '<span id="sortdate">'.$item->sort_date.'</span>';
+
+	echo html::style('kwalbum/media/ajax/jqueryautocomplete/jquery.autocomplete.min.css')
+		.html::script('kwalbum/media/ajax/jqueryautocomplete/jquery.autocomplete.pack.js')
+		.html::script('kwalbum/media/ajax/jquery.jeditable.mini.js')
+		.html::script('kwalbum/media/ajax/edit.js');
+
 	?>
 </div>
 
@@ -47,43 +96,4 @@ echo html::anchor($kwalbum_url.'/'
 	?>
 	</div>
 </div>
-
-<div class="box box-right">
-	<?php
-		echo "<strong>Item #</strong><span id='item_id'>$item->id</span>";
-
-		echo '<br/><strong id="location_label">Location:</strong> ';
-		echo '<span id="location">'.$item->location.'</span>';
-
-		echo '<br/><strong id="date_label">Date &amp; Time:</strong> ';
-		echo '<span id="date">'.$item->visible_date.'</span>';
-
-		echo "<br/><strong id='description_label'>Description:</strong>
-			<div id='description'>$item->description</div>";
-
-		echo '<strong id="tags_label">Tags:</strong> ';
-		echo '<span id="tags">';
-		$tags = $item->tags;
-		echo implode(',', $tags);
-		echo '</span>';
-
-		echo '<br/><strong id="persons_label">People:</strong> ';
-		echo '<span id="persons">';
-		$persons = $item->persons;
-		echo implode(',', $persons);
-		echo '</span>';
-
-		$vis = array('Public', 'Members Only', 'Privileged Only', 'Admin Only');
-		echo '<br/><strong id="visibility_label">Visibility:</strong> ';
-		echo '<span id="visibility">'.$vis[$item->hide_level].'</span>';
-
-		echo '<br/><strong id="sortdate_label">Sorting Datetime:</strong> ';
-		echo '<span id="sortdate">'.$item->sort_date.'</span>';
-
-	echo html::style('kwalbum/media/ajax/jqueryautocomplete/jquery.autocomplete.min.css')
-		.html::script('kwalbum/media/ajax/jqueryautocomplete/jquery.autocomplete.pack.js')
-		.html::script('kwalbum/media/ajax/jquery.jeditable.mini.js')
-		.html::script('kwalbum/media/ajax/edit.js');
-
-	?>
 </div>

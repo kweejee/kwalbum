@@ -149,6 +149,21 @@ class Model_Kwalbum_User extends Kwalbum_Model
 		return false;
 	}
 
+	/**
+	 * Check if a user can see an item
+	 *
+	 * @param kwalbum_item object of item to check about editing
+	 * @return true/false if user can view the item
+	 */
+	public function can_view_item($item = null)
+	{
+		// User can view any at the same level or lower
+		if ($this->permission_level >= $item->hide_level)
+			return true;
+
+		return false;
+	}
+
 	public function password_equals($password_to_check)
 	{
 		return (sha1($password_to_check) === $this->_password);

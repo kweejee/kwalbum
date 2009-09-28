@@ -34,6 +34,7 @@ if (count($items) == 0)
 
 foreach ($items as $item)
 {
+	$item->hide_if_needed($user);
 	$thumbview = new View('kwalbum/item/thumbnail');
 	$thumbview->item = $item;
 	echo $thumbview->render();

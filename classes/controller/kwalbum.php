@@ -1,5 +1,5 @@
 <?php defined('SYSPATH') OR die('No direct access allowed.');
-/**
+/**set_global
  *
  *
  * @author Tim Redmond <kweejee@tummycaching.com>
@@ -36,8 +36,6 @@ class Controller_Kwalbum extends Controller_Template
 			$this->location = Security::xss_clean($_GET['location']);
 			Model_Kwalbum_Item::append_where('location', $this->location);
 		}
-		$this->template->set_global('location', $this->location);
-
 
 		// date
 		$year = (int)$this->request->param('year');
@@ -54,7 +52,6 @@ class Controller_Kwalbum extends Controller_Template
 			$this->date = ((int)@$date[0] ? abs($date[0]) : '0000').'-'.((int)@$date[1] ? abs($date[1]) : '00').'-'.((int)@$date[2] ? abs($date[2]) : '00');
 			Model_Kwalbum_Item::append_where('date', $this->date);
 		}
-		$this->template->set_global('date', $this->date);
 
 		// tags
 		$this->tags = explode(',', Security::xss_clean($this->request->param('tags')));
@@ -69,7 +66,6 @@ class Controller_Kwalbum extends Controller_Template
 		}
 		else
 			$this->tags = null;
-		$this->template->set_global('tags', $this->tags);
 
 		// people names
 		$this->people = explode(',', Security::xss_clean($this->request->param('people')));
@@ -84,7 +80,6 @@ class Controller_Kwalbum extends Controller_Template
 		}
 		else
 			$this->people = null;
-		$this->template->set_global('people', $this->people);
 
 		// item id
 		if (0 < $this->request->param('id'))
@@ -95,8 +90,6 @@ class Controller_Kwalbum extends Controller_Template
 		// Set up user if logged in
 		$this->user = Model::factory('kwalbum_user')->load_from_cookie($this->request->action);
 
-		$this->template->set_global('user', $this->user);
-		$this->template->set_global('kwalbum_url', $this->url);
 		$this->params =
 			($year ? $year.'/' : null)
 			.($month ? $month.'/' : null)
@@ -106,7 +99,6 @@ class Controller_Kwalbum extends Controller_Template
 			.($_GET['tags'] ? 'tags/'.$_GET['tags'].'/' : null)
 			.($this->request->param('people') ? 'people/'.$this->request->param('people').'/' : null)
 			.($_GET['people'] ? 'people/'.$_GET['people'].'/' : null);
-		$this->template->set_global('kwalbum_url_params', $this->params);
 
 		if ($this->request->action != 'media' and $this->request->controller != 'install')
 		{
@@ -120,16 +112,29 @@ class Controller_Kwalbum extends Controller_Template
 				$page_number = 1;
 				if ($this->item)
 				{
+					$this->item->hide_if_needed($this->user);
 					$this->item_index = Model_Kwalbum_Item::get_index($this->item->id, $this->item->sort_date);
 					$page_number = Model_Kwalbum_Item::get_page_number($this->item_index);
 					$this->next_item = Model_Kwalbum_Item::get_next_item($this->item->id, $this->item->sort_date);
-					$this->template->set_global('next_item', $this->next_item);
+					$this->next_item->hide_if_needed($this->user);
 					$this->previous_item = Model_Kwalbum_Item::get_previous_item($this->item->id, $this->item->sort_date);
+					$this->previous_item->hide_if_needed($this->user);
+
+					$this->template->set_global('item', $this->item);
 					$this->template->set_global('previous_item', $this->previous_item);
+					$this->template->set_global('next_item', $this->next_item);
 				}
 			}
 
 			$this->page_number = $page_number;
+
+			$this->template->set_global('location', $this->location);
+			$this->template->set_global('date', $this->date);
+			$this->template->set_global('tags', $this->tags);
+			$this->template->set_global('people', $this->people);
+			$this->template->set_global('user', $this->user);
+			$this->template->set_global('kwalbum_url_params', $this->params);
+
 			$this->template->set_global('total_items', $this->total_items);
 			$this->template->set_global('total_pages', $this->total_pages);
 			$this->template->set_global('item_index', $this->item_index);
@@ -139,6 +144,7 @@ class Controller_Kwalbum extends Controller_Template
 			$this->template->set_global('in_edit_mode', $this->in_edit_mode);
 			$this->template->set_global('head', html::script('kwalbum/media/ajax/toggle.edit.js'));
 		}
+		$this->template->set_global('kwalbum_url', $this->url);
 	}
 
 	public function action_media($file)

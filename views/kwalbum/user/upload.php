@@ -20,7 +20,8 @@
 			<option value='0'>Public</option>
 			<option value='1'>Members Only</option>
 			<option value='2'>Privileged Only</option>
-			<?php echo ($user->is_admin ? "<option value='3'>Admin Only</option>" : null) ?></select>
+			<option value='3'>Contributors Only</option>
+			<?php echo ($user->is_admin ? "<option value='5'>Admin Only</option>" : null) ?></select>
 		</td>
 		</tr>
 		<tr>

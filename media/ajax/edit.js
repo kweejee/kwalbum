@@ -26,8 +26,19 @@ $(document).ready(function(){
 		indicator:"Saving...",
 		submit:'Save',
 		onblur:"submit",
-		cols:30,
-		rows:15, 
+		cols:35,
+		rows:20, 
+		submitdata:{item:$('#item_id').text()},
+	});
+	$('#large_description').editable( 'KWALBUM_URL/~ajax/SetDescription',{
+		loadurl:'KWALBUM_URL/~ajax/GetRawDescription?item='+$('#item_id').text(),
+		type:"textarea",
+		tooltip:"Click to edit...",
+		indicator:"Saving...",
+		submit:'Save',
+		onblur:"submit",
+		cols:60,
+		rows:20, 
 		submitdata:{item:$('#item_id').text()},
 	});
 	$('#tags_label').click(function(){$('#tags').click();});

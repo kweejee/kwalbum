@@ -489,7 +489,10 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 
 			if (0 == $month)
 			{
-				$pretty_date = $year;
+				if ((int)$year)
+					$pretty_date = $year;
+				else
+					$pretty_date = '';
 			}
 			else if (0 == $day)
 			{
@@ -614,12 +617,31 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 			= $this->_external_id = 0;
 		$this->description = $this->visible_date = $this->sort_date = $this->update_date
 			= $this->create_date = $this->path = $this->filename = '';
-		$this->_tags = $this->_persons = $this->_comments = $this->_location = $this->_user_name
+		$this->_tags = $this->_persons = $this->_comments = array();
+		$this->_location = $this->_user_name
 			= $this->_original_location = $this->_original_user_id
 			= $this->_external_site = null;
 		$this->type = Model_Kwalbum_Item::$types[0];
 		$this->has_comments = $this->is_external
 			= $this->loaded = $this->_external_site_is_changed = false;
+	}
+
+	function hide_if_needed($user)
+	{
+		if ( ! $user->can_view_item($this))
+		{
+			$id = $this->id;
+			$sort_date = $this->sort_date;
+			$this->clear();
+			$this->id = $id;
+			$this->sort_date = $sort_date;
+			$this->type = Model_Kwalbum_Item :: $types[3];
+			$this->path = MODPATH.'kwalbum/media/';
+			$this->filename = 'no.png';
+			$this->hide_level = 100;
+			$this->location = 'hidden';
+			$this->visible_date = '0000-00-00 00:00:00';
+		}
 	}
 
 	private function _delete_person_relations($id = null)
