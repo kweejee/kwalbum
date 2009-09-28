@@ -8,8 +8,7 @@ $(document).ready(function(){
 				autoFill:true});
 		}
 	});
-  
-  	$('#location_label').click(function(){$('#location').click();});
+	$('#location_label').click(function(){$('#location').click();});
 	$('#location').editable( 'KWALBUM_URL/~ajax/SetLocation',{
 		type:"autocomplete",
 		tooltip:"Click to edit...",
@@ -19,8 +18,7 @@ $(document).ready(function(){
 		submitdata:{item:$('#item_id').text()},
 		autocomplete: {data: 'KWALBUM_URL/~ajax/GetInputLocations'}
 	});
-	
-  	$('#description_label').click(function(){$('#description').click();});
+	$('#description_label').click(function(){$('#description').click();});
 	$('#description').editable( 'KWALBUM_URL/~ajax/SetDescription',{
 		loadurl:'KWALBUM_URL/~ajax/GetRawDescription?item='+$('#item_id').text(),
 		type:"textarea",
@@ -30,10 +28,9 @@ $(document).ready(function(){
 		onblur:"submit",
 		cols:30,
 		rows:15, 
- submitdata:{item:$('#item_id').text()},
+		submitdata:{item:$('#item_id').text()},
 	});
-	
-  	$('#tags_label').click(function(){$('#tags').click();});
+	$('#tags_label').click(function(){$('#tags').click();});
 	$('#tags').editable( 'KWALBUM_URL/~ajax/SetTags',{
 		type:"autocomplete",
 		tooltip:"Click to edit...",
@@ -43,7 +40,6 @@ $(document).ready(function(){
 		submitdata:{item:$('#item_id').text()},
 		autocomplete: {data: 'KWALBUM_URL/~ajax/GetInputTags'}
 	});
-	
 	$('#persons_label').click(function(){$('#persons').click();});
 	$('#persons').editable('KWALBUM_URL/~ajax/SetPersons',
 	{
@@ -55,7 +51,6 @@ $(document).ready(function(){
 		submitdata:{item:$('#item_id').text()},
 		autocomplete: {data: 'KWALBUM_URL/~ajax/GetInputPersons'}
 	});
-	
 	$('#visibility_label').click(function(){$('#visibility').click();});
 	$('#visibility').editable('KWALBUM_URL/~ajax/SetVisibility',
 	{

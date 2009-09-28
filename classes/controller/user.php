@@ -80,7 +80,7 @@ class Controller_User extends Controller_Kwalbum
 		$url = $this->url;
 
 		if (!$date = $this->date)
-			$date = date('Y-m-d');
+			$date = date('Y-m-d H:i');
 
 		$content = new View('kwalbum/user/upload');
 		$content->user_is_admin = $user->is_admin;
@@ -99,5 +99,23 @@ class Controller_User extends Controller_Kwalbum
 			.html::script('kwalbum/media/ajax/uploadify/jquery.uploadify.v2.1.0.min.js')
 			.html::script('kwalbum/media/ajax/upload.js')
 		;
+	}
+
+	function action_write()
+	{
+		$user = $this->user;
+		if ( ! $user->can_add)
+		{
+			$this->template->content = new View('kwalbum/invalidpermission');
+			return;
+		}
+
+		$url = $this->url;
+
+		if (!$date = $this->date)
+			$date = date('Y-m-d H:i');
+
+		$content = new View('kwalbum/user/write');
+		$content->user_is_admin = $user->is_admin;
 	}
 }

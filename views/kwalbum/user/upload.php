@@ -45,7 +45,7 @@
 		. Files larger than <?php echo (ini_get('memory_limit') / 10); ?>M may not upload correctly.</small><br/>
 
 		<input type="file" name="fileInput" id="fileInput" />
-		<a href="javascript:kwalbumUpload();">Upload Files</a> | <a href="javascript:$('#fileInput').uploadifyClearQueue();">Clear Queue</a>
+		<a href="javascript:kwalbumUpload();">Upload Files</a> | <a href="javascript:$('#fileInput').uploadifyClearQueue();">Clear Queue</a> | <a href="<?php echo $kwalbum_url ?>/~user/write">Ignore Queue and Write Text Item</a>
 	</p>
 </form>
 </div>
