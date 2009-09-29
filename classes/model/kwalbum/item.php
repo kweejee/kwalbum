@@ -596,7 +596,8 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 				{
 					$this->_comments = $this->comments;
 				}
-				$this->_comments[] = (string)$value;
+				if ($value instanceof Model_Kwalbum_Comment)
+					$this->_comments[] = $value;
 			}
 		}
 		else if ($key == 'external_site' or $key == 'external_id')
