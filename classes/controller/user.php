@@ -50,7 +50,11 @@ class Controller_User extends Controller_Kwalbum
 			}
 			else
 			{
-				$this->clear_cookies();
+				session_start();
+				unset($_SESSION['kwalbum_id']);
+				unset($_SESSION['kwalbum_edit']);
+				setcookie('kwalbum', '', time() - 36000, '/');
+				session_write_close();
 				$this->template->content->error = '<p class="error">You\'re login name or password was wrong.</p>';
 			}
 		}
@@ -85,7 +89,8 @@ class Controller_User extends Controller_Kwalbum
 		$content = new View('kwalbum/user/upload');
 		$content->user_is_admin = $user->is_admin;
 		$content->location = $this->location;
-		$content->tags = implode(',', $this->tags);
+		if (isset($this->tags))
+			$content->tags = implode(',', $this->tags);
 		$content->date = $date;
 
 		$template = $this->template;
@@ -118,7 +123,9 @@ class Controller_User extends Controller_Kwalbum
 		$content = new View('kwalbum/user/write');
 		$content->user_is_admin = $user->is_admin;
 		$content->location = $this->location;
-		$content->tags = 'news,'.implode(',', $this->tags);
+		$content->tags = 'news,';
+		if (isset($this->tags))
+			$content->tags .= implode(',', $this->tags);
 		$content->date = $date;
 
 		if (isset($_POST['act']))

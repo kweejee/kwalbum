@@ -109,7 +109,7 @@ class Controller_Install extends Controller_Kwalbum
 					$location = Model::factory('kwalbum_location');
 					$location->name = 'Unknown Location';
 					$location->save();
-					$this->template->content = new View('install/2');
+					$this->template->content = new View('kwalbum/install/2');
 					return;
 				}
 				catch (Exception $e)
@@ -144,29 +144,17 @@ class Controller_Install extends Controller_Kwalbum
 	 */
 	private function _drop_tables()
 	{
-		$db = Database::instance();
-
 		// Drop order is arranged based on foreign key restraints.
-		$sql = 'DROP TABLE IF EXISTS `kwalbum_comments`';
-		$db->query(null, $sql);
-		$sql = 'DROP TABLE IF EXISTS `kwalbum_items_tags`';
-		$db->query(null, $sql);
-		$sql = 'DROP TABLE IF EXISTS `kwalbum_items_persons`';
-		$db->query(null, $sql);
-		$sql = 'DROP TABLE IF EXISTS `kwalbum_items_sites`';
-		$db->query(null, $sql);
-		$sql = 'DROP TABLE IF EXISTS `kwalbum_tags`';
-		$db->query(null, $sql);
-		$sql = 'DROP TABLE IF EXISTS `kwalbum_persons`';
-		$db->query(null, $sql);
-		$sql = 'DROP TABLE IF EXISTS `kwalbum_sites`';
-		$db->query(null, $sql);
-		$sql = 'DROP TABLE IF EXISTS `kwalbum_items`';
-		$db->query(null, $sql);
-		$sql = 'DROP TABLE IF EXISTS `kwalbum_users`';
-		$db->query(null, $sql);
-		$sql = 'DROP TABLE IF EXISTS `kwalbum_locations`';
-		$db->query(null, $sql);
+		DB::query('', 'DROP TABLE IF EXISTS `kwalbum_comments`')->execute();
+		DB::query('', 'DROP TABLE IF EXISTS `kwalbum_items_tags`')->execute();
+		DB::query('', 'DROP TABLE IF EXISTS `kwalbum_items_persons`')->execute();
+		DB::query('', 'DROP TABLE IF EXISTS `kwalbum_items_sites`')->execute();
+		DB::query('', 'DROP TABLE IF EXISTS `kwalbum_tags`')->execute();
+		DB::query('', 'DROP TABLE IF EXISTS `kwalbum_persons`')->execute();
+		DB::query('', 'DROP TABLE IF EXISTS `kwalbum_sites`')->execute();
+		DB::query('', 'DROP TABLE IF EXISTS `kwalbum_items`')->execute();
+		DB::query('', 'DROP TABLE IF EXISTS `kwalbum_users`')->execute();
+		DB::query('', 'DROP TABLE IF EXISTS `kwalbum_locations`')->execute();
 	}
 
 	/** Create new Kwalbum tables
@@ -176,10 +164,8 @@ class Controller_Install extends Controller_Kwalbum
 	 */
 	private function _create_tables()
 	{
-		$db = Database::instance();
-
 		// Users
-		$sql = 'CREATE  TABLE IF NOT EXISTS `kwalbum_users`(
+		DB::query('', 'CREATE  TABLE IF NOT EXISTS `kwalbum_users`(
 		          `id` SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT ,
 		          `name` TINYTEXT NOT NULL ,
 				  `login_name` CHAR(40) NOT NULL ,
@@ -193,11 +179,11 @@ class Controller_Install extends Controller_Kwalbum
 				  PRIMARY KEY (`id`)
 		        ) ENGINE = InnoDB
 		        DEFAULT CHARACTER SET = utf8
-		        PACK_KEYS = DEFAULT;';
-		$db->query(null, $sql);
+		        PACK_KEYS = DEFAULT;')
+			->execute();
 
 		// Locations
-		$sql = 'CREATE TABLE IF NOT EXISTS `kwalbum_locations`(
+		DB::query('', 'CREATE TABLE IF NOT EXISTS `kwalbum_locations`(
 		          `id` SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT ,
 		          `name` VARCHAR('.$this->_user['maxNameLength'].') NOT NULL ,
 		          `latitude` DECIMAL(10,7) NOT NULL DEFAULT 0,
@@ -207,11 +193,11 @@ class Controller_Install extends Controller_Kwalbum
 		          INDEX `location` (`name`(10) ASC) ,
 		          INDEX `coordinates` (`latitude` ASC, `longitude` ASC)
 		        ) ENGINE = InnoDB
-		        DEFAULT CHARACTER SET = utf8';
-		$db->query(null, $sql);
+		        DEFAULT CHARACTER SET = utf8')
+			->execute();
 
 		// Items
-		$sql = 'CREATE  TABLE IF NOT EXISTS `kwalbum_items`(
+		DB::query('', 'CREATE  TABLE IF NOT EXISTS `kwalbum_items`(
 		          `id` MEDIUMINT UNSIGNED NOT NULL AUTO_INCREMENT ,
 		          `type_id` TINYINT UNSIGNED NOT NULL ,
 		          `user_id` SMALLINT UNSIGNED NOT NULL ,
@@ -241,11 +227,11 @@ class Controller_Install extends Controller_Kwalbum
 		            FOREIGN KEY (`location_id` )
 		            REFERENCES `kwalbum_locations` (`id` )
 		        ) ENGINE = InnoDB
-		        DEFAULT CHARACTER SET = utf8';
-		$db->query(null, $sql);
+		        DEFAULT CHARACTER SET = utf8;')
+			->execute();
 
 		// Comments
-		$sql = 'CREATE  TABLE IF NOT EXISTS `kwalbum_comments`(
+		DB::query('', 'CREATE  TABLE IF NOT EXISTS `kwalbum_comments`(
 		          `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
 		          `item_id` MEDIUMINT UNSIGNED NOT NULL,
 		          `name` TINYTEXT NOT NULL,
@@ -261,22 +247,22 @@ class Controller_Install extends Controller_Kwalbum
 		            ON DELETE CASCADE
 		            ON UPDATE CASCADE
 		        ) ENGINE = InnoDB
-		        DEFAULT CHARACTER SET = utf8;';
-		$db->query(null, $sql);
+		        DEFAULT CHARACTER SET = utf8;')
+			->execute();
 
 		// Tags
-		$sql = 'CREATE  TABLE IF NOT EXISTS `kwalbum_tags`(
+		DB::query('', 'CREATE  TABLE IF NOT EXISTS `kwalbum_tags`(
 		          `id` SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT ,
 		          `name` TINYTEXT NOT NULL ,
 		          `count` SMALLINT UNSIGNED NOT NULL ,
 		          PRIMARY KEY (`id`) ,
 		          INDEX `tag` (`name`(10) ASC)
 		        ) ENGINE = InnoDB
-		        DEFAULT CHARACTER SET = utf8;';
-		$db->query(null, $sql);
+		        DEFAULT CHARACTER SET = utf8;')
+			->execute();
 
 		// Items_Tags relationship
-		$sql = 'CREATE  TABLE IF NOT EXISTS `kwalbum_items_tags`(
+		DB::query('', 'CREATE  TABLE IF NOT EXISTS `kwalbum_items_tags`(
 		          `item_id` MEDIUMINT UNSIGNED NOT NULL ,
 		          `tag_id` SMALLINT UNSIGNED NOT NULL ,
 		          INDEX `item_id` (`item_id` ASC) ,
@@ -293,22 +279,22 @@ class Controller_Install extends Controller_Kwalbum
 		            ON DELETE CASCADE
 		            ON UPDATE CASCADE
 		        ) ENGINE = InnoDB
-		        DEFAULT CHARACTER SET = utf8;';
-		$db->query(null, $sql);
+		        DEFAULT CHARACTER SET = utf8;')
+			->execute();
 
 		// Persons
-		$sql = 'CREATE  TABLE IF NOT EXISTS `kwalbum_persons`(
+		DB::query('', 'CREATE  TABLE IF NOT EXISTS `kwalbum_persons`(
 		          `id` SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT ,
 		          `name` TINYTEXT NOT NULL ,
 		          `count` SMALLINT UNSIGNED NOT NULL ,
 		          PRIMARY KEY (`id`) ,
 		          INDEX `person` (`name`(10) ASC)
 		        ) ENGINE = InnoDB
-		        DEFAULT CHARACTER SET = utf8;';
-		$db->query(null, $sql);
+		        DEFAULT CHARACTER SET = utf8;')
+			->execute();
 
 		// Items_Persons relationship
-		$sql = 'CREATE  TABLE IF NOT EXISTS `kwalbum_items_persons`(
+		DB::query('', 'CREATE  TABLE IF NOT EXISTS `kwalbum_items_persons`(
 		          `item_id` MEDIUMINT UNSIGNED NOT NULL ,
 		          `person_id` SMALLINT UNSIGNED NOT NULL ,
 		          INDEX `item_id` (`item_id` ASC) ,
@@ -325,22 +311,22 @@ class Controller_Install extends Controller_Kwalbum
 		            ON DELETE CASCADE
 		            ON UPDATE CASCADE
 		        ) ENGINE = InnoDB
-		        DEFAULT CHARACTER SET = utf8;';
-		$db->query(null, $sql);
+		        DEFAULT CHARACTER SET = utf8;')
+			->execute();
 
 		// Sites, external sites to import items from
-		$sql = 'CREATE  TABLE IF NOT EXISTS `kwalbum_sites`(
+		DB::query('', 'CREATE  TABLE IF NOT EXISTS `kwalbum_sites`(
 		          `id` TINYINT UNSIGNED NOT NULL AUTO_INCREMENT ,
 		          `url` VARCHAR(100) NOT NULL ,
 		          `site_key` VARCHAR(45) NOT NULL ,
 		          `import_dt` DATETIME NOT NULL ,
 		          PRIMARY KEY (`id`)
 		        ) ENGINE = InnoDB
-		        DEFAULT CHARACTER SET = utf8;';
-		$db->query(null, $sql);
+		        DEFAULT CHARACTER SET = utf8;')
+			->execute();
 
 		// Items_Sites relationship for imported items
-		$sql = 'CREATE  TABLE IF NOT EXISTS `kwalbum_items_sites`(
+		DB::query('', 'CREATE  TABLE IF NOT EXISTS `kwalbum_items_sites`(
 		          `item_id` MEDIUMINT UNSIGNED NOT NULL ,
 		          `site_id` TINYINT UNSIGNED NOT NULL ,
 		          `external_item_id` MEDIUMINT UNSIGNED NOT NULL ,
@@ -359,7 +345,7 @@ class Controller_Install extends Controller_Kwalbum
 		            ON DELETE RESTRICT
 		            ON UPDATE CASCADE
 		        ) ENGINE = InnoDB
-		        DEFAULT CHARACTER SET = utf8;';
-		$db->query(null, $sql);
+		        DEFAULT CHARACTER SET = utf8;')
+			->execute();
 	}
 }

@@ -81,14 +81,16 @@ class Controller_Kwalbum extends Controller_Template
 		else
 			$this->people = null;
 
+		// Set up user if logged in
+		$this->user = Model::factory('kwalbum_user')->load_from_cookie($this->request->action);
+
 		// item id
 		if (0 < $this->request->param('id'))
 		{
 			$this->item = Model::factory('kwalbum_item')->load((int)$this->request->param('id'));
+			$this->item->hide_if_needed($this->user);
+			$this->template->set_global('item', $this->item);
 		}
-
-		// Set up user if logged in
-		$this->user = Model::factory('kwalbum_user')->load_from_cookie($this->request->action);
 
 		$this->params =
 			($year ? $year.'/' : null)
@@ -110,20 +112,21 @@ class Controller_Kwalbum extends Controller_Template
 			if ($page_number < 1 or $page_number > $this->total_pages)
 			{
 				$page_number = 1;
-				if ($this->item)
-				{
-					$this->item->hide_if_needed($this->user);
-					$this->item_index = Model_Kwalbum_Item::get_index($this->item->id, $this->item->sort_date);
-					$page_number = Model_Kwalbum_Item::get_page_number($this->item_index);
-					$this->next_item = Model_Kwalbum_Item::get_next_item($this->item->id, $this->item->sort_date);
+			}
+
+			if ($this->item)
+			{
+				$this->item_index = Model_Kwalbum_Item::get_index($this->item->id, $this->item->sort_date);
+				$page_number = Model_Kwalbum_Item::get_page_number($this->item_index);
+				$this->next_item = Model_Kwalbum_Item::get_next_item($this->item->id, $this->item->sort_date);
+				if ($this->next_item->id)
 					$this->next_item->hide_if_needed($this->user);
-					$this->previous_item = Model_Kwalbum_Item::get_previous_item($this->item->id, $this->item->sort_date);
+				$this->previous_item = Model_Kwalbum_Item::get_previous_item($this->item->id, $this->item->sort_date);
+				if ($this->previous_item->id)
 					$this->previous_item->hide_if_needed($this->user);
 
-					$this->template->set_global('item', $this->item);
-					$this->template->set_global('previous_item', $this->previous_item);
-					$this->template->set_global('next_item', $this->next_item);
-				}
+				$this->template->set_global('previous_item', $this->previous_item);
+				$this->template->set_global('next_item', $this->next_item);
 			}
 
 			$this->page_number = $page_number;

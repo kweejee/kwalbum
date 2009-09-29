@@ -101,7 +101,6 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 	public function save()
 	{
 		// Set type
-
 		$types = array_flip(Model_Kwalbum_Item::$types);
 		$type_id = $types[$this->type];
 		// Set location
@@ -617,8 +616,8 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 			= $this->_external_id = 0;
 		$this->description = $this->visible_date = $this->sort_date = $this->update_date
 			= $this->create_date = $this->path = $this->filename = '';
-		$this->_tags = $this->_persons = $this->_comments = array();
-		$this->_location = $this->_user_name
+		$this->_tags = $this->_persons = $this->_comments
+			= $this->_location = $this->_user_name
 			= $this->_original_location = $this->_original_user_id
 			= $this->_external_site = null;
 		$this->type = Model_Kwalbum_Item::$types[0];
@@ -827,6 +826,26 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 					WHERE kwalbum_persons.name LIKE :tag AND kwalbum_items_persons.item_id=kwalbum_items.id)")
 					->param(':tag', $tag.'%');
 			}
+		}
+
+		else if ($name == 'type')
+		{
+			$types = array_flip(Model_Kwalbum_Item::$types);
+			$type_id = $types[$value];
+			$query = (string)DB::query(null, " type_id = :type_id")
+				->param(':type_id', $type_id);
+		}
+
+		else if ($name == 'hide_level')
+		{
+			$query = (string)DB::query(null, " hide_level = :hide_level")
+				->param(':hide_level', (int)$value);
+		}
+
+		else if ($name == 'user_id')
+		{
+			$query = (string)DB::query(null, " user_id = :user_id")
+				->param(':user_id', (int)$value);
 		}
 
 		Model_Kwalbum_Item::$_where[] = $query;

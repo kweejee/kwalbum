@@ -8,7 +8,7 @@
  * @package kwalbum
  * @since Sep 1, 2009
  */
-if ( ! $user->can_view_item($item))
+if ($item->hide_level == 100)
 {
 	echo "<img src='$kwalbum_url/~$item->id/~item/resized' title='$item->filename'/>";
 }

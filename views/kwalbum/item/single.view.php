@@ -37,7 +37,7 @@ echo html::anchor($kwalbum_url.'/'
 	<?php echo (($item->description and $item->type != 'description only') ? $item->description.'<hr/>' : null); ?>
 
 	<?php
-		if (sizeof($item->tags) > 0)
+		if (count($item->tags) > 0)
 		{
 			echo '<strong>Tags:</strong> ';
 			$comma = false;
@@ -50,7 +50,7 @@ echo html::anchor($kwalbum_url.'/'
 			}
 			echo '<br/>';
 		}
-		if (sizeof($item->persons) > 0)
+		if (count($item->persons) > 0)
 		{
 			echo '<strong>People:</strong> ';
 			$comma = false;
