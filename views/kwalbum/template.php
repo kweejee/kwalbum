@@ -51,8 +51,8 @@ if ($summary)
 	<title><?php echo htmlspecialchars(isset($title) ? $title.$config->title_separator.$config->title : $config->title) ?></title>
 
 	<?php
-		echo html::style('kwalbum/media/css/default.css');
-		echo html::script('kwalbum/media/ajax/jquery.js');
+		echo html::style($kwalbum_url.'/media/css/default.css');
+		echo html::script($kwalbum_url.'/media/ajax/jquery.js');
 		echo isset($head) ? $head : null;
 	?>
 

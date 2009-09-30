@@ -11,12 +11,13 @@
 ?>
 <div class='box'>
 <?php
-	if ($success)
+	if (isset($success))
 	{
 		echo 'You are logged in.';
 		return;
 	}
-	echo $error;
+	if (isset($error))
+		echo $error;
 ?>
 <fieldset>
 <legend>Logging In</legend>

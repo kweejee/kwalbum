@@ -19,7 +19,7 @@ Route::set('kwalbum_item', 'kwalbum/~<id>(/<year>(/<month>(/<day>)))(/<location>
 		'day' => '[0-9]{1,2}',
 		'location' => $reserved_words.'[^~]+?',
 		'tags' => '.+?',
-		'people' => '[^~]+?',
+		'people' => '.+?',
 		'page' => '[0-9]+'
 	))
 	->defaults(array(
@@ -36,7 +36,7 @@ Route::set('kwalbum_browse', 'kwalbum(/<year>(/<month>(/<day>)))(/<location>)(/t
 		'day' => '[0-9]{1,2}',
 		'location' => $reserved_words.'[^~]+?',
 		'tags' => '.+?',
-		'people' => '[^~]+?',
+		'people' => '.+?',
 		'page' => '[0-9]+'
 	))
 	->defaults(array(

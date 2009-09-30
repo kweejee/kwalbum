@@ -23,7 +23,7 @@ class Controller_Kwalbum extends Controller_Template
 	public function before()
 	{
 		$this->template = new View('kwalbum/template');
-		$this->url = Kohana::$base_url.'kwalbum';
+		$this->url = URL::base(true, 'http').'kwalbum';
 
 		// get location from URL
 		if ( $this->request->param('location'))
@@ -97,10 +97,8 @@ class Controller_Kwalbum extends Controller_Template
 			.($month ? $month.'/' : null)
 			.($day ? $day.'/' : null)
 			.($this->location ? $this->location.'/' : null)
-			.($this->request->param('tags') ? 'tags/'.$this->request->param('tags').'/' : null)
-			.($_GET['tags'] ? 'tags/'.$_GET['tags'].'/' : null)
-			.($this->request->param('people') ? 'people/'.$this->request->param('people').'/' : null)
-			.($_GET['people'] ? 'people/'.$_GET['people'].'/' : null);
+			.($this->tags ? 'tags/'.implode(',', $this->tags).'/' : null)
+			.($this->people ? 'people/'.implode(',', $this->people).'/' : null);
 
 		if ($this->request->action != 'media' and $this->request->controller != 'install')
 		{
@@ -143,9 +141,9 @@ class Controller_Kwalbum extends Controller_Template
 			$this->template->set_global('item_index', $this->item_index);
 			$this->template->set_global('page_number', $this->page_number);
 
-			$this->in_edit_mode = (bool)$_SESSION['kwalbum_edit'];
+			$this->in_edit_mode = !empty($_SESSION['kwalbum_edit']);
 			$this->template->set_global('in_edit_mode', $this->in_edit_mode);
-			$this->template->set_global('head', html::script('kwalbum/media/ajax/toggle.edit.js'));
+			$this->template->set_global('head', html::script($this->url.'/media/ajax/toggle.edit.js'));
 		}
 		$this->template->set_global('kwalbum_url', $this->url);
 	}

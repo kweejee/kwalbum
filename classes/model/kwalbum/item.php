@@ -641,6 +641,9 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 			$this->hide_level = 100;
 			$this->location = 'hidden';
 			$this->visible_date = '0000-00-00 00:00:00';
+			// Setting tags and persons to empty arrays will cause them to never be loaded
+			$this->tags = array();
+			$this->persons = array();
 		}
 	}
 

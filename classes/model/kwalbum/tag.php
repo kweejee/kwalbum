@@ -127,7 +127,7 @@ class Model_Kwalbum_Tag extends Kwalbum_Model
 	}
 
 
-	static public function getNameArray($min_count = 1, $limit = 10, $offset = 0,
+	static public function getNameArray($min_count = 1, $limit = null, $offset = 0,
 		$name = '', $order = 'name ASC', $not_included = array())
 	{
 		$name = trim($name);
@@ -165,8 +165,8 @@ class Model_Kwalbum_Tag extends Kwalbum_Model
 				"SELECT name
 				FROM kwalbum_tags
 				WHERE name LIKE :partName AND count >= :min_count $query
-				ORDER BY $order
-				LIMIT :limit")
+				ORDER BY $order"
+				.($limit ? ' LIMIT :limit' : null))
 				->param(':partName', $partName)
 					->param(':min_count', $min_count)
 				->param(':name', $name)
@@ -191,8 +191,8 @@ class Model_Kwalbum_Tag extends Kwalbum_Model
 					"SELECT name
 					FROM kwalbum_tags
 					WHERE name LIKE :partName AND count >= :min_count $query"
-					." ORDER BY $order
-					LIMIT :limit")
+					." ORDER BY $order"
+					.($limit ? ' LIMIT :limit' : null))
 					->param(':partName', $partName)
 					->param(':min_count', $min_count)
 					->param(':name', $name)

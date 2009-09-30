@@ -21,18 +21,52 @@ class Kwalbum_Helper
     public static function replaceBadDate($date)
     {
 		$new = explode(' ', $date);
-		$newDate = $new[0];
-		$newTime = $new[1];
-		$new = explode('-', $newDate);
-		$newYear = (int)$new[0];
-		$newMonth = (int)$new[1];
-		$newDay = (int)$new[2];
-		$new = explode(':', $newTime);
-		$newHour = (int)$new[0];
-		$newMinute = (int)$new[1];
-		$newSecond = (int)$new[2];
-		$newNewDate = "$newYear-$newMonth-$newDay";
-		$newNewTime = "$newHour:$newMinute:$newSecond";
+		if (isset($new[0]))
+			$newDate = $new[0];
+		else
+			$newDate = '';
+		if (isset($new[1]))
+			$newTime = $new[1];
+		else
+			$newTime = '';
+		if ($newDate)
+		{
+			$new = explode('-', $newDate);
+			if (isset($new[0]))
+				$newYear = (int)$new[0];
+			else
+				$newYear = 0;
+			if (isset($new[1]))
+				$newMonth = (int)$new[1];
+			else
+				$newMonth = 0;
+			if (isset($new[2]))
+				$newDay = (int)$new[2];
+			else
+				$newDay = 0;
+			$newNewDate = "$newYear-$newMonth-$newDay";
+		}
+		else
+			$newNewDate = '0-0-0';
+		if ($newTime)
+		{
+			$new = explode(':', $newTime);
+			if (isset($new[0]))
+				$newHour = (int)$new[0];
+			else
+				$newHour = 0;
+			if (isset($new[1]))
+				$newMinute = (int)$new[1];
+			else
+				$newMinute = 0;
+			if (isset($new[2]))
+				$newSecond = (int)$new[2];
+			else
+				$newSecond = 0;
+			$newNewTime = "$newHour:$newMinute:$newSecond";
+		}
+		else
+			$newNewTime = '0:0:0';
 
 		if ('0-0-0' == $newNewDate and '' != $newDate and '0000-00-00' != $newDate)
 			$badDate = true;
@@ -75,6 +109,10 @@ class Kwalbum_Helper
 			$link_text = substr($description, 0, 200)
 				.(strlen($item->description) > 200 ? '...' : null);
 			$description = '';
+		}
+		else
+		{
+			$link_text = 'Unknown Filetype';
 		}
 
 		return html::anchor($kwalbum_url.'/~'.$item->id.'/'.$kwalbum_url_params, $link_text)
