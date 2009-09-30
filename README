@@ -13,6 +13,11 @@ INSTALLATION
      'kwalbum' => MODPATH.'kwalbum',
    after
      Kohana::modules(array(
+   Also make sure that 
+     'database'   => MODPATH.'database',   // Database access
+   and
+     'image'      => MODPATH.'image',      // Image manipulation
+   are uncommented and enabled for those modules.
 5. Create a writable directory for items to be uploaded to.  The default
    configured location is application/items
 6. Optionally, copy modules/kwalbum/config/kwalbum.php to
