@@ -78,7 +78,11 @@ class Kwalbum_ItemAdder
                     //echo '<pre>'.Kohana::debug( $pinfo );exit;
                 }*/
 
-                $item->visible_date = $item->sort_date = Kwalbum_Helper::replaceBadDate($data['DateTimeOriginal']);
+				// replace the set date if one is found in the picture's exif data
+				if (isset($data['DateTimeOriginal']))
+				{
+                	$item->visible_date = $item->sort_date = Kwalbum_Helper :: replaceBadDate($data['DateTimeOriginal']);
+				}
 
                 if ($latitude = @ $data['GPSLatitude'])
                 {
