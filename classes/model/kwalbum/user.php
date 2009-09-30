@@ -178,7 +178,8 @@ class Model_Kwalbum_User extends Kwalbum_Model
 			unset($_SESSION['kwalbum_edit']);
 			setcookie('kwalbum', '', time() - 36000, '/');
 			session_write_close();
-			return $this->clear();
+			$this->clear();
+			return $this;
 		}
 
 		if ( ! empty($_SESSION['kwalbum_id']))

@@ -40,7 +40,7 @@ if ( ! empty($message))
 	</tr></table>
 	</p>
 	<p>
-		<textarea cols="60" rows="20" name="description" id="description"><?php echo $description?></textarea>
+		<textarea cols="60" rows="20" name="description" id="description"><?php echo (isset($description) ? $description : null)?></textarea>
 		<br/>
 		<input type="submit" name="act" value="Save Entry" />
 	</p>
