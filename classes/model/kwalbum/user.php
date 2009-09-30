@@ -174,7 +174,10 @@ class Model_Kwalbum_User extends Kwalbum_Model
 		session_start();
 		if ($action == 'logout')
 		{
-			$this->_clear_cookies();
+			unset($_SESSION['kwalbum_id']);
+			unset($_SESSION['kwalbum_edit']);
+			setcookie('kwalbum', '', time() - 36000, '/');
+			session_write_close();
 			return $this->clear();
 		}
 
@@ -195,7 +198,9 @@ class Model_Kwalbum_User extends Kwalbum_Model
 			}
 			else
 			{
-				$this->_clear_cookies();
+				unset($_SESSION['kwalbum_id']);
+				unset($_SESSION['kwalbum_edit']);
+				setcookie('kwalbum', '', time() - 36000, '/');
 				return $this->clear();
 			}
 		}
@@ -203,15 +208,6 @@ class Model_Kwalbum_User extends Kwalbum_Model
 		session_write_close();
 
 		return $this;
-	}
-
-	private function _clear_cookies()
-	{
-		session_start();
-		unset($_SESSION['kwalbum_id']);
-		unset($_SESSION['kwalbum_edit']);
-		setcookie('kwalbum', '', time() - 36000, '/');
-		session_write_close();
 	}
 
 	public function clear()
