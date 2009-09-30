@@ -133,7 +133,6 @@ class Controller_Kwalbum extends Controller_Template
 			$this->template->set_global('date', $this->date);
 			$this->template->set_global('tags', $this->tags);
 			$this->template->set_global('people', $this->people);
-			$this->template->set_global('user', $this->user);
 			$this->template->set_global('kwalbum_url_params', $this->params);
 
 			$this->template->set_global('total_items', $this->total_items);
@@ -146,6 +145,7 @@ class Controller_Kwalbum extends Controller_Template
 			$this->template->set_global('head', html::script($this->url.'/media/ajax/toggle.edit.js'));
 		}
 		$this->template->set_global('kwalbum_url', $this->url);
+		$this->template->set_global('user', $this->user);
 	}
 
 	public function action_media($file)

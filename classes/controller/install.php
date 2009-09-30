@@ -20,7 +20,11 @@ class Controller_Install extends Controller_Kwalbum
 	public function action_index()
 	{
 		$this->template->title = 'Install';
-
+		$this->template->set_global('location', '');
+		$this->template->set_global('date', '');
+		$this->template->set_global('tags', '');
+		$this->template->set_global('people', '');
+		$this->template->set_global('in_edit_mode', false);
 		// Uncomment to delete everything and start over
 		//$this->_drop_tables();
 
