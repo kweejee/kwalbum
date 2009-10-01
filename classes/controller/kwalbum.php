@@ -28,7 +28,7 @@ class Controller_Kwalbum extends Controller_Template
 		// get location from URL
 		if ( $this->request->param('location'))
 		{
-			$this->location = Security::xss_clean($this->request->param('location'));
+			$this->location = Security::xss_clean(urldecode($this->request->param('location')));
 			Model_Kwalbum_Item::append_where('location', $this->location);
 		}
 		else if ( ! empty($_GET['location']))
@@ -54,7 +54,7 @@ class Controller_Kwalbum extends Controller_Template
 		}
 
 		// tags
-		$this->tags = explode(',', Security::xss_clean($this->request->param('tags')));
+		$this->tags = explode(',', Security::xss_clean(urldecode($this->request->param('tags'))));
 		if ($this->tags[0] != '')
 		{
 			Model_Kwalbum_Item::append_where('tags', $this->tags);

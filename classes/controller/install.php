@@ -15,7 +15,7 @@
 
 class Controller_Install extends Controller_Kwalbum
 {
-	private $_user = array('minNameLength' => 2, 'maxNameLength' => 45);
+	private $_user = array('minNameLength' => 2, 'maxNameLength' => 40);
 
 	public function action_index()
 	{
@@ -173,7 +173,7 @@ class Controller_Install extends Controller_Kwalbum
 		DB::query('', 'CREATE  TABLE IF NOT EXISTS `kwalbum_users`(
 		          `id` SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT ,
 		          `name` TINYTEXT NOT NULL ,
-				  `login_name` CHAR(40) NOT NULL ,
+				  `login_name` CHAR('.$this->_user['maxNameLength'].') NOT NULL ,
 				  `email` TINYTEXT NOT NULL ,
 				  `password` CHAR(40) NOT NULL ,
 		          `visit_dt` DATETIME NOT NULL ,
@@ -190,7 +190,7 @@ class Controller_Install extends Controller_Kwalbum
 		// Locations
 		DB::query('', 'CREATE TABLE IF NOT EXISTS `kwalbum_locations`(
 		          `id` SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT ,
-		          `name` VARCHAR('.$this->_user['maxNameLength'].') NOT NULL ,
+		          `name` VARCHAR(100) NOT NULL ,
 		          `latitude` DECIMAL(10,7) NOT NULL DEFAULT 0,
 		          `longitude` DECIMAL(10,7) NOT NULL DEFAULT 0,
 		          `count` SMALLINT UNSIGNED NOT NULL DEFAULT 0 ,
