@@ -16,7 +16,7 @@
 <?php
 	echo (empty($errors['db'])) ? '' : '<div class="errors">'.$errors['db'].'</div>';
 
-	echo form::open();
+	echo form::open($kwalbum_url.'/~install');
 	echo form::label('login_name', 'Login Name for main account (administrator)');
 	echo form::input('login_name', ($form['login_name']));
 	echo (empty($errors['login_name'])) ? '' : $errors['login_name'];

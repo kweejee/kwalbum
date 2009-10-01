@@ -25,6 +25,7 @@ class Controller_Install extends Controller_Kwalbum
 		$this->template->set_global('tags', '');
 		$this->template->set_global('people', '');
 		$this->template->set_global('in_edit_mode', false);
+
 		// Uncomment to delete everything and start over
 		//$this->_drop_tables();
 

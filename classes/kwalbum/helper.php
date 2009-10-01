@@ -32,6 +32,9 @@ class Kwalbum_Helper
 		if ($newDate)
 		{
 			$new = explode('-', $newDate);
+			if (count($new) != 3)
+				$new = explode(':', $newDate);
+
 			if (isset($new[0]))
 				$newYear = (int)$new[0];
 			else
