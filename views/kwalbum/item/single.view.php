@@ -91,3 +91,40 @@ echo ' <span class="kwalbumPageNumbers">(item '.$item_index.' of '.$total_items.
 	</div>
 </div>
 </div>
+
+<script type="text/javascript">var item_id=<?php echo $item->id?></script>
+<?php
+echo html::script($kwalbum_url.'/media/ajax/comment.js');
+?>
+<div class="box box-comments">
+<?php
+foreach ($item->comments as $comment)
+{
+	echo $comment->name.' : '.$comment->date.'<br/>'.$comment->text.'<hr/>';
+}
+if ($user->can_view_item($item))
+{
+	if ($user->is_logged_in)
+	{
+	?>
+
+		<div id="new_comment">
+			Add a comment.
+			<form>
+			<textarea id="comment_text" cols="45" rows="10"></textarea><br/>
+			<input type="button" id="comment_save" value="Add Your Comment" />
+			</form>
+		</div>
+	<?php
+	}
+	else
+	{
+		echo html::anchor($kwalbum_url.'/~user/login', 'Log in to add a comment.');
+	}
+}
+else
+{
+	echo 'no commenting allowed';
+}
+?>
+</div>

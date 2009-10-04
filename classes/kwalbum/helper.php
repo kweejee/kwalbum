@@ -120,7 +120,7 @@ class Kwalbum_Helper
 
 		return html::anchor($kwalbum_url.'/~'.$item->id.'/'.$kwalbum_url_params, $link_text)
 			."<br/>\n"
-			.$description;
-
+			.$description
+			.($item->has_comments ? '<span class="kwalbumHasComments">*has comments</span>' : null);
     }
 }

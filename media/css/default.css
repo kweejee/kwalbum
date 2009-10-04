@@ -5,6 +5,7 @@ h1 { font-size: 3em; font-weight: normal; color: #fff; }
 .box-right{border:0px;width:300px;float:right;}
 .box-thumbnail{border:0px;padding:0.5em;width:120px;background:#83c018;}
 .box-thumbnail img{width:100px;}
+.box-comments{clear:both;}
 
 #large_description{width:640px;}
 
@@ -31,3 +32,7 @@ img{border-style:hidden;}
 	clear:both;
 	text-align: left;
 }
+.kwalbumHasComments{
+	color: #fdd;
+}
+

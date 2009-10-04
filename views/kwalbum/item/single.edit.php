@@ -33,9 +33,9 @@ echo ' <span class="kwalbumPageNumbers">(item '.$item_index.' of '.$total_items.
 <div class="box-right">
 <div class="box box-right">
 	<?php
-		echo "<strong>Item #</strong><span id='item_id'>$item->id</span>";
+		echo "<script type='text/javascript'>var item_id=$item->id</script>";
 
-		echo '<br/><strong id="location_label">Location:</strong> ';
+		echo '<strong id="location_label">Location:</strong> ';
 		echo '<span id="location">'.$item->location.'</span>';
 
 		echo '<br/><strong id="date_label">Date &amp; Time:</strong> ';
@@ -66,10 +66,10 @@ echo ' <span class="kwalbumPageNumbers">(item '.$item_index.' of '.$total_items.
 		echo '<br/><strong id="sortdate_label">Sorting Datetime:</strong> ';
 		echo '<span id="sortdate">'.$item->sort_date.'</span>';
 
-	echo html::style('kwalbum/media/ajax/jqueryautocomplete/jquery.autocomplete.min.css')
-		.html::script('kwalbum/media/ajax/jqueryautocomplete/jquery.autocomplete.pack.js')
-		.html::script('kwalbum/media/ajax/jquery.jeditable.mini.js')
-		.html::script('kwalbum/media/ajax/edit.js');
+	echo html::style($kwalbum_url.'/media/ajax/jqueryautocomplete/jquery.autocomplete.min.css')
+		.html::script($kwalbum_url.'/media/ajax/jqueryautocomplete/jquery.autocomplete.pack.js')
+		.html::script($kwalbum_url.'/media/ajax/jquery.jeditable.mini.js')
+		.html::script($kwalbum_url.'/media/ajax/edit.js');
 
 	?>
 </div>
@@ -95,4 +95,13 @@ echo ' <span class="kwalbumPageNumbers">(item '.$item_index.' of '.$total_items.
 	?>
 	</div>
 </div>
+</div>
+
+<div class="box box-comments">
+<?php
+foreach ($item->comments as $comment)
+{
+	echo $comment->name.' : '.$comment->date.' : <b>'.$comment->ip.'</b><br/>'.$comment->text.'<hr/>';
+}
+?>
 </div>

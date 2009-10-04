@@ -102,17 +102,17 @@ class Controller_Ajax extends Controller_Kwalbum
 		$item = Model :: factory('kwalbum_item')->load((int)$_POST['item']);
 		$this->_testPermission($item);
         $visibility = (int) (@ $_POST['value']);
-//        if ($visibility < 0)
-//        {
-//            $visibility = 0;
-//        } else
-//            if ($visibility > 2)
-//            {
-//                if ($this->user->is_admin)
-//                    $visibility = 3;
-//                else
-//                    $visibility = 2;
-//            }
+        if ($visibility < 0)
+        {
+            $visibility = 0;
+        } else
+            if ($visibility > 3)
+            {
+                if ($this->user->is_admin)
+                    $visibility = 5;
+                else
+                    $visibility = 3;
+            }
         $item->hide_level = $visibility;
 		$item->save();
 		$vis = array('Public', 'Members Only', 'Privileged Only', 'Contributors Only', '', 'Admin Only');
@@ -166,6 +166,22 @@ class Controller_Ajax extends Controller_Kwalbum
 		$_SESSION['kwalbum_edit'] = (bool)$_POST['edit'];
 		session_write_close();
 		echo 1;
+	}
+
+	function action_AddComment()
+	{
+		$item = Model::factory('kwalbum_item')->load((int)$_POST['item']);
+		if ( ! $this->user->can_view_item($item))
+		{
+			echo 'no commenting for you';
+			return;
+		}
+		$comment = new Model_Kwalbum_Comment();
+		$comment->name = $this->user->name;
+		$comment->text = Security :: xss_clean($_POST['comment']);
+		$comment->item_id = $item->id;
+		$comment->save();
+		echo $comment->name.' : '.$comment->date.'<br/>'.$comment->text.'<hr/>';
 	}
 
 	function action_upload()
