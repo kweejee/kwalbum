@@ -154,4 +154,93 @@ class Controller_User extends Controller_Kwalbum
 			.html::script('kwalbum/media/ajax/write.js')
 		;
 	}
+
+	function action_register()
+	{
+
+		$this->template->content = new View('kwalbum/user/register');
+		$this->template->title = 'Register';
+		$form = array
+		(
+			'name' => '',
+			'login_name' => '',
+			'email' => '',
+			'password' => ''
+		);
+
+		// Copy the form as errors so the errors will be stored with keys
+		// matching the form field names
+		$errors = $form;
+
+		if ($_POST)
+		{
+			$post = Validate::factory($_POST)
+				->filter(true, 'trim')
+				->filter(true, 'htmlspecialchars')
+				->rule('name', 'not_empty')
+				->rule('login_name', 'not_empty')
+				->rule('email', 'not_empty')
+				->rule('email', 'email')
+				->rule('password', 'not_empty')
+				->rule('name', 'min_length', array(2))
+				->rule('name', 'max_length', array(40));
+
+			if ($post->check())
+			{
+				$data = $post->as_array();
+				$name = $data['name'];
+				$login_name = $data['login_name'];
+				$email = $data['email'];
+				$password = $data['password'];
+
+				$user = Model::factory('kwalbum_user');
+
+				// TODO: extend Validate to include custom error checking and clean this part up
+				$has_errors = false;
+				$temp = $user->load($login_name, 'login_name');
+				if ($temp->id)
+				{
+					$has_errors = true;
+					$errors['login_name'] = 'This login name is already being used.';
+				}
+				$temp = $user->load($name, 'name');
+				if ($temp->id)
+				{
+					$has_errors = true;
+					$errors['name'] = 'This name is already being used.';
+				}
+
+				if ($has_errors)
+				{
+					// Repopulate the form fields
+					$form = arr::overwrite($form, $post->as_array());
+				}
+				else
+				{
+
+
+					// create user
+					$user->name = $name;
+					$user->login_name = $login_name;
+					$user->email = $email;
+					$user->password = $password;
+					$user->permission_level = 1;
+					$user->save();
+					$errors = false;
+				}
+			}
+			else // Did not validate
+			{
+				// Repopulate the form fields
+				$form = arr::overwrite($form, $post->as_array());
+
+				// Populate the error fields, if any
+				// Pass the error message file name to the errors() method
+				// Default error message file is in i18n/en_US/
+				$errors = arr::overwrite($errors, $post->errors('install_form/errors'));
+			}
+		}
+		$this->template->set_global('form', $form);
+		$this->template->set_global('errors', $errors);
+	}
 }

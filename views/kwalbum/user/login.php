@@ -45,4 +45,6 @@
 </tr>
 </table>
 </form>
+
+<a href="<?php echo $kwalbum_url?>/~user/reset_password">Reset a forgotten password</a>
 </div>

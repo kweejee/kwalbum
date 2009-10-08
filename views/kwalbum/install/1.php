@@ -17,25 +17,25 @@
 	echo (empty($errors['db'])) ? '' : '<div class="errors">'.$errors['db'].'</div>';
 
 	echo form::open($kwalbum_url.'/~install');
+
 	echo form::label('login_name', 'Login Name for main account (administrator)');
 	echo form::input('login_name', ($form['login_name']));
-	echo (empty($errors['login_name'])) ? '' : $errors['login_name'];
+	echo (empty($errors['login_name'])) ? '' : '<div class="errors">'.$errors['login_name'].'</div>';
+	echo '<br/>';
+
+	echo form::label('name', 'Name to Display on comments');
+	echo form::input('name', ($form['name']));
+	echo (empty($errors['name'])) ? '' : '<div class="errors">'.$errors['name'].'</div>';
 	echo '<br/>';
 
 	echo form::label('password', 'Password');
-	echo form::input('password', ($form['password']));
-	echo (empty($errors['password'])) ? '' : $errors['password'];
+	echo form::password('password', ($form['password']));
+	echo (empty($errors['password'])) ? '' : '<div class="errors">'.$errors['password'].'</div>';
 	echo '<br/>';
 
 	echo form::label('email', 'Email Address in case of lost password');
-	echo form::input('email', ($form['login_name']));
-	echo (empty($errors['email'])) ? '' : $errors['email'];
-	echo '<br/>';
-
-	echo form::label('name', 'Name to Display');
-	echo form::input('name', ($form['name']));
-	echo $_user['minNameLength'].' to '.$_user['maxNameLength'].' characters long';
-	echo (empty($errors['name'])) ? '' : $errors['name'];
+	echo form::input('email', ($form['email']));
+	echo (empty($errors['email'])) ? '' : '<div class="errors">'.$errors['email'].'</div>';
 	echo '<br/>';
 
 	echo form::submit('submit', 'Add Kwalbum to Database');

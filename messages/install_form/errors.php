@@ -9,6 +9,7 @@ return array
 	'email' => array
 	(
 		'not_empty' => 'required',
+		'email' => 'Invalid email format.',
 		'default' => 'Invalid Input.',
 	),
 	'password' => array
@@ -22,7 +23,6 @@ return array
 		'min_length' => 'Your name has to be longer.',
 		'max_length' => 'Your name is too long.',
 		'default' => 'Invalid Input.',
-
 	),
 	'db' => 'There was an error creating the database tables.'
 );

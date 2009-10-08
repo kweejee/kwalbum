@@ -98,7 +98,7 @@ class Kwalbum_Helper
      * @return string html
      * @since 3.0
      */
-    public static function getThumbnailLink($item, $kwalbum_url, $kwalbum_url_params)
+    public static function getThumbnailLink($item, $kwalbum_url, $kwalbum_url_params = '')
     {
     	$description = strip_tags($item->description,'<br><br/>');
 		if ($item->type == 'jpeg' or $item->type == 'gif' or $item->type == 'png')
