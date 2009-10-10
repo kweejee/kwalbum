@@ -62,7 +62,8 @@ class Model_Kwalbum_User extends Kwalbum_Model
 			$query = DB::query(Database::INSERT,
 				"INSERT INTO kwalbum_users
 				(name, login_name, email, password, token, visit_dt, permission_level, reset_code)
-				VALUES (:name, :login_name, :email, :password, :token, :visit_dt, :permission_level, :reset_code)");
+				VALUES (:name, :login_name, :email, :password, :token, :visit_dt, :permission_level,
+					:reset_code)");
 			if ( ! $this->permission_level)
 			{
 				$this->permission_level = 1;
@@ -75,7 +76,8 @@ class Model_Kwalbum_User extends Kwalbum_Model
 			$query = DB::query(Database::UPDATE,
 				"UPDATE kwalbum_users
 				SET name = :name, login_name = :login_name, email = :email, password = :password,
-					token = :token, visit_dt = :visit_dt, permission_level= :permission_level
+					token = :token, visit_dt = :visit_dt, permission_level = :permission_level,
+					reset_code = :reset_code
 				WHERE id = :id")
 				->param(':id', $this->id);
 		}
@@ -182,7 +184,7 @@ class Model_Kwalbum_User extends Kwalbum_Model
 				if ($this->token)
 				{
 					$this->token = '';
-					$this->save;
+					$this->save();
 				}
 			}
 			unset($_SESSION['kwalbum_id']);

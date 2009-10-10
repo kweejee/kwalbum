@@ -123,4 +123,13 @@ class Kwalbum_Helper
 			.$description
 			.($item->has_comments ? '<span class="kwalbumHasComments">*has comments</span>' : null);
     }
+
+    static public function getRandomHash()
+    {
+		$token = '';
+		$length = mt_rand(50,100);
+		for ($i = 0; $i < $length; $i++)
+			$token = chr(mt_rand(0,122));
+		return sha1($token);
+    }
 }

@@ -27,11 +27,7 @@ class Controller_User extends Controller_Kwalbum
 			{
 				$loginLength = (int)$_POST['length'];
 				$user->visit_date = date('Y-m-d H:i:s');
-				$token = '';
-				$length = mt_rand(50,100);
-				for ($i = 0; $i < $length; $i++)
-					$token = chr(mt_rand(0,122));
-				$user->token = sha1($token);
+				$user->token = Kwalbum_Helper::getRandomHash();
 				$user->save();
 
 				if ($loginLength != 0)
@@ -188,9 +184,9 @@ class Controller_User extends Controller_Kwalbum
 			if ($post->check())
 			{
 				$data = $post->as_array();
-				$name = $data['name'];
-				$login_name = $data['login_name'];
-				$email = $data['email'];
+				$name = Security :: xss_clean($data['name']);
+				$login_name = Security :: xss_clean($data['login_name']);
+				$email = Security :: xss_clean($data['email']);
 				$password = $data['password'];
 
 				$user = Model::factory('kwalbum_user');
@@ -242,5 +238,73 @@ class Controller_User extends Controller_Kwalbum
 		}
 		$this->template->set_global('form', $form);
 		$this->template->set_global('errors', $errors);
+	}
+
+	public function action_resetpassword()
+	{
+		$this->template->content = new View('kwalbum/user/resetpassword');
+		$this->template->title = 'Reset Password';
+
+		if (isset($_GET['h']))
+		{
+			$temp = explode('.', $_GET['h']);
+			if (!isset($temp[1]))
+			{
+				$this->template->content->message = '<span class="errors">This address is no longer valid for changing your password.</span>';
+				return;
+			}
+
+			$hash = $temp[0];
+			$id = (int)$temp[1];
+			$user = Model::factory('kwalbum_user')->load($id);
+
+			if ($user->reset_code != $hash)
+			{
+				$user->reset_code = '';
+				$user->save();
+				$this->template->content->message = '<span class="errors">This address is no longer valid for changing your password.</span>';
+			}
+			else if (isset($_POST['act']))
+			{
+				$pw = $_POST['pw'];
+				if (strlen($pw) > 5)
+				{
+					$user->password = $pw;
+					$user->reset_code = '';
+					$user->save();
+					$this->template->content->message = 'Your password has been changed and you can now <a href="'.$this->url.'/~user/login">log in</a>.';
+				}
+				else
+				{
+					$user->reset_code = Kwalbum_Helper::getRandomHash();
+					$user->save();
+					$this->template->set_global('user', $user);
+					$this->template->content->message2 = '<div class="errors">New password must be at least 6 characters long.</div>';
+				}
+			}
+			else
+			{
+				$user->reset_code = Kwalbum_Helper::getRandomHash();
+				$user->save();
+			}
+		}
+		elseif (isset($_POST['act']))
+		{
+			$login = $_POST['name'];
+			$email = $_POST['email'];
+			$user = Model::factory('kwalbum_user')->load($login, 'login_name');
+			if ($user->email == $email)
+			{
+				$user->reset_code = Kwalbum_Helper::getRandomHash();
+				$user->save();
+				$host = $_SERVER['SERVER_NAME'];
+				$emailMessage = "A password change has been requested for $login at $host.  To change it go to\n$this->url/~user/resetpassword/?h=$user->reset_code.$user->id\n\nAutomatic email from\nKwalbum \n\n";
+				if ( ! mail($email, 'Lost Password on '.$host, $emailMessage, 'From: "do_not_reply.'.$host.'" <kwalbum@'.$host.'>'))
+				{
+					$this->template->content->message = '<span class="errors">Email with further instructions was not sent.  Please contact the website administrator.</span>';
+				}
+			}
+			$this->template->content->message = 'If the login name and email address match, then an email has been sent with further instructions.  If you do not recieve the email within a few hours, check your junk mail folder then contact the website administrator if you still can not find it.  If you are unsure which email address or name you registered with, try them all until you get an email or contact the administrator and ask for help.';
+		}
 	}
 }
