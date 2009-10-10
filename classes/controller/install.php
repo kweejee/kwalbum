@@ -179,6 +179,7 @@ class Controller_Install extends Controller_Kwalbum
 		          `visit_dt` DATETIME NOT NULL ,
 		          `permission_level` TINYINT UNSIGNED NOT NULL DEFAULT 0 ,
 				  `token` CHAR(40) NOT NULL ,
+				  `reset_code` VARCHAR(40) NOT NULL ,
 				  INDEX `login` (`login_name` ASC, `password` ASC) ,
 				  INDEX `token` (`token` ASC) ,
 				  PRIMARY KEY (`id`)

@@ -12,7 +12,7 @@
 
 class Model_Kwalbum_User extends Kwalbum_Model
 {
-	public $id, $name, $login_name, $email, $token, $visit_date, $permission_level;
+	public $id, $name, $login_name, $email, $token, $visit_date, $permission_level, $reset_code;
 	private $_password;
 
 	public function load($id = null, $field = 'id')
@@ -25,7 +25,7 @@ class Model_Kwalbum_User extends Kwalbum_Model
 
 		try {
 			$result = DB::query(Database::SELECT,
-				"SELECT id, name, login_name, email, password, token, visit_dt, permission_level
+				"SELECT id, name, login_name, email, password, token, visit_dt, permission_level, reset_code
 				FROM kwalbum_users
 				WHERE $field = :id
 				LIMIT 1")
@@ -49,6 +49,7 @@ class Model_Kwalbum_User extends Kwalbum_Model
 		$this->token = $row['token'];
 		$this->visit_date = $row['visit_dt'];
 		$this->permission_level = (int)$row['permission_level'];
+		$this->reset_code = $row['reset_code'];
 		$this->loaded = true;
 
 		return $this;
@@ -60,8 +61,8 @@ class Model_Kwalbum_User extends Kwalbum_Model
 		{
 			$query = DB::query(Database::INSERT,
 				"INSERT INTO kwalbum_users
-				(name, login_name, email, password, token, visit_dt, permission_level)
-				VALUES (:name, :login_name, :email, :password, :token, :visit_dt, :permission_level)");
+				(name, login_name, email, password, token, visit_dt, permission_level, reset_code)
+				VALUES (:name, :login_name, :email, :password, :token, :visit_dt, :permission_level, :reset_code)");
 			if ( ! $this->permission_level)
 			{
 				$this->permission_level = 1;
@@ -85,7 +86,8 @@ class Model_Kwalbum_User extends Kwalbum_Model
 			->param(':password', $this->_password)
 			->param(':token', $this->token)
 			->param(':visit_dt', $this->visit_date)
-			->param(':permission_level', $this->permission_level);
+			->param(':permission_level', $this->permission_level)
+			->param(':reset_code', $this->reset_code);
 
 		$result = $query->execute();
 		if ($this->loaded == false)
@@ -174,6 +176,15 @@ class Model_Kwalbum_User extends Kwalbum_Model
 		session_start();
 		if ($action == 'logout')
 		{
+			if ( ! empty($_SESSION['kwalbum_id']))
+			{
+				$user = $this->load((int)$_SESSION['kwalbum_id']);
+				if ($this->token)
+				{
+					$this->token = '';
+					$this->save;
+				}
+			}
 			unset($_SESSION['kwalbum_id']);
 			unset($_SESSION['kwalbum_edit']);
 			setcookie('kwalbum', '', time() - 36000, '/');
@@ -186,6 +197,11 @@ class Model_Kwalbum_User extends Kwalbum_Model
 		{
 			$id = (int)$_SESSION['kwalbum_id'];
 			$this->load($id);
+			if ($this->reset_code)
+			{
+				$this->reset_code = '';
+				$this->save();
+			}
 		}
 		elseif (isset ($_COOKIE['kwalbum']))
 		{
@@ -199,6 +215,15 @@ class Model_Kwalbum_User extends Kwalbum_Model
 			}
 			else
 			{
+				if ( ! empty($_SESSION['kwalbum_id']))
+				{
+					$user = $this->load((int)$_SESSION['kwalbum_id']);
+					if ($this->token)
+					{
+						$this->token = '';
+						$this->save;
+					}
+				}
 				unset($_SESSION['kwalbum_id']);
 				unset($_SESSION['kwalbum_edit']);
 				setcookie('kwalbum', '', time() - 36000, '/');
@@ -215,7 +240,7 @@ class Model_Kwalbum_User extends Kwalbum_Model
 	{
 		$this->id = $this->permission_level = 0;
 		$this->name = $this->login_name = $this->email = $this->_password
-			= $this->token = $this->visit_date = '';
+			= $this->token = $this->visit_date = $this->reset_code = '';
 		$this->loaded = false;
 	}
 
