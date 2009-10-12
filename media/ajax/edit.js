@@ -20,7 +20,7 @@ $(document).ready(function(){
 	});
 	$('#description_label').click(function(){$('#description').click();});
 	$('#description').editable( 'KWALBUM_URL/~ajax/SetDescription',{
-		loadurl:'KWALBUM_URL/~ajax/GetRawDescription?item='+$('#item_id').text(),
+		loadurl:'KWALBUM_URL/~ajax/GetRawDescription?item='+item_id,
 		type:"textarea",
 		tooltip:"Click to edit...",
 		indicator:"Saving...",
@@ -31,7 +31,7 @@ $(document).ready(function(){
 		submitdata:{item:item_id},
 	});
 	$('#large_description').editable( 'KWALBUM_URL/~ajax/SetDescription',{
-		loadurl:'KWALBUM_URL/~ajax/GetRawDescription?item='+$('#item_id').text(),
+		loadurl:'KWALBUM_URL/~ajax/GetRawDescription?item='+item_id,
 		type:"textarea",
 		tooltip:"Click to edit...",
 		indicator:"Saving...",

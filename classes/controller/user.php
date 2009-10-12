@@ -248,7 +248,7 @@ class Controller_User extends Controller_Kwalbum
 		if (isset($_GET['h']))
 		{
 			$temp = explode('.', $_GET['h']);
-			if (!isset($temp[1]))
+			if ( ! isset($temp[1]))
 			{
 				$this->template->content->message = '<span class="errors">This address is no longer valid for changing your password.</span>';
 				return;
@@ -258,7 +258,7 @@ class Controller_User extends Controller_Kwalbum
 			$id = (int)$temp[1];
 			$user = Model::factory('kwalbum_user')->load($id);
 
-			if ($user->reset_code != $hash)
+			if ( ! $user->reset_code or $user->reset_code != $hash)
 			{
 				$user->reset_code = '';
 				$user->save();
@@ -276,16 +276,9 @@ class Controller_User extends Controller_Kwalbum
 				}
 				else
 				{
-					$user->reset_code = Kwalbum_Helper::getRandomHash();
-					$user->save();
 					$this->template->set_global('user', $user);
 					$this->template->content->message2 = '<div class="errors">New password must be at least 6 characters long.</div>';
 				}
-			}
-			else
-			{
-				$user->reset_code = Kwalbum_Helper::getRandomHash();
-				$user->save();
 			}
 		}
 		elseif (isset($_POST['act']))
@@ -295,8 +288,11 @@ class Controller_User extends Controller_Kwalbum
 			$user = Model::factory('kwalbum_user')->load($login, 'login_name');
 			if ($user->email == $email)
 			{
-				$user->reset_code = Kwalbum_Helper::getRandomHash();
-				$user->save();
+				if ( ! $user->reset_code)
+				{
+					$user->reset_code = Kwalbum_Helper::getRandomHash();
+					$user->save();
+				}
 				$host = $_SERVER['SERVER_NAME'];
 				$emailMessage = "A password change has been requested for $login at $host.  To change it go to\n$this->url/~user/resetpassword/?h=$user->reset_code.$user->id\n\nAutomatic email from\nKwalbum \n\n";
 				if ( ! mail($email, 'Lost Password on '.$host, $emailMessage, 'From: "do_not_reply.'.$host.'" <kwalbum@'.$host.'>'))
