@@ -100,17 +100,23 @@ class Kwalbum_Helper
      */
     public static function getThumbnailLink($item, $kwalbum_url, $kwalbum_url_params = '')
     {
-    	$description = strip_tags($item->description,'<br><br/>');
+    	$cleaned_description = strip_tags($item->description,'<br><br/>');
+
 		if ($item->type == 'jpeg' or $item->type == 'gif' or $item->type == 'png')
 		{
 			$link_text = "<img src='$kwalbum_url/~$item->id/~item/thumbnail' title='$item->filename'/>";
-			$description = substr($description, 0, 50)
-				.(strlen($item->description) > 50 ? '...' : null);
+			$description = '';
+			if (strlen($cleaned_description) > 30)
+				$description .= '<div class="box-thumbnail-description">';
+			$description .= substr($cleaned_description, 0, 50)
+				.(strlen($cleaned_description) > 50 ? '...' : null);
+			if (strlen($cleaned_description) > 30)
+				$description .= '</div>';
 		}
 		else if ($item->type == 'description only')
 		{
-			$link_text = substr($description, 0, 200)
-				.(strlen($item->description) > 200 ? '...' : null);
+			$link_text = '<div class="box-thumbnail-description">'.substr($cleaned_description, 0, 200)
+				.(strlen($cleaned_description) > 200 ? '...' : null).'</div>';
 			$description = '';
 		}
 		else

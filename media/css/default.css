@@ -6,6 +6,7 @@ h1 { font-size: 3em; font-weight: normal; color: #fff; }
 .box-thumbnail{border:0px;padding:0.5em;width:120px;background:#83c018;}
 .box-thumbnail img{width:100px;}
 .box-comments{clear:both;}
+.box-thumbnail-description{width:200;}
 
 #large_description{width:640px;}
 
@@ -18,7 +19,7 @@ img{border-style:hidden;}
 .hidden{display:none;}
 
 .kwalbumBox{
-	width:170px;height:192px;
+	height:192px;
 	text-align:center;
 	border-width:1px;
 	border-style:solid;
@@ -26,15 +27,7 @@ img{border-style:hidden;}
 	margin:5px;
 	padding:5px;
 }
-.kwalbumCurrentIndex{
-	font-size:1.4em;
-	font-weight:bold;
-}
-.kwalbumPageNumbers{
-	clear:both;
-	text-align: left;
-}
-.kwalbumHasComments{
-	color: #fdd;
-}
+.kwalbumCurrentIndex{font-size:1.4em;font-weight:bold;}
+.kwalbumPageNumbers{clear:both;text-align: left;}
+.kwalbumHasComments{color: #fdd;}
 

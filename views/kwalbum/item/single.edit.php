@@ -98,6 +98,7 @@ echo ' <span class="kwalbumPageNumbers">(item '.$item_index.' of '.$total_items.
 </div>
 
 <div class="box box-comments">
+Comments:<br/>
 <?php
 foreach ($item->comments as $comment)
 {
