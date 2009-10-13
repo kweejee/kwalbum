@@ -68,7 +68,7 @@ class Controller_Kwalbum extends Controller_Template
 			$this->tags = null;
 
 		// people names
-		$this->people = explode(',', Security::xss_clean($this->request->param('people')));
+		$this->people = explode(',', Security::xss_clean(urldecode($this->request->param('people'))));
 		if ($this->people[0] != '')
 		{
 			Model_Kwalbum_Item::append_where('people', $this->people);
