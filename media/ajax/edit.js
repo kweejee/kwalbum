@@ -4,7 +4,7 @@ $(document).ready(function(){
 		element:$.editable.types.text.element,
 		plugin:function(settings, original) {
 			$('input', this).autocomplete(settings.autocomplete.data, {
-				max:10,cacheLength:1,matchSubset:false,
+				max:10,cacheLength:1,matchSubset:false,matchCase:true,
 				autoFill:true});
 		}
 	});
