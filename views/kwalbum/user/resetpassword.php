@@ -20,7 +20,7 @@ if (isset($message))
 	echo $message;
 }
 
-if (!isset($_GET['h']))
+if ( ! isset($_GET['h']))
 {
 	?>
 <form method="post" action="<?php echo $kwalbum_url?>/~user/resetpassword">

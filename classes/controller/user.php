@@ -276,10 +276,11 @@ class Controller_User extends Controller_Kwalbum
 				}
 				else
 				{
-					$this->template->set_global('user', $user);
 					$this->template->content->message2 = '<div class="errors">New password must be at least 6 characters long.</div>';
 				}
 			}
+			$user->permission_level = 0;
+			$this->template->set_global('user', $user);
 		}
 		elseif (isset($_POST['act']))
 		{
