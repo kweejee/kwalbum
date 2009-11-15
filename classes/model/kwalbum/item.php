@@ -17,7 +17,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 		$description, $latitude, $longitude, $path, $filename,
 		$has_comments, $hide_level, $count, $is_external, $loaded;
 	private $_user_name, $_original_location, $_original_user_id,
-		 $_location_id, $_tags, $_persons, $_comments,
+		 $_location_id, $_tags, $_persons, $_comments, $_comment_count,
 		 $_external_site, $_external_id, $_external_site_is_changed;
 
 	static public $types = array(
@@ -550,6 +550,22 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 				return $this->_external_site;
 			else
 				return $this->_external_id;
+		}
+		else if ($id == 'comment_count')
+		{
+			if ($this->_comment_count)
+				return $this->_comment_count;
+			if ( ! $this->has_comments)
+				return 0;
+
+			$query = "SELECT count(*)
+				FROM kwalbum_comments
+				WHERE item_id = :id";
+			$result = DB::query(Database::SELECT, $query)
+				->param(':id', $this->id)
+				->execute();
+			$this->_comment_count = (int)$result[0]['count(*)'];
+			return $this->_comment_count;
 		}
 	}
 
