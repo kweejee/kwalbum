@@ -97,7 +97,7 @@ echo ' <span class="kwalbumPageNumbers">(item '.$item_index.' of '.$total_items.
 echo html::script($kwalbum_url.'/media/ajax/comment.js');
 ?>
 <div class="box box-comments">
-<a name='comments'><b>comments</b></a><br/>
+<a name='comments'><b>Comments:</b></a><br/>
 <?php
 foreach ($item->comments as $comment)
 {
