@@ -31,6 +31,14 @@ echo ' <span class="kwalbumPageNumbers">(item '.$item_index.' of '.$total_items.
 </div>
 
 <div class="box-right">
+<?php
+echo ' <span class="kwalbumPageNumbers">(item '.$item_index.' of '.$total_items.') - '
+	.html::anchor($kwalbum_url.'/'
+	.($kwalbum_url_params ? $kwalbum_url_params : null)
+	.($page_number > 1 ? 'page/'.$page_number.'/' : null)
+	.(($kwalbum_url_params or $page_number > 1) ? null : '~browse/'),
+	'back to browsing').'</span><br/>';
+?>
 <div class="box box-right">
 	<?php
 		echo "<script type='text/javascript'>var item_id=$item->id</script>";
