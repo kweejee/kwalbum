@@ -2,7 +2,7 @@ html { background:#83c018; }
 body {margin: 1em; font-size: 76%; font-family: Arial, sans-serif; color: #273907; line-height: 1.5; }
 h1 { font-size: 3em; font-weight: normal; color: #fff; }
 .box { padding: 1em; background:#98cc2b;border:1px solid #569f09;text-align:left;float:left;margin:5px;}
-.box-right{border:0px;width:300px;float:right;}
+.box-right{border:0px;width:300px;float:right;padding-top:0px;}
 .box-thumbnail{border:0px;padding:0.5em;width:120px;background:#83c018;}
 .box-thumbnail img{width:100px;}
 .box-comments{clear:both;}

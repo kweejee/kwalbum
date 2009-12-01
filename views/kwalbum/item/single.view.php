@@ -19,7 +19,7 @@
 	?>
 </div>
 
-<div class="box-right">
+<div class="box box-right">
 <?php
 echo ' <span class="kwalbumPageNumbers">(item '.$item_index.' of '.$total_items.') - '
 	.html::anchor($kwalbum_url.'/'
@@ -28,7 +28,7 @@ echo ' <span class="kwalbumPageNumbers">(item '.$item_index.' of '.$total_items.
 	.(($kwalbum_url_params or $page_number > 1) ? null : '~browse/'),
 	'back to browsing').'</span><br/>';
 ?>
-<div class="box box-right">
+
 	<?php echo $item->location; ?>
 	<br/>
 	<?php echo $item->pretty_date; ?>
@@ -67,9 +67,7 @@ echo ' <span class="kwalbumPageNumbers">(item '.$item_index.' of '.$total_items.
 			echo '<br/>';
 		}
 	?>
-</div>
 
-<div class="box box-right">
 	<div class="box box-thumbnail">
 	Previous Item:<br/>
 	<?php

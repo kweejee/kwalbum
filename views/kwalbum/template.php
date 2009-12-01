@@ -60,9 +60,6 @@ if ($summary)
 <body>
 <?php
 echo View::factory('kwalbum/mainmenu')->render();
-if ($in_edit_mode)
-	echo '<strong>!!! In Edit Mode !!!&nbsp;&nbsp;&nbsp;</strong>';
-echo $summary;
 echo '<hr/>';
 echo $content
 ?>
