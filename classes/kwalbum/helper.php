@@ -104,7 +104,8 @@ class Kwalbum_Helper
 
 		if ($item->type == 'jpeg' or $item->type == 'gif' or $item->type == 'png')
 		{
-			$link_text = "<img src='$kwalbum_url/~$item->id/~item/thumbnail' title='$item->filename'/>";
+			$item->type = ($item->type == 'jpeg' ? 'jpg' : $item->type);
+			$link_text = "<img src='$kwalbum_url/~$item->id/~item/thumbnail.$item->type' title='$item->filename'/>";
 			$description = '';
 			if (strlen($cleaned_description) > 30)
 				$description .= '<div class="box-thumbnail-description">';
