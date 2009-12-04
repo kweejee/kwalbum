@@ -356,6 +356,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 
 		//echo Kohana::debug($query);exit;
 	}
+
 	public function delete($id = NULL)
 	{
 		if ($id === NULL)
@@ -397,12 +398,6 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 		// Remove item-tag relations and reduce tags' item counts
 		$this->_delete_tag_relations($id);
 
-		// Delete the item
-		DB::query(Database::DELETE, "DELETE FROM kwalbum_items
-			WHERE id = :id")
-			->param(':id', $id)
-			->execute();
-
 		// Delete comments
 		$comments = $this->_load_comments($id);
 		foreach ($comments as $comment)
@@ -414,6 +409,12 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 		DB::query(Database::DELETE,
 			"DELETE FROM kwalbum_items_sites
 			WHERE item_id = :id")
+			->param(':id', $id)
+			->execute();
+
+		// Delete the item
+		DB::query(Database::DELETE, "DELETE FROM kwalbum_items
+			WHERE id = :id")
 			->param(':id', $id)
 			->execute();
 

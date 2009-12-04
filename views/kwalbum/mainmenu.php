@@ -28,12 +28,14 @@
 			echo html::anchor($kwalbum_url.'/~admin', 'admin').' - ';
 		}
 		echo html::anchor($kwalbum_url.'/~user/logout', 'logout');
+
+		if ($in_edit_mode)
+			echo '&nbsp;&nbsp;&nbsp;<strong>!!! In Edit Mode !!!</strong>&nbsp;&nbsp;&nbsp;';
 	}
 	else
 	{
 		echo html::anchor($kwalbum_url.'/~user/login', 'login')
 			.' - '.html::anchor($kwalbum_url.'/~user/register', 'register');
-	if ($in_edit_mode)
-		echo '&nbsp;&nbsp;&nbsp;<strong>!!! In Edit Mode !!!</strong>&nbsp;&nbsp;&nbsp;';
+	}
 	?>
 </div>

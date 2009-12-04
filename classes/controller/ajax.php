@@ -184,6 +184,18 @@ class Controller_Ajax extends Controller_Kwalbum
 		echo $comment->name.' : '.$comment->date.'<br/>'.$comment->text.'<hr/>';
 	}
 
+	function action_DeleteItem()
+	{
+		$item = Model::factory('kwalbum_item')->load((int)$_POST['item']);
+		if ( ! $this->user->can_edit_item($item))
+		{
+			echo 0;
+			return;
+		}
+		$item->delete();
+		echo 1;
+	}
+
 	function action_upload()
 	{
 		if ( ! $this->user->can_add)

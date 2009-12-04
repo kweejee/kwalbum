@@ -90,6 +90,12 @@ $(document).ready(function(){
 		indicator:"Saving...",
 		onblur:"submit",
 		submitdata:{item:item_id},
-		loadurl:'KWALBUM_URL/~ajax/GetVisibility?item='+$('#item_id').text()
+		loadurl:'KWALBUM_URL/~ajax/GetVisibility?item='+item_id
+	});
+	$('#delete_button').click(function(){
+		if (confirm('You are about to permanently delete an item.')){
+			$.post("KWALBUM_URL/~ajax/DeleteItem", {item: item_id},function(){$('#delete').text('DELETED!');});
+			$('#delete').text('deleting...');
+		}
 	});
 });

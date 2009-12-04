@@ -68,31 +68,34 @@ echo ' <span class="kwalbumPageNumbers">(item '.$item_index.' of '.$total_items.
 		echo '<br/><strong id="sortdate_label">Sorting Datetime:</strong> ';
 		echo '<span id="sortdate">'.$item->sort_date.'</span>';
 
+		echo '<br/><span id="delete"><input type="button" id="delete_button" value="Delete Item"/></span><br/><br/>';
+
 	echo html::style($kwalbum_url.'/media/ajax/jqueryautocomplete/jquery.autocomplete.min.css')
 		.html::script($kwalbum_url.'/media/ajax/jqueryautocomplete/jquery.autocomplete.pack.js')
 		.html::script($kwalbum_url.'/media/ajax/jquery.jeditable.mini.js')
 		.html::script($kwalbum_url.'/media/ajax/edit.js');
 
 	?>
+	<div>
+		<div class="box box-thumbnail">
+		Previous Item:<br/>
+		<?php
+		if ($previous_item->id)
+			echo Kwalbum_Helper::getThumbnailLink($previous_item, $kwalbum_url, $kwalbum_url_params);
+		else
+			echo 'Viewing First Item';
+		?>
+		</div>
+		<div class="box box-thumbnail">
+		Next Item:<br/>
+		<?php
 
-	<div class="box box-thumbnail">
-	Previous Item:<br/>
-	<?php
-	if ($previous_item->id)
-		echo Kwalbum_Helper::getThumbnailLink($previous_item, $kwalbum_url, $kwalbum_url_params);
-	else
-		echo 'Viewing First Item';
-	?>
-	</div>
-	<div class="box box-thumbnail">
-	Next Item:<br/>
-	<?php
-
-	if ($next_item->id)
-		echo Kwalbum_Helper::getThumbnailLink($next_item, $kwalbum_url, $kwalbum_url_params);
-	else
-		echo 'Viewing Last Item';
-	?>
+		if ($next_item->id)
+			echo Kwalbum_Helper::getThumbnailLink($next_item, $kwalbum_url, $kwalbum_url_params);
+		else
+			echo 'Viewing Last Item';
+		?>
+		</div>
 	</div>
 </div>
 </div>
