@@ -30,21 +30,22 @@ class Controller_Browse extends Controller_Kwalbum
 
 	}
 
-	public function action_newest()
+	public function action_comments()
 	{
 
 		//echo Kohana::debug($this);
-		if ( $this->request->uri == 'kwalbum' and ! ($this->location or $this->date or count($this->tags) > 0))
-		{
-			$this->template->content = new View('kwalbum/index');
-			return;
-		}
+//		if ( $this->request->uri == 'kwalbum' and ! ($this->location or $this->date or count($this->tags) > 0))
+//		{
+//			$this->template->content = new View('kwalbum/index');
+//			return;
+//		}
 
-		$view = new View('kwalbum/browse/index');
-		Model_Kwalbum_Item::set_sort_direction('DESC');
-		$view->items = Model_Kwalbum_Item::get_thumbnails($this->page_number);
+		$view = new View('kwalbum/browse/comments');
+		Model_Kwalbum_Comment :: set_sort_field('create');
+		Model_Kwalbum_Comment :: set_sort_direction('DESC');
+		$view->items = Model_Kwalbum_Comment :: get_thumbnails($this->page_number);
 		$this->template->content = $view;
-		$this->template->title = 'browsing newest';
+		$this->template->title = 'browsing newest comments';
 
 	}
 }

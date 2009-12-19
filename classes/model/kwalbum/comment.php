@@ -14,6 +14,10 @@ class Model_Kwalbum_Comment extends Kwalbum_Model
 {
 	public $id, $name, $text, $item_id, $date;
 	private $_ip;
+	static private $_where = array();
+	static private $_sort_field = 'kwalbum_comments.create_dt';
+	static private $_sort_direction = 'DESC';
+	static private $_gtlt = '>';
 
 	public function __set($var, $value = null)
 	{
@@ -156,6 +160,60 @@ class Model_Kwalbum_Comment extends Kwalbum_Model
 				->param(':item_id', $item_id)
 				->execute();
 		}
+	}
+
+	static public function set_sort_field($sort_field)
+	{
+		switch ($sort_field)
+		{
+			case 'create':
+			default: $sort_field = 'kwalbum_comments.create_dt';
+		}
+		Model_Kwalbum_Comment :: $_sort_field = $sort_field;
+	}
+
+	static public function set_sort_direction($sort_direction)
+	{
+		if ($sort_direction == 'ASC')
+		{
+			Model_Kwalbum_Comment :: $_sort_direction = 'ASC';
+			Model_Kwalbum_Comment :: $_gtlt = '<';
+		}
+		else
+		{
+			Model_Kwalbum_Comment :: $_sort_direction = 'DESC';
+			Model_Kwalbum_Comment :: $_gtlt = '>';
+		}
+	}
+
+	static public function get_thumbnails($page_number = 1)
+	{
+		$sort_field = Model_Kwalbum_Comment :: $_sort_field;
+		$sort_direction = Model_Kwalbum_Comment :: $_sort_direction;
+		$query = "SELECT kwalbum_items.id AS item_id, kwalbum_comments.id AS comment_id
+			FROM kwalbum_items
+			JOIN kwalbum_comments
+			WHERE kwalbum_items.id = kwalbum_comments.item_id
+			ORDER BY $sort_field $sort_direction
+			LIMIT :offset,:limit";
+
+		$limit = Kohana::config('kwalbum.items_per_page');
+		$offset = ($page_number-1)*$limit;
+		$result = DB::query(Database::SELECT, $query)
+			->param(':offset', $offset)
+			->param(':limit', $limit)
+			->execute();
+
+		$thumbnails = array();
+		$i = 0;
+		foreach ($result as $row)
+		{
+			$thumbnails[$i]['item'] = Model :: factory('kwalbum_item')->load($row['item_id']);
+			$thumbnails[$i]['comment'] = Model :: factory('kwalbum_comment')->load($row['comment_id']);
+			$i++;
+		}
+
+		return $thumbnails;
 	}
 
 	public function clear()
