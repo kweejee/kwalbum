@@ -98,7 +98,6 @@ echo ' <span class="kwalbumPageNumbers">(item '.$item_index.' of '.$total_items.
 		</div>
 	</div>
 </div>
-</div>
 
 <div class="box box-comments">
 <a name='comments'><b>Comments:</b></a><br/>

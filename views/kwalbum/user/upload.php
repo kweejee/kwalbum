@@ -12,9 +12,8 @@
 <div class="box">
 <form action="<?php echo $kwalbum_url.'/'.$kwalbum_url_params ?>~user/upload" method="post" enctype="multipart/form-data" autocomplete="off">
 <input type='hidden' name='overLimit' value='no'/>
-	<p>
-		<table>
-		<tr>
+	<table>
+	<tr>
 		<td colspan='2'><b>Information for all pictures being uploaded</b></td>
 		<td>Visibility: <select name='vis' id='vis'>
 			<option value='0'>Public</option>
@@ -23,8 +22,8 @@
 			<option value='3'>Contributors Only</option>
 			<?php echo ($user->is_admin ? "<option value='5'>Admin Only</option>" : null) ?></select>
 		</td>
-		</tr>
-		<tr>
+	</tr>
+	<tr>
 		<td>
 			<label>Location:</label>
 			<input type="text" class="text" name="loc" id="loc" value="<?php echo $location?>" size="15" />
@@ -34,8 +33,8 @@
 			<input type="text" class="text" name="tags" id="tags" value="<?php echo $tags?>" size="20" />
 		</td>
 		<td>Date if not found on picture: <input type="text" class="text" name="date" id="date" value="<?php echo $date ?>" size="15" /></td>
-	</tr></table>
-	</p>
+	</tr>
+	</table>
 	<p>
 		<small>Allowed filetypes are jpg, gif, and png<?php /*, wmv,
 		<a href="http://filext.com/file-extension/divx" target='_blank'>divx</a>, mpeg,

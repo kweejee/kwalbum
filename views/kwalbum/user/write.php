@@ -15,7 +15,6 @@ if ( ! empty($message))
 	echo $message.'<br/>';
 ?>
 <form action="<?php echo $kwalbum_url.'/'.$kwalbum_url_params ?>/~user/write" method="post" autocomplete="off">
-	<p>
 		<table>
 		<tr>
 		<td colspan='2'><b>What are we writing about today?</b></td>
@@ -37,8 +36,8 @@ if ( ! empty($message))
 			<input type="text" class="text" name="tags" id="tags" value="<?php echo $tags?>" size="20" />
 		</td>
 		<td>Date of entry: <input type="text" class="text" name="date" id="date" value="<?php echo $date?>" size="15" /></td>
-	</tr></table>
-	</p>
+	</tr>
+	</table>
 	<p>
 		<textarea cols="60" rows="20" name="description" id="description"><?php echo (isset($description) ? $description : null)?></textarea>
 		<br/>

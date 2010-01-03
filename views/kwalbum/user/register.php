@@ -45,3 +45,5 @@
 		echo '<br />';
 		echo form::close();
 	}
+?>
+</div>

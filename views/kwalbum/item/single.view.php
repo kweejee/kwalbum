@@ -88,7 +88,6 @@ echo ' <span class="kwalbumPageNumbers">(item '.$item_index.' of '.$total_items.
 	?>
 	</div>
 </div>
-</div>
 
 <script type="text/javascript">var item_id=<?php echo $item->id?></script>
 <?php
@@ -109,7 +108,7 @@ if ($user->can_view_item($item))
 
 		<div id="new_comment">
 			Add a comment.
-			<form>
+			<form action="#">
 			<textarea id="comment_text" cols="45" rows="10"></textarea><br/>
 			<input type="button" id="comment_save" value="Add Your Comment" />
 			</form>
