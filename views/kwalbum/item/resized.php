@@ -8,17 +8,13 @@
  * @package kwalbum
  * @since Sep 1, 2009
  */
-//if ($item->hide_level == 100)
-//{
-//	echo "<img src='$kwalbum_url/~$item->id/~item/resized' title='$item->filename'/>";
-//}
-//else
+
 if ($item->type == 'jpeg' or $item->type == 'gif' or $item->type == 'png')
 {
 	$item->type = ($item->type == 'jpeg' ? 'jpg' : $item->type);
-	echo html::anchor($kwalbum_url.'/~'.$item->id.'/~item/original.'.$item->type,
-		"<img src='$kwalbum_url/~$item->id/~item/resized.$item->type' title='$item->filename' alt='$item->filename' />")
-		.'<br/>'.html::anchor($kwalbum_url.'/~'.$item->id.'/~item/download.'.$item->type, 'download');
+	echo html::anchor($kwalbum_url.'/~'.$item->id.'/~item/original.'.$item->filename,
+		"<img src='$kwalbum_url/~$item->id/~item/resized.$item->filename' title='$item->filename' alt='$item->filename' />")
+		.'<br/>'.html::anchor($kwalbum_url.'/~'.$item->id.'/~item/download.'.$item->filename, 'download');
 }
 else if ($item->type == 'description only')
 {

@@ -13,7 +13,7 @@ Route::set('kwalbum_item', 'kwalbum/~<id>(/<year>(/<month>(/<day>)))(/<location>
 		'id' => '[0-9]+',
 		'controller'   => '[a-zA-Z]+?',
 		'action'   => '[a-zA-Z0-9]+?',
-		'ext' => '\.\w+',
+		'ext' => '\..+',
 		'year' => '[0-9]{4}',
 		'month' => '[0-9]{1,2}',
 		'day' => '[0-9]{1,2}',
@@ -30,7 +30,7 @@ Route::set('kwalbum_item', 'kwalbum/~<id>(/<year>(/<month>(/<day>)))(/<location>
 Route::set('kwalbum_browse', 'kwalbum(/<year>(/<month>(/<day>)))(/<location>)(/tags/<tags>)(/people/<people>)(/page/<page>)(/~<controller>(/<action>(<ext>)))', array(
 		'controller'   => '[a-zA-Z]+?',
 		'action'   => '[a-zA-Z0-9]+?',
-		'ext' => '\.\w+',
+		'ext' => '\..+',
 		'year' => '[0-9]{4}',
 		'month' => '[0-9]{1,2}',
 		'day' => '[0-9]{1,2}',

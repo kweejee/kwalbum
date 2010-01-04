@@ -29,7 +29,7 @@ echo ' <span class="kwalbumPageNumbers">(item '.$item_index.' of '.$total_items.
 	'back to browsing').'</span><br/>';
 ?>
 
-	<?php echo $item->location; ?>
+	<?php echo html::anchor($kwalbum_url.'/'.$item->location, $item->location); ?>
 	<br/>
 	<?php echo $item->pretty_date; ?>
 	<hr/>

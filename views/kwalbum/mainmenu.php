@@ -20,8 +20,9 @@
 	{
 		if ($user->can_edit)
 		{
-			echo html::anchor($kwalbum_url.'/~user/upload', 'upload')
-				.' - <a href="#" id="kwalbumEditToggle'.($in_edit_mode ? 'View">view' : 'Edit">edit').'</a> - ';
+			if ($user->can_add)
+				echo html::anchor($kwalbum_url.'/~user/upload', 'upload').' - ';
+			echo '<a href="#" id="kwalbumEditToggle'.($in_edit_mode ? 'View">view' : 'Edit">edit').'</a> - ';
 		}
 		if ($user->is_admin)
 		{
