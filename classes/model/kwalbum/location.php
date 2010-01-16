@@ -99,7 +99,13 @@ class Model_Kwalbum_Location extends Kwalbum_Model
 		}
 	}
 
-	public function delete($id = NULL)
+	/**
+	 * Delete a location and all connections it has to items.
+	 * 
+	 * @param int $id
+	 * @return boolean
+	 */
+	public function delete($id = null)
 	{
 		if ($id === null)
 		{
@@ -109,7 +115,7 @@ class Model_Kwalbum_Location extends Kwalbum_Model
 		// do not delete the "unknown" location
 		if ($id == 1)
 		{
-			return $this;
+			return false;
 		}
 
 		$count = DB::query(Database::UPDATE,
@@ -134,6 +140,8 @@ class Model_Kwalbum_Location extends Kwalbum_Model
 		{
 			$this->clear();
 		}
+
+		return true;
 	}
 
 	public function clear()
@@ -146,6 +154,16 @@ class Model_Kwalbum_Location extends Kwalbum_Model
 	public function __toString()
 	{
 		return $this->name;
+	}
+
+	static public function getAllArray($order = 'name ASC')
+	{
+		$result = DB::query(Database::SELECT,
+			"SELECT *
+			FROM kwalbum_locations
+			ORDER BY $order")
+			->execute();
+		return $result;
 	}
 
 	static public function getNameArray($min_count = 1, $limit = null, $offset = 0, $name = '', $order = 'name ASC')

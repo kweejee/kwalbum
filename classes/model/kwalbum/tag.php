@@ -126,6 +126,15 @@ class Model_Kwalbum_Tag extends Kwalbum_Model
 		return $this->name;
 	}
 
+	static public function getAllArray($order = 'name ASC')
+	{
+		$result = DB::query(Database::SELECT,
+			"SELECT *
+			FROM kwalbum_tags
+			ORDER BY $order")
+			->execute();
+		return $result;
+	}
 
 	static public function getNameArray($min_count = 1, $limit = null, $offset = 0,
 		$name = '', $order = 'name ASC', $not_included = array())
