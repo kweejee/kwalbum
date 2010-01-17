@@ -14,6 +14,13 @@ class Model_Kwalbum_User extends Kwalbum_Model
 {
 	public $id, $name, $login_name, $email, $token, $visit_date, $permission_level, $reset_code;
 	private $_password;
+	static $permissions = array('see public items',
+		', see member only items, comment on items',
+		', see private items, see full people names',
+		', add items, edit items they add, delete items they add',
+		', edit all items, delete all items',
+		', change user permissions, delete users');
+	static $permission_names = array('', 'Member', 'Privileged', 'Contributor', 'Editor', 'Admin');
 
 	public function load($id = null, $field = 'id')
 	{
@@ -99,6 +106,33 @@ class Model_Kwalbum_User extends Kwalbum_Model
 		}
 	}
 
+	static public function getAllArray($order = 'name ASC')
+	{
+		$users = array();
+
+		$result = DB::query(Database::SELECT,
+			"SELECT id
+			FROM kwalbum_users
+			WHERE id != 2
+			ORDER BY $order")
+			->execute();
+
+		if ($result->count() > 0)
+		{
+			foreach($result as $row)
+			{
+				$users[] = Model :: factory('kwalbum_user')->load($row['id']);
+			}
+		}
+
+		return $users;
+	}
+
+	/**
+	 *
+	 * @param int $id
+	 * @return boolean
+	 */
 	public function delete($id = NULL)
 	{
 		if ($id === NULL)
@@ -129,6 +163,8 @@ class Model_Kwalbum_User extends Kwalbum_Model
 		{
 			$this->clear();
 		}
+
+		return true;
 	}
 
 	/**
@@ -261,6 +297,13 @@ class Model_Kwalbum_User extends Kwalbum_Model
 			case 'can_add': return ($this->permission_level >= 3);
 			//case 'can_edit_all': return ($this->permission_level >= 4); // see can_edit_item($item)
 			case 'is_admin': return ($this->permission_level == 5);
+			case 'permission': return Model_Kwalbum_User::$permission_names[$this->permission_level];
+			case 'permission_description':
+				$perms = '';
+				for($i = 0; $i <= $this->permission_level; ++$i)
+					$perms .= Model_Kwalbum_User::$permissions[$i];
+				return $perms;
+			default:
 		}
 	}
 

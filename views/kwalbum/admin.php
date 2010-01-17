@@ -12,7 +12,7 @@
 
 ?>
 <div class="box">
-	Admin Features
+	<big><b>Admin Options</b></big>
 	<ul>
 		<li><?php echo html::anchor($kwalbum_url.'/~admin/locations', 'Locations'); ?></li>
 		<li><?php echo html::anchor($kwalbum_url.'/~admin/tags', 'Tags'); ?></li>

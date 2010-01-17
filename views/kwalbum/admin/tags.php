@@ -1,14 +1,18 @@
-<h2><?php echo html::anchor($kwalbum_url.'/~admin', 'Admin Options'); ?>: Editing Tags</h2>
+<div class="box">
+	<big><b><?php echo html::anchor($kwalbum_url.'/~admin', 'Admin Options'); ?>: Editing Tags</b></big>
+
 <table border="1">
-	<tr><th>Count</th><th style="width:255px;">Click to Edit Name</th><th>Delete?</th></tr>
+	<tr><th>Count</th><th style="width:255px;">Name</th><th>Delete?</th></tr>
 <?php
 $tags = Model_Kwalbum_Tag::getAllArray();
 foreach ($tags as $tag)
 {
-	echo "	<tr id='row{$tag['id']}'><td>{$tag['count']}</td><td><span id='tag{$tag['id']}'>{$tag['name']}</span></td><td>"
-		."<input type='button' onClick='deleteTag({$tag['id']})' value='Delete'/></td></tr>";
+	echo "	<tr id='row{$tag['id']}'><td>"
+		.html::anchor($kwalbum_url.'/tags/'.$tag['name'], $tag['count'])
+		."</td><td><span id='tag{$tag['id']}'>{$tag['name']}</span></td><td style='text-align:center'>"
+		."<a href='#' onClick='deleteTag({$tag['id']});return false;'>[X]</a></td></tr>";
 }
-echo "</table>";
+echo "</table></div>";
 
 echo html::script($kwalbum_url.'/media/ajax/jquery.jeditable.mini.js')
 ?>

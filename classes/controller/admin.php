@@ -21,7 +21,7 @@ class Controller_Admin extends Controller_Kwalbum
 		if ( ! $this->_testAdmin())
 			return;
 		$this->template->content = new View('kwalbum/admin');
-		$this->template->title = 'Admin Only';
+		$this->template->title = 'Admin Options';
 
 	}
 
@@ -55,6 +55,7 @@ class Controller_Admin extends Controller_Kwalbum
 			return;
 		$this->template->content = new View('kwalbum/admin/users');
 		$this->template->title = 'Edit Users';
+		$this->template->current_user = $this->user;
 	}
 
 	private function _testAdmin()

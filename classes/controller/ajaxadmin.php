@@ -17,8 +17,7 @@ class Controller_AjaxAdmin extends Controller_Kwalbum
 		$loc = Model :: factory('kwalbum_location')->load((int)$_POST['id']);
 		if ( ! empty($_POST['value']))
 		{
-			$value = Security :: xss_clean($_POST['value']);
-			$loc->name = $value;
+			$loc->name = Security :: xss_clean($_POST['value']);
 			$loc->save();
 		}
 		echo $loc->name;
@@ -40,8 +39,7 @@ class Controller_AjaxAdmin extends Controller_Kwalbum
 		$person = Model :: factory('kwalbum_person')->load((int)$_POST['id']);
 		if ( ! empty($_POST['value']))
 		{
-			$value = Security :: xss_clean($_POST['value']);
-			$person->name = $value;
+			$person->name = Security :: xss_clean($_POST['value']);
 			$person->save();
 		}
 		echo $person->name;
@@ -63,8 +61,7 @@ class Controller_AjaxAdmin extends Controller_Kwalbum
 		$tag = Model :: factory('kwalbum_tag')->load((int)$_POST['id']);
 		if ( ! empty($_POST['value']))
 		{
-			$value = Security :: xss_clean($_POST['value']);
-			$tag->name = $value;
+			$tag->name = Security :: xss_clean($_POST['value']);
 			$tag->save();
 		}
 		echo $tag->name;
@@ -76,6 +73,42 @@ class Controller_AjaxAdmin extends Controller_Kwalbum
 		$this->_testPermission();
 		Model :: factory('kwalbum_tag')
 			->load((int)$_POST['id'])
+			->delete();
+		exit;
+	}
+
+	function action_GetUserPermission()
+	{
+		$this->_testPermission();
+		$perms = Model_Kwalbum_User::$permission_names;
+		$user = Model :: factory('kwalbum_user')->load((int)$_GET['userid']);
+		$perms['selected'] = $user->permission_level;
+		echo json_encode($perms);
+		exit;
+	}
+
+
+	function action_EditUserPermission()
+	{
+		$this->_testPermission();
+		$user = Model :: factory('kwalbum_user')->load((int)$_POST['userid']);
+		if ( ! empty($_POST['value']))
+		{
+			if ($user->id > 1 and $user->id != $this->user->id)
+			{
+				$user->permission_level = (int)$_POST['value'];
+				$user->save();
+			}
+		}
+		echo $user->permission_description;
+		exit;
+	}
+
+	function action_DeleteUser()
+	{
+		$this->_testPermission();
+		Model :: factory('kwalbum_user')
+			->load((int)$_POST['userid'])
 			->delete();
 		exit;
 	}

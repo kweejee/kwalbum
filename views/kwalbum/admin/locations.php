@@ -1,15 +1,19 @@
-<h2><?php echo html::anchor($kwalbum_url.'/~admin', 'Admin Options'); ?>: Editing Locations</h2>
+<div class="box">
+	<big><b><?php echo html::anchor($kwalbum_url.'/~admin', 'Admin Options'); ?>: Editing Locations</b></big>
+
 <table border="1">
-	<tr><th>Count</th><th style="width:255px;">Click to Edit Name</th><th>Delete?</th><th>Click to Edit Map</th></tr>
+	<tr><th>Count</th><th style="width:255px;">Name</th><th>Delete?</th><th>Click to Edit Map</th></tr>
 <?php
 $locations = Model_Kwalbum_Location::getAllArray();
 foreach ($locations as $loc)
 {
-	echo "	<tr id='row{$loc['id']}'><td>{$loc['count']}</td><td><span id='loc{$loc['id']}'>{$loc['name']}</span></td><td>"
-		.($loc['id'] > 1 ? "<input type='button' onClick='deleteLocation({$loc['id']})' value='Delete'/>" : '&nbsp;')
+	echo "	<tr id='row{$loc['id']}'><td>"
+		.html::anchor($kwalbum_url.'/'.$loc['name'], $loc['count'])
+		."</td><td><span id='loc{$loc['id']}'>{$loc['name']}</span></td><td style='text-align:center'>"
+		.($loc['id'] > 1 ? "<a href='#' onClick='deleteLocation({$loc['id']});return false;'>[X]</a>" : '&nbsp;')
 		.'</td></tr>';
 }
-echo "</table>";
+echo "</table></div>";
 
 echo html::script($kwalbum_url.'/media/ajax/jquery.jeditable.mini.js')
 ?>
