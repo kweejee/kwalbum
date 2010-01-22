@@ -6,11 +6,11 @@
 <?php
 $users = Model_Kwalbum_User::getAllArray();
 
-foreach ($users as $user)
+foreach ($users as $u)
 {
-	echo "	<tr id='row{$user->id}'><td><span id='user{$user->id}'>{$user->name}</span></td><td>{$user->login_name}</td>"
-		."<td>{$user->email}</td><td>{$user->visit_date}</td><td><span id='perm{$user->id}'>$user->permission_description</span></td>"
-		."<td style='text-align:center'>".($user->id > 2 ? "<a href='#' onClick='deleteUser({$user->id});return false;'>[X]</a>" : "&nbsp;")."</td></tr>";
+	echo "	<tr id='row{$u->id}'><td><span id='user{$user->id}'>{$u->name}</span></td><td>{$u->login_name}</td>"
+		."<td>{$u->email}</td><td>{$u->visit_date}</td><td><span id='perm{$user->id}'>$u->permission_description</span></td>"
+		."<td style='text-align:center'>".($u->id > 2 ? "<a href='#' onClick='deleteUser({$u->id});return false;'>[X]</a>" : "&nbsp;")."</td></tr>";
 }
 echo "</table></div>";
 
@@ -24,15 +24,15 @@ function deleteUser(id){
 	}
 }
 <?php
-foreach ($users as $user)
+foreach ($users as $u)
 {
-	if ($user->id > 1 and $user->id != $current_user->id)
+	if ($u->id > 1 and $u->id != $user->id)
 	{
 ?>
-	$('#perm<?php echo $user->id; ?>').editable('<?php echo $kwalbum_url; ?>/~ajaxAdmin/EditUserPermission',{
+	$('#perm<?php echo $u->id; ?>').editable('<?php echo $kwalbum_url; ?>/~ajaxAdmin/EditUserPermission',{
 		type:"select",tooltip:"Click to edit...",indicator:"Saving...",
-		onblur:"submit",submitdata:{userid:<?php echo $user->id; ?>},
-		loadurl:'<?php echo $kwalbum_url; ?>/~ajaxAdmin/GetUserPermission?userid=<?php echo $user->id; ?>'
+		onblur:"submit",submitdata:{userid:<?php echo $u->id; ?>},
+		loadurl:'<?php echo $kwalbum_url; ?>/~ajaxAdmin/GetUserPermission?userid=<?php echo $u->id; ?>'
 	});
 <?php
 	}
