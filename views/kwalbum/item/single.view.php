@@ -67,6 +67,7 @@ echo ' <span class="kwalbumPageNumbers">(item '.$item_index.' of '.$total_items.
 			echo '<br/>';
 		}
 	?>
+	<strong>Views:</strong> <?php echo $item->count; ?><br/>
 
 	<div class="box box-thumbnail">
 	Previous Item:<br/>

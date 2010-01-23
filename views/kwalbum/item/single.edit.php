@@ -76,6 +76,8 @@ echo ' <span class="kwalbumPageNumbers">(item '.$item_index.' of '.$total_items.
 		.html::script($kwalbum_url.'/media/ajax/edit.js');
 
 	?>
+	<strong>Views:</strong> <?php echo $item->count; ?><br/>
+	
 	<div>
 		<div class="box box-thumbnail">
 		Previous Item:<br/>

@@ -44,6 +44,13 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 	static private $_sort_direction = 'ASC';
 	static private $_gtlt = '<';
 
+	/**
+	 * Load an item based on $field matching $id
+	 * 
+	 * @param mixed $id
+	 * @param string $field
+	 * @return Model_Kwalbum_Item
+	 */
 	public function load($id = null, $field = 'id')
 	{
 		$this->clear();
@@ -98,6 +105,9 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 		return $this;
 	}
 
+	/**
+	 * Save object changes to the database
+	 */
 	public function save()
 	{
 		// Set type
@@ -357,6 +367,12 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 		//echo Kohana::debug($query);exit;
 	}
 
+	/**
+	 * Delete an item from the database along with any relationships to other
+	 * tables in the database.  If it is the current object, clear it also.
+	 * 
+	 * @param int $id optional id for an item that is not the current object
+	 */
 	public function delete($id = NULL)
 	{
 		if ($id === NULL)
@@ -422,6 +438,39 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 		{
 			$this->clear();
 		}
+	}
+
+	/**
+	 * Add 1 to an item's count if it was not recently viewed by the user.
+	 * 
+	 * @param int $id
+	 */
+	static public function increase_count($id)
+	{
+		if ( ! $id)
+		{
+			return;
+		}
+		$id = (int)$id;
+
+		$session = Session::instance();
+		$viewed_ids = $session->get('viewed_item_ids', array());
+		$count_it = true;
+		if (in_array($id, $viewed_ids))
+		{
+			$count_it = false;
+		}
+
+		if ($count_it)
+		{
+			DB::query(Database::UPDATE, "UPDATE kwalbum_items
+					SET count = count+1
+					WHERE id = :id")
+					->param(':id', $id)
+					->execute();
+			$viewed_ids[] = $id;
+		}
+		$session->set('viewed_item_ids', $viewed_ids);
 	}
 
 	public function __get($id)
