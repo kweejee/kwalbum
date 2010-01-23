@@ -157,8 +157,9 @@ class Controller_Kwalbum extends Controller_Template
 
 		// Remove the extension from the filename
 		$file = substr($file, 0, -(strlen($ext) + 1));
-
-		if ($file = Kohana::find_file('media', $file, $ext))
+		
+		$file = Kohana::find_file('media', $file, $ext);
+		if ($file)
 		{
 			// Send the file content as the response
 			$this->request->response = str_replace('KWALBUM_URL', $this->url, file_get_contents($file));
