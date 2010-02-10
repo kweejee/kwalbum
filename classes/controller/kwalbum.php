@@ -82,12 +82,14 @@ class Controller_Kwalbum extends Controller_Template
 			$this->people = null;
 
 		// Set up user if logged in
-		$this->user = Model::factory('kwalbum_user')->load_from_cookie($this->request->action);
+		$this->user = Model::factory('kwalbum_user')
+			->load_from_cookie($this->request->action);
 
 		// item id
 		if (0 < $this->request->param('id'))
 		{
-			$this->item = Model::factory('kwalbum_item')->load((int)$this->request->param('id'));
+			$this->item = Model::factory('kwalbum_item')
+				->load((int)$this->request->param('id'));
 			$this->item->hide_if_needed($this->user);
 			$this->template->set_global('item', $this->item);
 		}

@@ -528,13 +528,19 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 		else if ($id == 'pretty_date')
 		{
 			$date = explode(' ', $this->visible_date);
-			$time = explode(':', $date[1]);
+
+			if (count($date) > 1) {
+				$time = explode(':', $date[1]);
+				$hour = $time[0];
+				$minute = $time[1];
+			} else {
+				$hour = '';
+				$minute = '';
+			}
 			$date = explode('-', $date[0]);
 			$year = $date[0];
 			$month = $date[1];
-			$day = $date[2];
-			$hour = $time[0];
-			$minute = $time[1];
+				$day = $date[2];
 
 			if (0 == $month)
 			{

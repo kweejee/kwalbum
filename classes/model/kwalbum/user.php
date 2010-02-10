@@ -216,7 +216,7 @@ class Model_Kwalbum_User extends Kwalbum_Model
 		{
 			if ( ! empty($_SESSION['kwalbum_id']))
 			{
-				$user = $this->load((int)$_SESSION['kwalbum_id']);
+				$this->load((int)$_SESSION['kwalbum_id']);
 				if ($this->token)
 				{
 					$this->token = '';
@@ -255,11 +255,11 @@ class Model_Kwalbum_User extends Kwalbum_Model
 			{
 				if ( ! empty($_SESSION['kwalbum_id']))
 				{
-					$user = $this->load((int)$_SESSION['kwalbum_id']);
+					$this->load((int)$_SESSION['kwalbum_id']);
 					if ($this->token)
 					{
 						$this->token = '';
-						$this->save;
+						$this->save();
 					}
 				}
 				unset($_SESSION['kwalbum_id']);

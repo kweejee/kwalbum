@@ -101,12 +101,13 @@ class Kwalbum_Helper
     public static function getThumbnailLink($item, $kwalbum_url, $kwalbum_url_params = '')
     {
     	$cleaned_description = strip_tags($item->description,'<br><br/>');
+		$description = '';
 
 		if ($item->type == 'jpeg' or $item->type == 'gif' or $item->type == 'png')
 		{
 			$item->type = ($item->type == 'jpeg' ? 'jpg' : $item->type);
 			$link_text = "<img src='$kwalbum_url/~$item->id/~item/thumbnail.$item->filename' title='$item->filename'/>";
-			$description = '';
+
 			if (strlen($cleaned_description) > 30)
 				$description .= '<div class="box-thumbnail-description">';
 			$description .= substr($cleaned_description, 0, 50)
@@ -118,7 +119,6 @@ class Kwalbum_Helper
 		{
 			$link_text = '<div class="box-thumbnail-description">'.substr($cleaned_description, 0, 200)
 				.(strlen($cleaned_description) > 200 ? '...' : null).'</div>';
-			$description = '';
 		}
 		else
 		{
