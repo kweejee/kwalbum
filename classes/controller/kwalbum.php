@@ -82,8 +82,8 @@ class Controller_Kwalbum extends Controller_Template
 			$this->people = null;
 
 		// Set up user if logged in
-		$this->user = Model::factory('kwalbum_user')
-			->load_from_cookie($this->request->action);
+		$this->user = Model::factory('kwalbum_user');
+		$this->user->load_from_cookie($this->request->action);
 
 		// item id
 		if (0 < $this->request->param('id'))

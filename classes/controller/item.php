@@ -25,6 +25,7 @@ class Controller_Item extends Controller_Kwalbum
 
 	function action_index()
 	{
+		$this->item->increase_count();
 		$this->auto_render = true;
 		if ($this->in_edit_mode)
 		{
@@ -56,19 +57,19 @@ class Controller_Item extends Controller_Kwalbum
 
 	function action_resized()
 	{
-		Model_Kwalbum_Item::increase_count($this->item->id);
+		$this->item->increase_count();
 		$this->_send_file($this->item->path.'r/'.$this->item->filename, '_resized');
 	}
 
 	function action_original()
 	{
-		Model_Kwalbum_Item::increase_count($this->item->id);
+		$this->item->increase_count();
 		$this->_send_file($this->item->path.$this->item->filename);
 	}
 
 	function action_download()
 	{
-		Model_Kwalbum_Item::increase_count($this->item->id);
+		$this->item->increase_count();
 		$this->_send_file($this->item->path.$this->item->filename, '', true);
 	}
 

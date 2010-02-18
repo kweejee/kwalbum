@@ -442,16 +442,10 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 
 	/**
 	 * Add 1 to an item's count if it was not recently viewed by the user.
-	 * 
-	 * @param int $id
 	 */
-	static public function increase_count($id)
+	public function increase_count()
 	{
-		if ( ! $id)
-		{
-			return;
-		}
-		$id = (int)$id;
+		$id = $this->id;
 
 		$session = Session::instance();
 		$viewed_ids = $session->get('viewed_item_ids', array());
@@ -463,6 +457,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 
 		if ($count_it)
 		{
+			$this->count++;
 			DB::query(Database::UPDATE, "UPDATE kwalbum_items
 					SET count = count+1
 					WHERE id = :id")
