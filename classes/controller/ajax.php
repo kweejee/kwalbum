@@ -11,7 +11,7 @@
 
 class Controller_Ajax extends Controller_Kwalbum
 {
-	function before()
+	public function before()
 	{
 		if ($this->request->action == 'upload')
 			session_id($_POST['session_id']);
@@ -22,7 +22,7 @@ class Controller_Ajax extends Controller_Kwalbum
 		parent::before();
 	}
 
-	function action_GetInputLocations()
+	public function action_GetInputLocations()
 	{
 		$this->_testPermission();
 		$userInput = trim(@$_GET['q']);
@@ -34,7 +34,7 @@ class Controller_Ajax extends Controller_Kwalbum
 		}
 	}
 
-	function action_SetLocation()
+	public function action_SetLocation()
 	{
 		$item = Model :: factory('kwalbum_item')->load((int)$_POST['item']);
 		$this->_testPermission($item);
@@ -43,7 +43,7 @@ class Controller_Ajax extends Controller_Kwalbum
 		echo $item->location;
 	}
 
-	function action_SetDate()
+	public function action_SetDate()
 	{
 		$item = Model :: factory('kwalbum_item')->load((int)$_POST['item']);
 		$this->_testPermission($item);
@@ -58,7 +58,7 @@ class Controller_Ajax extends Controller_Kwalbum
 		echo $item->visible_date;
 	}
 
-	function action_SetSortDate()
+	public function action_SetSortDate()
 	{
 		$item = Model :: factory('kwalbum_item')->load((int)$_POST['item']);
 		$this->_testPermission($item);
@@ -70,14 +70,14 @@ class Controller_Ajax extends Controller_Kwalbum
 		}
 		echo $item->sort_date;
 	}
-	function action_GetRawDescription()
+	public function action_GetRawDescription()
 	{
 		$item = Model :: factory('kwalbum_item')->load((int)$_GET['item']);
 		$this->_testPermission($item);
 		echo $item->description;
 	}
 
-	function action_SetDescription()
+	public function action_SetDescription()
 	{
 		$item = Model :: factory('kwalbum_item')->load((int)$_POST['item']);
 		$this->_testPermission($item);
@@ -86,7 +86,7 @@ class Controller_Ajax extends Controller_Kwalbum
 		echo $item->description;
 	}
 
-	function action_GetVisibility()
+	public function action_GetVisibility()
 	{
 		$item = Model :: factory('kwalbum_item')->load((int)$_GET['item']);
 		$this->_testPermission($item);
@@ -97,7 +97,7 @@ class Controller_Ajax extends Controller_Kwalbum
 		echo json_encode($vis);
 	}
 
-	function action_SetVisibility()
+	public function action_SetVisibility()
 	{
 		$item = Model :: factory('kwalbum_item')->load((int)$_POST['item']);
 		$this->_testPermission($item);
@@ -119,12 +119,12 @@ class Controller_Ajax extends Controller_Kwalbum
 		echo $vis[$item->hide_level];
 	}
 
-	function action_GetInputTags()
+	public function action_GetInputTags()
 	{
 		$this->_getInputList('Model_Kwalbum_Tag', 'getNameArray');
 	}
 
-	function action_SetTags()
+	public function action_SetTags()
 	{
 		$item = Model :: factory('kwalbum_item')->load((int)$_POST['item']);
 		$this->_testPermission($item);
@@ -139,7 +139,7 @@ class Controller_Ajax extends Controller_Kwalbum
 		echo implode(',',$item->tags);
 	}
 
-	function action_SetPersons()
+	public function action_SetPersons()
 	{
 		$item = Model :: factory('kwalbum_item')->load((int)$_POST['item']);
 		$this->_testPermission($item);
@@ -153,12 +153,12 @@ class Controller_Ajax extends Controller_Kwalbum
 		echo implode(',',$item->persons);
 	}
 
-	function action_GetInputPersons()
+	public function action_GetInputPersons()
 	{
 		$this->_getInputList('Model_Kwalbum_Person', 'getNameArray');
 	}
 
-	function action_SetEditMode()
+	public function action_SetEditMode()
 	{
 		if ( ! $this->user->can_edit)
 			$_POST['edit'] = false;
@@ -168,7 +168,7 @@ class Controller_Ajax extends Controller_Kwalbum
 		echo 1;
 	}
 
-	function action_AddComment()
+	public function action_AddComment()
 	{
 		$item = Model::factory('kwalbum_item')->load((int)$_POST['item']);
 		if ( ! $this->user->can_view_item($item))
@@ -184,7 +184,7 @@ class Controller_Ajax extends Controller_Kwalbum
 		echo $comment->name.' : '.$comment->date.'<br/>'.$comment->text.'<hr/>';
 	}
 
-	function action_DeleteItem()
+	public function action_DeleteItem()
 	{
 		$item = Model::factory('kwalbum_item')->load((int)$_POST['item']);
 		if ( ! $this->user->can_edit_item($item))
@@ -196,7 +196,7 @@ class Controller_Ajax extends Controller_Kwalbum
 		echo 1;
 	}
 
-	function action_upload()
+	public function action_upload()
 	{
 		if ( ! $this->user->can_add)
 		{
@@ -275,4 +275,9 @@ class Controller_Ajax extends Controller_Kwalbum
 		}
 	}
 
+	public function action_GetMapLocations()
+	{
+
+		
+	}
 }

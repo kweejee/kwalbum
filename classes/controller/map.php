@@ -15,5 +15,6 @@ class Controller_Map extends Controller_Kwalbum
 	public function action_index()
 	{
 		$this->template->content = new View('kwalbum/map');
+		$this->template->title = 'Map';
 	}
 }

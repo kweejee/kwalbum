@@ -48,4 +48,16 @@ class Controller_Browse extends Controller_Kwalbum
 		$this->template->title = 'browsing newest comments';
 
 	}
+
+	public function action_popular()
+	{
+		$view = new View('kwalbum/browse/popular');
+		Model_Kwalbum_Item :: set_sort_field('count');
+		Model_Kwalbum_Item :: set_sort_direction('DESC');
+		$view->items = Model_Kwalbum_Item :: get_thumbnails($this->page_number);
+		$this->template->content = $view;
+		$this->template->title = 'browsing most popular';
+
+	}
+
 }

@@ -922,6 +922,11 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 		Model_Kwalbum_Item::$_where[] = $query;
 	}
 
+	/**
+	 * get a collection of thumbnails based on the query
+	 * @param int $page_number
+	 * @return ArrayOfItem
+	 */
 	static public function get_thumbnails($page_number = 1)
 	{
 		$sort_field = Model_Kwalbum_Item::$_sort_field;
