@@ -31,3 +31,6 @@ img{border-style:hidden;}
 .kwalbumPageNumbers{clear:both;text-align: left;}
 .kwalbumHasComments{color: #fdd;}
 
+.kwalbumItemMapCanvas{width:300px;height:300px;border:1px solid black;}
+.kwalbumPopupTitle{text-align:center;font-size:1.4em;font-weight:bold;}
+.kwalbumPopupDescription{text-align:left;}

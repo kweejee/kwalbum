@@ -24,7 +24,8 @@
 	?>
 </div>
 
-<div class="box box-right">
+<div class="box-right">
+	<div class="box">
 <?php
 echo ' <span class="kwalbumPageNumbers">(item '.$item_index.' of '.$total_items.') - '
 	.html::anchor($kwalbum_url.'/'
@@ -99,6 +100,11 @@ echo ' <span class="kwalbumPageNumbers">(item '.$item_index.' of '.$total_items.
 		?>
 		</div>
 	</div>
+
+</div></div>
+
+<div class="box">
+	<div id="mapCanvas" class="kwalbumItemMapCanvas"></div>
 </div>
 
 <div class="box box-comments">
@@ -110,3 +116,10 @@ foreach ($item->comments as $comment)
 }
 ?>
 </div>
+
+<script src="http://www.openlayers.org/api/OpenLayers.js" type="text/javascript"></script>
+<script src="http://www.openstreetmap.org/openlayers/OpenStreetMap.js" type="text/javascript"></script>
+<script src="<?php echo $kwalbum_url; ?>/media/ajax/map/item.edit.js" type="text/javascript"></script>
+<script type="text/javascript">
+	initMap(<?php echo $item->latitude.','.$item->longitude.','.$item->id; ?>);
+</script>

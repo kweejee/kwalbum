@@ -2,7 +2,7 @@
 	<big><b><?php echo html::anchor($kwalbum_url.'/~admin', 'Admin Options'); ?>: Editing Locations</b></big>
 
 <table border="1">
-	<tr><th>Count</th><th style="width:255px;">Name</th><th>Delete?</th><th>Click to Edit Map</th></tr>
+	<tr><th>Count</th><th style="width:255px;">Name</th><th>Delete?</th><th>Mapping Coordinates</th></tr>
 <?php
 $locations = Model_Kwalbum_Location::getAllArray();
 foreach ($locations as $loc)
@@ -11,7 +11,7 @@ foreach ($locations as $loc)
 		.html::anchor($kwalbum_url.'/'.$loc['name'], $loc['count'])
 		."</td><td><span id='loc{$loc['id']}'>{$loc['name']}</span></td><td style='text-align:center'>"
 		.($loc['id'] > 1 ? "<a href='#' onClick='deleteLocation({$loc['id']});return false;'>[X]</a>" : '&nbsp;')
-		.'</td></tr>';
+		."</td><td><span id='coord{$loc['id']}' onClick='window.open(\"{$kwalbum_url}/~admin/locationmap?id={$loc['id']}\")'>{$loc['longitude']},{$loc['latitude']}</span></td></tr>";
 }
 echo "</table></div>";
 

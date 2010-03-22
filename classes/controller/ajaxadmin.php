@@ -113,6 +113,18 @@ class Controller_AjaxAdmin extends Controller_Kwalbum
 		exit;
 	}
 
+	function action_SaveMapLocation()
+	{
+		$this->_testPermission();
+		$loc = new Model_Kwalbum_Location;
+		$loc->load($_POST['id']);
+		$loc->latitude = (float)$_POST['lat'];
+		$loc->longitude = (float)$_POST['lon'];
+		$loc->save();
+		echo 1;
+		exit;
+	}
+
 	private function _testPermission()
 	{
 		if ($this->user->is_admin)

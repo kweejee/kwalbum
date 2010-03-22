@@ -83,8 +83,8 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 		$this->update_date = $row['update_dt'];
 		$this->create_date = $row['create_dt'];
 		$this->description = $row['description'];
-		$this->latitude = $row['latitude'];
-		$this->longitude = $row['longitude'];
+		$this->latitude = (float)$row['latitude'];
+		$this->longitude = (float)$row['longitude'];
 		$this->path = Kohana::config('kwalbum.item_path').$row['path'];
 		$this->filename = $row['filename'];
 		$this->has_comments = (bool)$row['has_comments'];
@@ -1064,5 +1064,77 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 	static public function get_page_number($index)
 	{
 		return ceil($index/Kohana::config('kwalbum.items_per_page'));
+	}
+
+	/**
+	 * recursive function to find items to be used as markers on a map
+	 * 
+	 * @param float $left
+	 * @param float $right
+	 * @param float $top
+	 * @param float $bottom
+	 * @param string $where
+	 * @param ArrayOfArray $data
+	 * @param int $limit
+	 * @param int $depth
+	 * @return void
+	 */
+	static public function getMarkers($left, $right, $top, $bottom, &$where, &$data, $limit, $depth = 0) {
+		$where_query = $where
+			." AND latitude IS NOT NULL AND latitude != 0"
+			." AND latitude >= '$bottom' AND latitude <= '$top'"
+			.($left>$right
+				? " AND (longitude >= '$left' OR longitude <= '$right')"
+				: " AND longitude >= '$left' AND longitude <= '$right'");
+			$query = "SELECT count(*) FROM kwalbum_items $where_query";
+		$result = DB::query(Database::SELECT, $query)
+			->execute();
+		$count = (int)$result[0]['count(*)'];
+
+		if (0 == $count)
+			return;
+
+		if (0 < $depth and $limit < $count)
+		{
+			$depth--;
+			$centerLat = ($left+$right)/2;
+			$centerLon = ($top+$bottom)/2;
+			Model_Kwalbum_Item::getMarkers($left, $centerLat, $top, $centerLon, $where, $data, $limit, $depth);
+			Model_Kwalbum_Item::getMarkers($centerLat, $right, $top, $centerLon, $where, $data, $limit, $depth);
+			Model_Kwalbum_Item::getMarkers($left, $centerLat, $centerLon, $bottom, $where, $data, $limit, $depth);
+			Model_Kwalbum_Item::getMarkers($centerLat, $right, $centerLon, $bottom, $where, $data, $limit, $depth);
+		}
+		else
+		{
+			if ($limit >= $count)
+			{
+				$query = 'SELECT id, latitude as lat, longitude as lon, count(*) as count, visible_dt as date, description'
+					.' FROM kwalbum_items'
+					.$where_query
+					.' GROUP BY latitude, longitude'
+					.' ORDER BY latitude'
+					.' LIMIT '.$limit;
+				$result = DB::query(Database::SELECT, $query)
+					->execute();
+				foreach($result as $row) {
+					$row['group'] = false;
+					$data[] = $row;
+				}
+			}
+			else
+			{
+				$query = 'SELECT AVG(latitude) as lat, AVG(longitude) as lon'
+					.' FROM kwalbum_items'
+					.$where_query
+					.' LIMIT 1';
+				$result = DB::query(Database::SELECT, $query)
+					->execute();
+				$row = $result[0];
+				$row['group'] = true;
+				$row['count'] = $count;
+				$data[] = $row;
+			}
+		}
+		return;
 	}
 }

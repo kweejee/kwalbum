@@ -57,6 +57,23 @@ class Controller_Admin extends Controller_Kwalbum
 		$this->template->title = 'Edit Users';
 	}
 
+	function action_locationmap()
+	{
+		if ( ! $this->_testAdmin())
+			return;
+
+		$id = @(int)$_GET['id'];
+		if ( ! $id)
+		{
+			echo 'Error! No ID given!<script type="text/javascript">window.close();</script>';
+			exit;
+		}
+		$location = new Model_Kwalbum_Location;
+		$location->load($id);
+		$this->template = new View('kwalbum/admin/locationmap');
+		$this->template->location = $location;
+	}
+
 	private function _testAdmin()
 	{
 		if ($this->user->is_admin)

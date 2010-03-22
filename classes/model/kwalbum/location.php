@@ -41,8 +41,8 @@ class Model_Kwalbum_Location extends Kwalbum_Model
 
 		$this->id = (int)$row['id'];
 		$this->name = $row['name'];
-		$this->latitude = $row['latitude'];
-		$this->longitude = $row['longitude'];
+		$this->latitude = (float)$row['latitude'];
+		$this->longitude = (float)$row['longitude'];
 		$this->count = (int)$row['count'];
 		$this->loaded = true;
 
@@ -78,9 +78,9 @@ class Model_Kwalbum_Location extends Kwalbum_Model
 			}
 			$this->id = $id = (int)$result[0]['id'];
 			if ($this->latitude == 0)
-				$this->latitude = $result[0]['latitude'];
+				$this->latitude = (float)$result[0]['latitude'];
 			if ($this->longitude == 0)
-				$this->longitude = $result[0]['longitude'];
+				$this->longitude = (float)$result[0]['longitude'];
 			if ($this->count == 0)
 				$this->count = (int)$result[0]['count'];
 		}
@@ -254,5 +254,24 @@ class Model_Kwalbum_Location extends Kwalbum_Model
 		}
 
 		return $locations;
+	}
+
+	static public function getMarkers($left, $right, $top, $bottom, &$data) {
+		$where_query = " WHERE latitude IS NOT NULL AND latitude != 0"
+			." AND latitude >= '$bottom' AND latitude <= '$top'"
+			.($left>$right
+				? " AND (longitude >= '$left' OR longitude <= '$right')"
+				: " AND longitude >= '$left' AND longitude <= '$right'");
+		$query = 'SELECT id, name, latitude as lat, longitude as lon, count'
+			.' FROM kwalbum_locations'
+			.$where_query
+			.' ORDER BY count DESC'
+			.' LIMIT 10';
+		$result = DB::query(Database::SELECT, $query)
+			->execute();
+		foreach($result as $row) {
+			$data[] = $row;
+		}
+		return;
 	}
 }
