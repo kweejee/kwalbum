@@ -66,7 +66,7 @@ echo $content
 
 <p class="copyright">
 	Rendered in {execution_time} seconds, using {memory_usage} of memory<br />
-	Powered by Kwalbum and Kohana
+	Powered by <a href="https://github.com/kweejee/kwalbum">Kwalbum</a> and <a href="http://kohanaframework.org/">Kohana</a>
 </p>
 
 </body>
