@@ -117,7 +117,21 @@ class Kwalbum_ItemAdder
 			$this->ResizeImage($item->path, $item->filename);
 		}
 
-		$item->save();
+		if ($_POST['group_option'] == 'existing')
+		{
+			$result = DB::query(Database::SELECT,
+			"SELECT update_dt
+			FROM kwalbum_items
+			ORDER BY id DESC
+			LIMIT 1")
+			->execute();
+			$item->update_date = $result[0]['update_dt'];
+			$item->save(false);
+		} 
+		else
+		{
+			$item->save();
+		}
 		return $item->id;
 	}
 
@@ -140,12 +154,15 @@ class Kwalbum_ItemAdder
 			$extension = pathinfo($item->filename, PATHINFO_EXTENSION);
 			do
 			{
-				$item->filename = "{$name}_$i.$extension";
+				$item->filename = "{$name}_{$i}.{$extension}";
 				$i++;
 			} while ( ! Model_Kwalbum_Item::check_unique_filename($item->path, $item->filename));
 		}
 		$item->type = $this->get_filetype($item->filename);
 
+		if ( $_FILES['Filedata']['error'] == 1) {
+			throw new Kohana_Exception('File not uploaded.  Size greater than '.MAX_FILE_SIZE.'?');
+		}
 		if ( ! Upload :: save($_FILES['Filedata'], $item->filename, $item->path))
 		{
 			throw new Kohana_Exception('upload could not be saved');
@@ -270,14 +287,16 @@ class Kwalbum_ItemAdder
 			$pathMonth = $dirs[1];
 
 			$path = $path.$pathYear;
-			if ( ! file_exists($path) and ! mkdir($path))
+			if ( ! file_exists($path)
+					and ! mkdir($path))
 			{
 				throw new Kohana_Exception('Directory :dir could not be created', array (
 					':dir' => Kohana :: debug_path($path)
 				));
 			}
 			$path .= '/'.$pathMonth;
-			if ( ! file_exists($path) and ! mkdir($path))
+			if ( ! file_exists($path)
+					and ! mkdir($path))
 			{
 				throw new Kohana_Exception('Directory :dir could not be created', array (
 					':dir' => Kohana :: debug_path($path)

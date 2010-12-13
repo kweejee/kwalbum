@@ -8,6 +8,7 @@ $(document).ready(function(){
 	});
 	$('#fileInput').uploadify({
 		'uploader':'KWALBUM_URL/media/ajax/uploadify/uploadify.swf',
+		'onComplete':kwablum_refresh_upload_data,
 		'cancelImg':'KWALBUM_URL/media/ajax/uploadify/cancel.png',
 		'script':'KWALBUM_URL/~ajax/upload.php',
 		'multi':true,
@@ -16,14 +17,20 @@ $(document).ready(function(){
 		'fileDesc':'Image Files Only'
 	});
 });
-function kwalbumUpload()
+var kwablum_refresh_upload_data = function()
 {
 	$('#fileInput').uploadifySettings('scriptData',{
 		'loc':$("#loc").val(),
 		'tags':$("#tags").val(),
 		'vis':$('#vis').val(),
 		'date':$('#date').val(),
+		'group_option':$('#groupOption').val(),
 		'session_id':'SESSION_ID'
 	});
+}
+function kwalbum_upload()
+{
+	kwablum_refresh_upload_data();
+	$('#groupOption').val('existing');
 	$('#fileInput').uploadifyUpload();
 }

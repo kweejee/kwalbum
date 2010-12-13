@@ -108,7 +108,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 	/**
 	 * Save object changes to the database
 	 */
-	public function save()
+	public function save($update_update_date_with_update_date = true)
 	{
 		// Set type
 		$types = array_flip(Model_Kwalbum_Item::$types);
@@ -197,7 +197,9 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 
 		// Set update_date
 
-		$this->update_date = date('Y-m-d H:i:s');
+		if ($update_update_date_with_update_date) {
+			$this->update_date = date('Y-m-d H:i:s');
+		}
 
 		// Save actual item
 
