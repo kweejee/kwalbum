@@ -1,5 +1,5 @@
 <?php defined('SYSPATH') or die('No direct script access.');
-$reserved_words = '(?!(tags|people|page))';
+$reserved_words = '(?!(tags|people|page|created))';
 
 Route::set('kwalbum_media', 'kwalbum/media/<file>', array(
 		'file' => '.+',
@@ -9,10 +9,10 @@ Route::set('kwalbum_media', 'kwalbum/media/<file>', array(
 		'action'     => 'media',
 	));
 
-Route::set('kwalbum_item', 'kwalbum/~<id>(/<year>(/<month>(/<day>)))(/<location>)(/tags/<tags>)(/people/<people>)(/page/<page>)(/~<controller>(/<action>(<ext>)))', array(
+Route::set('kwalbum_item', 'kwalbum/~<id>(/<year>(/<month>(/<day>)))(/<location>)(/tags/<tags>)(/people/<people>)(/created/<created>)(/~item(/<action>(<ext>)))(/page/<page>)', array(
 		'id' => '[0-9]+',
-		'controller'   => '[a-zA-Z]+?',
-		'action'   => '[a-zA-Z0-9]+?',
+		'action' => '[a-zA-Z0-9]+?',
+		'created' => '[0-9-]{10}%20[0-9:]{8}',
 		'ext' => '\..+',
 		'year' => '[0-9]{4}',
 		'month' => '[0-9]{1,2}',
@@ -27,9 +27,10 @@ Route::set('kwalbum_item', 'kwalbum/~<id>(/<year>(/<month>(/<day>)))(/<location>
 		'action'     => 'index',
 	));
 
-Route::set('kwalbum_browse', 'kwalbum(/<year>(/<month>(/<day>)))(/<location>)(/tags/<tags>)(/people/<people>)(/page/<page>)(/~<controller>(/<action>(<ext>)))', array(
+Route::set('kwalbum_browse', 'kwalbum(/<year>(/<month>(/<day>)))(/<location>)(/tags/<tags>)(/people/<people>)(/created/<created>)(/~<controller>(/<action>(<ext>)))(/page/<page>)', array(
 		'controller'   => '[a-zA-Z]+?',
 		'action'   => '[a-zA-Z0-9]+?',
+		'created' => '[0-9-]{10}%20[0-9:]{8}',
 		'ext' => '\..+',
 		'year' => '[0-9]{4}',
 		'month' => '[0-9]{1,2}',

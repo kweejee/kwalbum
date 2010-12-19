@@ -839,86 +839,81 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 	{
 		$query = '';
 
-		if ($name == 'location')
+		switch ($name)
 		{
-			$query = (string)DB::query(null, " location_id =
-				(SELECT id
-				FROM kwalbum_locations
-				WHERE name = :location)")
-				->param(':location', $value);
-		}
-		else if ($name == 'date')
-		{
-			$newDate = explode('-', $value);
-			$year = (int) $newDate[0];
-			$month = (int) @$newDate[1];
-			$day = (int) @$newDate[2];
+			case 'location':
+				$query = (string)DB::query(null, " location_id =
+					(SELECT id
+					FROM kwalbum_locations
+					WHERE name = :location)")
+					->param(':location', $value);
+				break;
+			case 'date':
+				$newDate = explode('-', $value);
+				$year = (int) $newDate[0];
+				$month = (int) @$newDate[1];
+				$day = (int) @$newDate[2];
 
-			if (1800 <= $year and 12 >= $month and 32 >= $day)
-			{
-				if (0 == $month)
+				if (1800 <= $year and 12 >= $month and 32 >= $day)
 				{
-					$date1 = "$value 00:00:00";
-					$date2 = "$year-12-31 23:59:59";
+					if (0 == $month)
+					{
+						$date1 = "$value 00:00:00";
+						$date2 = "$year-12-31 23:59:59";
+					}
+					else if (0 == $day)
+					{
+						$date1 = "$value 00:00:00";
+						$date2 = "$year-$month-32 23:59:59";
+					} else
+					{
+						$date1 = "$value 00:00:00";
+						$date2 = "$value 23:59:59";
+					}
+					$query = (string)DB::query(null, 'sort_dt >= :date1 AND sort_dt <= :date2')
+						->param(':date1', $date1)
+						->param(':date2', $date2);
 				}
-				else if (0 == $day)
+				break;
+			case 'tags':
+				foreach($value as $tag)
 				{
-					$date1 = "$value 00:00:00";
-					$date2 = "$year-$month-32 23:59:59";
-				} else
-				{
-					$date1 = "$value 00:00:00";
-					$date2 = "$value 23:59:59";
+					$query .= ($query ? ' AND ' : null).
+						(string)DB::query(null, " 0 < (SELECT count(*) FROM kwalbum_items_tags
+						LEFT JOIN kwalbum_tags ON kwalbum_items_tags.tag_id = kwalbum_tags.id
+						WHERE kwalbum_tags.name=:tag AND kwalbum_items_tags.item_id=kwalbum_items.id)")
+						->param(':tag', $tag);
 				}
-				$query = (string)DB::query(null, 'sort_dt >= :date1 AND sort_dt <= :date2')
-					->param(':date1', $date1)
-					->param(':date2', $date2);
-			}
-
-		}
-
-		else if ($name == 'tags')
-		{
-			foreach($value as $tag)
-			{
-				$query .= ($query ? ' AND ' : null).
-					(string)DB::query(null, " 0 < (SELECT count(*) FROM kwalbum_items_tags
-					LEFT JOIN kwalbum_tags ON kwalbum_items_tags.tag_id = kwalbum_tags.id
-					WHERE kwalbum_tags.name=:tag AND kwalbum_items_tags.item_id=kwalbum_items.id)")
-					->param(':tag', $tag);
-			}
-		}
-
-		else if ($name == 'people')
-		{
-			foreach($value as $tag)
-			{
-				$query .= ($query ? ' AND ' : null).
-					(string)DB::query(null, " 0 < (SELECT count(*) FROM kwalbum_items_persons
-					LEFT JOIN kwalbum_persons ON kwalbum_items_persons.person_id = kwalbum_persons.id
-					WHERE kwalbum_persons.name LIKE :tag AND kwalbum_items_persons.item_id=kwalbum_items.id)")
-					->param(':tag', $tag.'%');
-			}
-		}
-
-		else if ($name == 'type')
-		{
-			$types = array_flip(Model_Kwalbum_Item::$types);
-			$type_id = $types[$value];
-			$query = (string)DB::query(null, " type_id = :type_id")
-				->param(':type_id', $type_id);
-		}
-
-		else if ($name == 'hide_level')
-		{
-			$query = (string)DB::query(null, " hide_level = :hide_level")
-				->param(':hide_level', (int)$value);
-		}
-
-		else if ($name == 'user_id')
-		{
-			$query = (string)DB::query(null, " user_id = :user_id")
-				->param(':user_id', (int)$value);
+				break;
+			case 'people':
+				foreach($value as $tag)
+				{
+					$query .= ($query ? ' AND ' : null).
+						(string)DB::query(null, " 0 < (SELECT count(*) FROM kwalbum_items_persons
+						LEFT JOIN kwalbum_persons ON kwalbum_items_persons.person_id = kwalbum_persons.id
+						WHERE kwalbum_persons.name LIKE :tag AND kwalbum_items_persons.item_id=kwalbum_items.id)")
+						->param(':tag', $tag.'%');
+				}
+				break;
+			case 'type':
+				$types = array_flip(Model_Kwalbum_Item::$types);
+				$type_id = $types[$value];
+				$query = (string)DB::query(null, " type_id = :type_id")
+					->param(':type_id', $type_id);
+			case 'hide_level':
+				$query = (string)DB::query(null, " hide_level = :hide_level")
+					->param(':hide_level', (int)$value);
+				break;
+			case 'user_id':
+				$query = (string)DB::query(null, " user_id = :user_id")
+					->param(':user_id', (int)$value);
+				break;
+			case 'create_dt':
+				$query = (string)DB::query(null, " create_dt = :create_dt")
+					->param(':create_dt', $value);
+				break;
+			default:
+				$query = '';
 		}
 
 		Model_Kwalbum_Item::$_where[] = $query;
@@ -967,9 +962,15 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 	{
 		switch ($sort_field)
 		{
-			case 'update': $sort_field = 'update_dt'; break;
-			case 'create': $sort_field = 'create_dt'; break;
-			case 'count': $sort_field = 'count'; break;
+			case 'update': 
+				$sort_field = 'update_dt';
+				break;
+			case 'create': 
+				$sort_field = 'create_dt';
+				break;
+			case 'count':
+			case 'id':
+				break;
 			default: $sort_field = 'sort_dt';
 		}
 		Model_Kwalbum_Item::$_sort_field = $sort_field;

@@ -15,7 +15,7 @@ class Controller_Kwalbum extends Controller_Template
 	// allow to run in production
 	const ALLOW_PRODUCTION = true;
 
-	public $location, $date, $tags, $people, $params;
+	public $location, $date, $tags, $people, $create_dt, $params;
 	public $user, $item, $previous_item, $next_item;
 	public $total_items, $total_pages, $item_index, $page_number;
 	public $in_edit_mode;
@@ -81,6 +81,20 @@ class Controller_Kwalbum extends Controller_Template
 		else
 			$this->people = null;
 
+		// created timestamp
+		if ( $this->request->param('created'))
+		{
+			$this->create_dt = Security::xss_clean(urldecode($this->request->param('created')));
+			Model_Kwalbum_Item::append_where('create_dt', $this->create_dt);
+		}
+		else if ( ! empty($_GET['created']))
+		{
+			$this->create_dt = Security::xss_clean($_GET['created']);
+			Model_Kwalbum_Item::append_where('create_dt', $this->create_dt);
+		}
+		else
+			$this->create_dt = null;
+
 		// Set up user if logged in
 		$this->user = Model::factory('kwalbum_user');
 		$this->user->load_from_cookie($this->request->action);
@@ -100,7 +114,8 @@ class Controller_Kwalbum extends Controller_Template
 			.($day ? $day.'/' : null)
 			.($this->location ? $this->location.'/' : null)
 			.($this->tags ? 'tags/'.implode(',', $this->tags).'/' : null)
-			.($this->people ? 'people/'.implode(',', $this->people).'/' : null);
+			.($this->people ? 'people/'.implode(',', $this->people).'/' : null)
+			.($this->create_dt ? "created/{$this->create_dt}/" : null);
 
 		if ($this->request->action != 'media' and $this->request->controller != 'install')
 		{
@@ -135,6 +150,7 @@ class Controller_Kwalbum extends Controller_Template
 			$this->template->set_global('date', $this->date);
 			$this->template->set_global('tags', $this->tags);
 			$this->template->set_global('people', $this->people);
+			$this->template->set_global('create_dt', $this->create_dt);
 			$this->template->set_global('kwalbum_url_params', $this->params);
 
 			$this->template->set_global('total_items', $this->total_items);

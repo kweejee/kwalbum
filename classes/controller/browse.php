@@ -26,7 +26,7 @@ class Controller_Browse extends Controller_Kwalbum
 		$view = new View('kwalbum/browse/index');
 		$view->items = Model_Kwalbum_Item::get_thumbnails($this->page_number);
 		$this->template->content = $view;
-		$this->template->title = 'browsing all';
+		$this->template->title = 'browsing';
 
 	}
 
@@ -59,5 +59,4 @@ class Controller_Browse extends Controller_Kwalbum
 		$this->template->title = 'browsing most popular';
 
 	}
-
 }
