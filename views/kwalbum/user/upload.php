@@ -46,7 +46,7 @@
 			. Files larger than <?php echo (ini_get('memory_limit') / 10); ?>M may not upload correctly.</small>
 		</td>
 		<td>
-			<select name="groupOption" id="groupOption">
+			<select name="group_option" id="group_option">
 				<option value="new" selected>Upload to new update group</option>
 				<option value="existing">Upload to last group</option>
 			</select>

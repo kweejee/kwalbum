@@ -114,22 +114,37 @@ class Controller_User extends Controller_Kwalbum
 		$url = $this->url;
 
 		if (!$date = $this->date)
+		{
 			$date = date('Y-m-d H:i');
+		}
 
 		$content = new View('kwalbum/user/write');
 		$content->user_is_admin = $user->is_admin;
 		$content->location = $this->location;
 		$content->tags = 'news,';
+		if (isset($_POST['group_option']))
+		{
+			$content->same_group = ($_POST['group_option'] == 'existing');
+		}
+		else
+		{
+			$content->same_group = false;
+		}
+		
 		if (isset($this->tags))
+		{
 			$content->tags .= implode(',', $this->tags);
+		}
 		$content->date = $date;
 
 		if (isset($_POST['act']))
 		{
 			$adder = new Kwalbum_ItemAdder($this->user);
-			if ($id = $adder->save_write())
+			$id = $adder->save_write();
+			if ($id)
 			{
 				$content->message = "There has been success in saving your words!<br/><a href='$this->url/~$id'>Go read them now to make sure they are correct.</a>";
+				$content->same_group = true;
 			}
 			else
 			{

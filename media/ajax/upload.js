@@ -24,13 +24,13 @@ var kwablum_refresh_upload_data = function()
 		'tags':$("#tags").val(),
 		'vis':$('#vis').val(),
 		'date':$('#date').val(),
-		'group_option':$('#groupOption').val(),
+		'group_option':$('#group_option').val(),
 		'session_id':'SESSION_ID'
 	});
 }
 function kwalbum_upload()
 {
 	kwablum_refresh_upload_data();
-	$('#groupOption').val('existing');
+	$('#group_option').val('existing');
 	$('#fileInput').uploadifyUpload();
 }

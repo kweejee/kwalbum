@@ -82,18 +82,36 @@ class Controller_Kwalbum extends Controller_Template
 			$this->people = null;
 
 		// created timestamp
-		if ( $this->request->param('created'))
+		if ($this->request->param('created_date'))
 		{
-			$this->create_dt = Security::xss_clean(urldecode($this->request->param('created')));
-			Model_Kwalbum_Item::append_where('create_dt', $this->create_dt);
+			$this->create_dt = Security::xss_clean(urldecode($this->request->param('created_date')));
+			if ($this->request->param('created_time'))
+			{
+				$this->create_dt .= ' '.Security::xss_clean(urldecode($this->request->param('created_time')));
+				Model_Kwalbum_Item::append_where('create_dt', $this->create_dt);
+			}
+			else
+			{
+				Model_Kwalbum_Item::append_where('create_date', $this->create_dt);
+			}
 		}
-		else if ( ! empty($_GET['created']))
+		else if ( ! empty($_GET['created_date']))
 		{
-			$this->create_dt = Security::xss_clean($_GET['created']);
-			Model_Kwalbum_Item::append_where('create_dt', $this->create_dt);
+			$this->create_dt = Security::xss_clean($_GET['created_date']);
+			if ($_GET['created_time'])
+			{
+				$this->create_dt .= ' '.Security::xss_clean($_GET['created_time']);
+				Model_Kwalbum_Item::append_where('create_dt', $this->create_dt);
+			}
+			else
+			{
+				Model_Kwalbum_Item::append_where('create_date', $this->create_dt);
+			}
 		}
 		else
+		{
 			$this->create_dt = null;
+		}
 
 		// Set up user if logged in
 		$this->user = Model::factory('kwalbum_user');
@@ -115,7 +133,7 @@ class Controller_Kwalbum extends Controller_Template
 			.($this->location ? $this->location.'/' : null)
 			.($this->tags ? 'tags/'.implode(',', $this->tags).'/' : null)
 			.($this->people ? 'people/'.implode(',', $this->people).'/' : null)
-			.($this->create_dt ? "created/{$this->create_dt}/" : null);
+			.($this->create_dt ? 'created/'.implode('/', explode(' ', $this->create_dt)).'/' : null);
 
 		if ($this->request->action != 'media' and $this->request->controller != 'install')
 		{

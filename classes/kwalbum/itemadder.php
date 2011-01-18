@@ -117,7 +117,7 @@ class Kwalbum_ItemAdder
 			$this->ResizeImage($item->path, $item->filename);
 		}
 
-		if ($_POST['group_option'] == 'existing')
+		if (isset($_POST['group_option']) && $_POST['group_option'] == 'existing')
 		{
 			$result = DB::query(Database::SELECT,
 			"SELECT update_dt

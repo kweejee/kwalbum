@@ -912,6 +912,10 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 				$query = (string)DB::query(null, " create_dt = :create_dt")
 					->param(':create_dt', $value);
 				break;
+			case 'create_date':
+				$query = (string)DB::query(null, " DATE(create_dt) = :create_date")
+					->param(':create_date', $value);
+				break;
 			default:
 				$query = '';
 		}
