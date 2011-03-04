@@ -27,4 +27,26 @@ return array
 	 * No more than 45 characters
 	 */
 	'key' => 'change me',
+
+	/**
+	 * Png image in the item directory to use as a watermark if you want user
+	 * levels other than contributer to see one.
+	 */
+	'watermark_filename' => '',
+
+	/**
+	 * Maximum percent of the width of the image the watermark should cover.
+	 */
+	'watermark_width_percent' => .4,
+
+	/**
+	 * Maximum percent of the height of the image the watermark should cover.
+	 */
+	'watermark_height_percent' => .3,
+
+	/**
+	 * Because of memory limits on some servers, files larger than this will
+	 * not have a watermark added.
+	 */
+	'watermark_filesize_limit' => 3000000
 );

@@ -88,7 +88,6 @@ class Controller_Item extends Controller_Kwalbum
 		// Use the file name as the download file name
 		$filename = pathinfo($filepath, PATHINFO_FILENAME);
 
-
 		// Get the file size
 		$size = filesize($filepath);
 
@@ -96,8 +95,56 @@ class Controller_Item extends Controller_Kwalbum
 		$extension = strtolower(pathinfo($filepath, PATHINFO_EXTENSION));
 
 		// Guess the mime using the file extension
-		$mime = Kohana::config('mimes');
-		$mime = $mime[$extension][0];
+		$mimes = Kohana::config('mimes');
+		$mime = $mimes[$extension][0];
+		if (!$this->user->can_see_all) {
+			$watermark = Kohana::config('kwalbum.watermark_filename');
+			if ($watermark && $size < Kohana::config('kwalbum.watermark_filesize_limit'))
+			{
+				$watermark = Kohana::config('kwalbum.item_path').$watermark;
+				$watermark = @imagecreatefrompng($watermark);
+			} else {
+				$watermark = null;
+			}
+			if ($watermark)
+			{
+				switch ($mime)
+				{
+					case $mimes['jpg'][0]:
+					$picture = imagecreatefromjpeg($filepath);
+					if ($picture)
+					{
+						$width_p = imagesx($picture);
+						$height_p = imagesy($picture);
+						$width_w = imagesx($watermark);
+						$height_w = imagesy($watermark);
+						$width_percent = Kohana::config('kwalbum.watermark_width_percent');
+						$height_percent = Kohana::config('kwalbum.watermark_height_percent');
+						if ($width_p < $height_p) {
+							$height_r = $height_p * $height_percent;
+							$width_r = $height_r * $width_w/$height_w;
+							if ($width_r > $width_p * $width_percent) {
+								$width_r = $width_p * $width_percent;
+								$height_r = $width_r * $height_w/$width_w;
+							}
+						} else {
+							$width_r = $width_p * $width_percent;
+							$height_r = $width_r * $height_w/$width_w;
+							if ($height_r > $height_p * $height_percent) {
+								$height_r = $height_p * $height_percent;
+								$width_r = $height_r * $width_w/$height_w;
+							}
+						}
+						imagecopyresampled($picture, $watermark, 0, $height_p-$height_r, 0, 0, $width_r, $height_r, $width_w, $height_w);
+						//imagecopy($picture, $watermark, 0, $height_p-$height_w, 0, 0, $width_w, $height_w);
+						header("Content-Type: image/jpeg");
+						imagejpeg($picture, null, 95);
+						exit;
+					}
+					break;
+				}
+			}
+		}
 
 		// Open the file for reading
 		$file = fopen($filepath, 'rb');
