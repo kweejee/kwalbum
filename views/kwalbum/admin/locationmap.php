@@ -25,7 +25,7 @@ if ( ! $location->longitude)
 <div id="mapCanvas" class="mapCanvas"></div>
 <script src="http://www.openlayers.org/api/OpenLayers.js" type="text/javascript"></script>
 <script src="http://www.openstreetmap.org/openlayers/OpenStreetMap.js" type="text/javascript"></script>
-<script src="http://lan.kwalbum/kwalbum/media/ajax/jquery.js" type="text/javascript"></script>
+<script src="/kwalbum/media/ajax/jquery.js" type="text/javascript"></script>
 <script src="<?php echo $kwalbum_url; ?>/media/ajax/map/location.admin.js" type="text/javascript"></script>
 <script type="text/javascript">
 	initMap(<?php echo $location->latitude.','.$location->longitude.','.$location->id; ?>);
