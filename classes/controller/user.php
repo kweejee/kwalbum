@@ -3,7 +3,7 @@
  *
  *
  * @author Tim Redmond <kweejee@tummycaching.com>
- * @copyright Copyright 2009 Tim Redmond
+ * @copyright Copyright 2009-2012 Tim Redmond
  * @license GNU General Public License version 3 <http://www.gnu.org/licenses/>
  * @package kwalbum
  * @since Aug 2, 2009
@@ -185,23 +185,25 @@ class Controller_User extends Controller_Kwalbum
 
 		if ($_POST)
 		{
+			$_POST['name'] = htmlspecialchars(trim($_POST['name']));
+			$_POST['login_name'] = htmlspecialchars(trim($_POST['login_name']));
+			$_POST['email'] = htmlspecialchars(trim($_POST['email']));
+			$_POST['password'] = htmlspecialchars(trim($_POST['password']));
 			$post = Validate::factory($_POST)
-				->filter(true, 'trim')
-				->filter(true, 'htmlspecialchars')
 				->rule('name', 'not_empty')
 				->rule('login_name', 'not_empty')
 				->rule('email', 'not_empty')
 				->rule('email', 'email')
 				->rule('password', 'not_empty')
-				->rule('name', 'min_length', array(2))
-				->rule('name', 'max_length', array(40));
+				->rule('name', 'min_length', array(':value', 2))
+				->rule('name', 'max_length', array(':value', 40));
 
 			if ($post->check())
 			{
 				$data = $post->as_array();
-				$name = Security :: xss_clean($data['name']);
-				$login_name = Security :: xss_clean($data['login_name']);
-				$email = Security :: xss_clean($data['email']);
+				$name = htmlspecialchars(trim($data['name']));
+				$login_name = htmlspecialchars(trim($data['login_name']));
+				$email = htmlspecialchars(trim($data['email']));
 				$password = $data['password'];
 
 				$user = Model::factory('kwalbum_user');

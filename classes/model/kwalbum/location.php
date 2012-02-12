@@ -3,7 +3,7 @@
  *
  *
  * @author Tim Redmond <kweejee@tummycaching.com>
- * @copyright Copyright 2009 Tim Redmond
+ * @copyright Copyright 2009-2012 Tim Redmond
  * @license GNU General Public License version 3 <http://www.gnu.org/licenses/>
  * @version 3.0 Jul 6, 2009
  * @package kwalbum
@@ -69,8 +69,8 @@ class Model_Kwalbum_Location extends Kwalbum_Model
 					(name, latitude, longitude, count)
 					VALUES (:name, :latitude, :longitude, :count)")
 					->param(':name', $this->name)
-					->param(':latitude', $this->latitude)
-					->param(':longitude', $this->longitude)
+					->param(':latitude', $this->latitude ? $this->latitude : 0)
+					->param(':longitude', $this->longitude ? $this->longitude : 0)
 					->param(':count', $this->count)
 					->execute();
 				$this->id = $result[0];

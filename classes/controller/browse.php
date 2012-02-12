@@ -3,7 +3,7 @@
  *
  *
  * @author Tim Redmond <kweejee@tummycaching.com>
- * @copyright Copyright 2009 Tim Redmond
+ * @copyright Copyright 2009-2012 Tim Redmond
  * @license GNU General Public License version 3 <http://www.gnu.org/licenses/>
  * @package kwalbum
  * @since Sep 1, 2009
@@ -16,7 +16,7 @@ class Controller_Browse extends Controller_Kwalbum
 	{
 
 		//echo Kohana::debug($this);
-		if ( $this->request->uri == 'kwalbum' and ! ($this->location or $this->date or count($this->tags) > 0))
+		if ( $this->request->uri() == 'kwalbum' and ! ($this->location or $this->date or count($this->tags) > 0))
 		{
 			$this->template->content = new View('kwalbum/index');
 			return;

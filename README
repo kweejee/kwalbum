@@ -5,7 +5,7 @@ Kwalbum Without Albums
 INSTALLATION
 ------------
 
-1. Install Kohana 3 from http://kohanaframework.org
+1. Install Kohana from http://kohanaframework.org
 2. Make sure Kohana's database module has been enabled and configured.
 3. Move the kwalbum directory to kohana's modules directory.
 4. Configure Kohana to use the Kwalbum module.
@@ -31,5 +31,6 @@ INSTALLATION
 REQUIREMENTS
 ------------
 
+Kohana 3.2
 Same PHP requirements as Kohana
 MySQL 5.1+

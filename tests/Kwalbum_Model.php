@@ -3,7 +3,7 @@
  * Kwalbum Test
  *
  * @author Tim Redmond <kweejee@tummycaching.com>
- * @copyright Copyright 2009 Tim Redmond
+ * @copyright Copyright 2009-2012 Tim Redmond
  * @license GNU General Public License version 3 <http://www.gnu.org/licenses/>
  * @version 3.0 Jul 13, 2009
  * @package kwalbum_test
@@ -193,7 +193,7 @@ class UnitTest_Kwalbum_Model extends UnitTest_Case
 		$this->assert_equal($item->type, 'jpeg');
 		$this->assert_equal($item->user_id, 1);
 		$this->assert_equal($item->description, 'd escription');
-		$this->assert_equal($item->path, Kohana::config('kwalbum.item_path').'p ath');
+		$this->assert_equal($item->path, Kwalbum_Model::get_config('item_path').'p ath');
 		$this->assert_equal($item->filename, 'f ilename');
 		$this->assert_similar($item->latitude, 0.0);
 		$this->assert_similar($item->longitude, 0.0);

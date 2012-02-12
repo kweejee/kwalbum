@@ -3,7 +3,7 @@
  *
  *
  * @author Tim Redmond <kweejee@tummycaching.com>
- * @copyright Copyright 2009 Tim Redmond
+ * @copyright Copyright 2009-2012 Tim Redmond
  * @license GNU General Public License version 3 <http://www.gnu.org/licenses/>
  * @package kwalbum
  * @since Aug 24, 2009
@@ -17,7 +17,7 @@ class Controller_AjaxAdmin extends Controller_Kwalbum
 		$loc = Model :: factory('kwalbum_location')->load((int)$_POST['id']);
 		if ( ! empty($_POST['value']))
 		{
-			$loc->name = Security :: xss_clean($_POST['value']);
+			$loc->name = htmlspecialchars(trim($_POST['value']));
 			$loc->save();
 		}
 		echo $loc->name;
@@ -39,7 +39,7 @@ class Controller_AjaxAdmin extends Controller_Kwalbum
 		$person = Model :: factory('kwalbum_person')->load((int)$_POST['id']);
 		if ( ! empty($_POST['value']))
 		{
-			$person->name = Security :: xss_clean($_POST['value']);
+			$person->name = htmlspecialchars(trim($_POST['value']));
 			$person->save();
 		}
 		echo $person->name;
@@ -61,7 +61,7 @@ class Controller_AjaxAdmin extends Controller_Kwalbum
 		$tag = Model :: factory('kwalbum_tag')->load((int)$_POST['id']);
 		if ( ! empty($_POST['value']))
 		{
-			$tag->name = Security :: xss_clean($_POST['value']);
+			$tag->name = htmlspecialchars(trim($_POST['value']));
 			$tag->save();
 		}
 		echo $tag->name;

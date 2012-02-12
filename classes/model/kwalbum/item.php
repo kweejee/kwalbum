@@ -3,7 +3,7 @@
  *
  *
  * @author Tim Redmond <kweejee@tummycaching.com>
- * @copyright Copyright 2009 Tim Redmond
+ * @copyright Copyright 2009-2012 Tim Redmond
  * @license GNU General Public License version 3 <http://www.gnu.org/licenses/>
  * @version 3.0 Jul 6, 2009
  * @package kwalbum
@@ -85,7 +85,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 		$this->description = $row['description'];
 		$this->latitude = (float)$row['latitude'];
 		$this->longitude = (float)$row['longitude'];
-		$this->path = Kohana::config('kwalbum.item_path').$row['path'];
+		$this->path = self::get_config('item_path').$row['path'];
 		$this->filename = $row['filename'];
 		$this->has_comments = (bool)$row['has_comments'];
 		$this->hide_level = (int)$row['hide_level'];
@@ -242,7 +242,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 			->param(':location_id', $location_id)
 			->param(':user_id', $this->user_id)
 			->param(':description', $this->description)
-			->param(':path', str_replace(Kohana::config('kwalbum.item_path'), '', $this->path))
+			->param(':path', str_replace(self::get_config('item_path'), '', $this->path))
 			->param(':filename', $this->filename)
 			->param(':update_date', $this->update_date)
 			->param(':visible_date', $this->visible_date)
@@ -810,7 +810,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 			FROM kwalbum_items
 			WHERE path = :path AND filename = :filename
 			LIMIT 1")
-			->param(':path', str_replace(Kohana::config('kwalbum.item_path'), '', $path))
+			->param(':path', str_replace(self::get_config('item_path'), '', $path))
 			->param(':filename', $filename)
 			->execute();
 		if ($result->count() == 0)
@@ -937,7 +937,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 			." ORDER BY $sort_field $sort_direction
 			LIMIT :offset,:limit";
 
-		$limit = Kohana::config('kwalbum.items_per_page');
+		$limit = self::get_config('items_per_page');
 		$offset = ($page_number-1)*$limit;
 		$result = DB::query(Database::SELECT, $query)
 			->param(':offset', $offset)
@@ -1070,7 +1070,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 
 	static public function get_page_number($index)
 	{
-		return ceil($index/Kohana::config('kwalbum.items_per_page'));
+		return ceil($index/self::get_config('items_per_page'));
 	}
 
 	/**

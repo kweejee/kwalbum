@@ -28,9 +28,9 @@ class Kwalbum_ItemAdder
 
 		$item->hide_level = Kwalbum_ItemAdder :: get_visibility($user);
 
-		$item->location = trim(Security :: xss_clean(@ $_POST['loc']));
+		$item->location = trim(htmlspecialchars(@ $_POST['loc']));
 
-		$tags = explode(',', Security :: xss_clean(@ $_POST['tags']));
+		$tags = explode(',', htmlspecialchars(@ $_POST['tags']));
 		for ($i = 0; $i < count($tags); $i++)
 		{
 			$tags[$i] = trim($tags[$i]);
@@ -74,7 +74,7 @@ class Kwalbum_ItemAdder
 				    $pinfo = get_photoshop_file_info($data, $xmp, $irb);
 				    foreach ($pinfo['keywords'] as $keyword)
 				    {
-					$item->tags = trim(Security :: xss_clean($keyword));
+					$item->tags = trim($keyword);
 				    }
 				    //echo '<pre>'.Kohana::debug( $pinfo );exit;
 				}*/
@@ -143,20 +143,20 @@ class Kwalbum_ItemAdder
 	{
 		$item = $this->_item;
 
-		$targetFile = Security :: xss_clean($_FILES['Filedata']['name']);
+		$targetFile = trim($_FILES['Filedata']['name']);
 		$item->path = $this->make_path();
 
 		$item->filename = $this->replace_bad_filename_characters($targetFile);
-		if ( ! Model_Kwalbum_Item::check_unique_filename($item->path, $item->filename))
+		while ( ! Model_Kwalbum_Item::check_unique_filename($item->path, $item->filename))
 		{
-			$i = 1;
-			$name = pathinfo($item->filename, PATHINFO_FILENAME);
-			$extension = pathinfo($item->filename, PATHINFO_EXTENSION);
-			do
+			if (!$name)
 			{
-				$item->filename = "{$name}_{$i}.{$extension}";
-				$i++;
-			} while ( ! Model_Kwalbum_Item::check_unique_filename($item->path, $item->filename));
+				$i = 0;
+				$name = pathinfo($item->filename, PATHINFO_FILENAME);
+				$extension = pathinfo($item->filename, PATHINFO_EXTENSION);
+			}
+			$i++;
+			$item->filename = "{$name}_{$i}.{$extension}";
 		}
 		$item->type = $this->get_filetype($item->filename);
 
@@ -179,7 +179,7 @@ class Kwalbum_ItemAdder
 	{
 		$item = $this->_item;
 
-		$item->description = Security :: xss_clean(trim($_POST['description']));
+		$item->description = trim($_POST['description']);
 		if (empty($item->description))
 		{
 			return false;
@@ -253,7 +253,7 @@ class Kwalbum_ItemAdder
 			' ' => '_',
 			'&' => 'and',
 			'+' => 'plus',
-			'\'' => '_',
+			'\''=> '_',
 			'"' => '_',
 			'<' => '_',
 			'>' => '_',
@@ -281,7 +281,7 @@ class Kwalbum_ItemAdder
 	{
 		if (!$existingPath)
 		{
-			$path = Kohana :: config('kwalbum.item_path');
+			$path = Kwalbum_Model::get_config('item_path');
 			$dirs = explode('-', date('y-m'));
 			$pathYear = $dirs[0];
 			$pathMonth = $dirs[1];

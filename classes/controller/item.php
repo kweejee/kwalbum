@@ -3,7 +3,7 @@
  *
  *
  * @author Tim Redmond <kweejee@tummycaching.com>
- * @copyright Copyright 2009 Tim Redmond
+ * @copyright Copyright 2009-2012 Tim Redmond
  * @license GNU General Public License version 3 <http://www.gnu.org/licenses/>
  * @version 3.0 Jun 30, 2009
  * @package kwalbum
@@ -17,9 +17,9 @@ class Controller_Item extends Controller_Kwalbum
 	{
 		$this->auto_render = false;
 		parent::before();
-		if ($this->request->action != 'index' and $this->item->hide_level > $this->user->permission_level)
+		if ($this->request->action() != 'index' and $this->item->hide_level > $this->user->permission_level)
 		{
-			$this->request->action = 'hidden';
+			$this->request->action('hidden');
 		}
 	}
 
@@ -80,7 +80,7 @@ class Controller_Item extends Controller_Kwalbum
 		if ( ! $filepath = realpath($filepathname))
 		{
 			// Return a 404 status
-			$request->status = 404;
+			$request->status(404);
 			Kohana::$log->add('~item/_send_file', '404: '.$filepathname);
 			return;
 		}
@@ -95,13 +95,13 @@ class Controller_Item extends Controller_Kwalbum
 		$extension = strtolower(pathinfo($filepath, PATHINFO_EXTENSION));
 
 		// Guess the mime using the file extension
-		$mimes = Kohana::config('mimes');
+		$mimes = Kohana::$config->load('mimes');
 		$mime = $mimes[$extension][0];
 		if (!$this->user->can_see_all) {
-			$watermark = Kohana::config('kwalbum.watermark_filename');
-			if ($watermark && $size < Kohana::config('kwalbum.watermark_filesize_limit'))
+			$watermark = Kwalbum_Model::get_config('watermark_filename');
+			if ($watermark && $size < Kwalbum_Model::get_config('watermark_filesize_limit'))
 			{
-				$watermark = Kohana::config('kwalbum.item_path').$watermark;
+				$watermark = Kwalbum_Model::get_config('item_path').$watermark;
 				$watermark = @imagecreatefrompng($watermark);
 			} else {
 				$watermark = null;
@@ -118,8 +118,8 @@ class Controller_Item extends Controller_Kwalbum
 						$height_p = imagesy($picture);
 						$width_w = imagesx($watermark);
 						$height_w = imagesy($watermark);
-						$width_percent = Kohana::config('kwalbum.watermark_width_percent');
-						$height_percent = Kohana::config('kwalbum.watermark_height_percent');
+						$width_percent = Kwalbum_Model::get_config('watermark_width_percent');
+						$height_percent = Kwalbum_Model::get_config('watermark_height_percent');
 						if ($width_p < $height_p) {
 							$height_r = $height_p * $height_percent;
 							$width_r = $height_r * $width_w/$height_w;
@@ -150,11 +150,11 @@ class Controller_Item extends Controller_Kwalbum
 		$file = fopen($filepath, 'rb');
 
 		// Set the headers for a download
-		$request->headers['Content-Disposition'] = ( $download ? 'attachment; ' : null)
+		$request->headers('Content-Disposition', ( $download ? 'attachment; ' : null)
 			.'filename="'.$filename.$filename_addition
-			.'.'.$extension.'"';
-		$request->headers['Content-Type']  = $mime;
-		$request->headers['Content-Length'] = $size;
+			.'.'.$extension.'"');
+		$request->headers('Content-Type', $mime);
+		$request->headers('Content-Length', $size);
 
 		// Send all headers now
 		$request->send_headers();

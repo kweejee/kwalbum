@@ -3,7 +3,7 @@
  *
  *
  * @author Tim Redmond <kweejee@tummycaching.com>
- * @copyright Copyright 2009 Tim Redmond
+ * @copyright Copyright 2009-2012 Tim Redmond
  * @license GNU General Public License version 3 <http://www.gnu.org/licenses/>
  * @version 3.0 Jul 6, 2009
  * @package kwalbum
@@ -197,7 +197,7 @@ class Model_Kwalbum_Comment extends Kwalbum_Model
 			ORDER BY $sort_field $sort_direction
 			LIMIT :offset,:limit";
 
-		$limit = Kohana::config('kwalbum.items_per_page');
+		$limit = self::get_config('items_per_page');
 		$offset = ($page_number-1)*$limit;
 		$result = DB::query(Database::SELECT, $query)
 			->param(':offset', $offset)

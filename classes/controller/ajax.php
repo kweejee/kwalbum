@@ -3,7 +3,7 @@
  *
  *
  * @author Tim Redmond <kweejee@tummycaching.com>
- * @copyright Copyright 2009 Tim Redmond
+ * @copyright Copyright 2009-2012 Tim Redmond
  * @license GNU General Public License version 3 <http://www.gnu.org/licenses/>
  * @package kwalbum
  * @since Aug 24, 2009
@@ -13,9 +13,9 @@ class Controller_Ajax extends Controller_Kwalbum
 {
 	public function before()
 	{
-		if ($this->request->action == 'upload')
+		if ($this->request->action() == 'upload')
 			session_id($_POST['session_id']);
-		//session_name(Kohana::config('session.name'));
+		//session_name(Kohana::$config->load('session.name'));
 
 		$this->auto_render = false;
 
@@ -38,7 +38,7 @@ class Controller_Ajax extends Controller_Kwalbum
 	{
 		$item = Model :: factory('kwalbum_item')->load((int)$_POST['item']);
 		$this->_testPermission($item);
-		$item->location = Security :: xss_clean($_POST['value']);
+		$item->location = htmlspecialchars(trim($_POST['value']));
 		$item->save();
 		echo $item->location;
 	}
@@ -81,7 +81,7 @@ class Controller_Ajax extends Controller_Kwalbum
 	{
 		$item = Model :: factory('kwalbum_item')->load((int)$_POST['item']);
 		$this->_testPermission($item);
-		$item->description = Security :: xss_clean($_POST['value']);
+		$item->description = trim($_POST['value']);
 		$item->save();
 		echo $item->description;
 	}
@@ -128,7 +128,7 @@ class Controller_Ajax extends Controller_Kwalbum
 	{
 		$item = Model :: factory('kwalbum_item')->load((int)$_POST['item']);
 		$this->_testPermission($item);
-		$tags = explode(',', Security :: xss_clean($_POST['value']));
+		$tags = explode(',', htmlspecialchars($_POST['value']));
 		for ($i = 0; $i < count($tags); $i++)
 		{
 			$tags[$i] = trim($tags[$i]);
@@ -143,7 +143,7 @@ class Controller_Ajax extends Controller_Kwalbum
 	{
 		$item = Model :: factory('kwalbum_item')->load((int)$_POST['item']);
 		$this->_testPermission($item);
-		$persons = explode(',', Security :: xss_clean($_POST['value']));
+		$persons = explode(',', htmlspecialchars($_POST['value']));
 		for ($i = 0; $i < count($persons); $i++)
 		{
 			$persons[$i] = trim($persons[$i]);
@@ -178,7 +178,7 @@ class Controller_Ajax extends Controller_Kwalbum
 		}
 		$comment = new Model_Kwalbum_Comment();
 		$comment->name = $this->user->name;
-		$comment->text = Security :: xss_clean($_POST['comment']);
+		$comment->text = htmlspecialchars(trim($_POST['comment']));
 		$comment->item_id = $item->id;
 		$comment->save();
 		echo $comment->name.' : '.$comment->date.'<br/>'.$comment->text.'<hr/>';
@@ -200,7 +200,7 @@ class Controller_Ajax extends Controller_Kwalbum
 	{
 		if ( ! $this->user->can_add)
 		{
-			$this->request->status = 400;
+			$this->request->status(400);
 			Kohana::$log->add('~ajax/upload', 'invalid permission for user id '.$this->user->id);
 			return;
 		}
@@ -215,12 +215,12 @@ class Controller_Ajax extends Controller_Kwalbum
 			}
 			else
 			{
-				$this->request->status = 400;
+				$this->request->status(400);
 				Kohana::$log->add('~ajax/upload', 'ItemAdder failed to save_upload item');
 				return;
 			}
 		}
-		$this->request->status = 400;
+		$this->request->status(400);
 		Kohana::$log->add('~ajax/upload', 'empty FILES sent');
 	}
 

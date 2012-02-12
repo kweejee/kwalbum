@@ -3,9 +3,9 @@
  *
  *
  * @author Tim Redmond <kweejee@tummycaching.com>
- * @copyright Copyright 2009 Tim Redmond
+ * @copyright Copyright 2009-2012 Tim Redmond
  * @license GNU General Public License version 3 <http://www.gnu.org/licenses/>
- * @version 3.0 Jun 30, 2009
+ * @version 3.1 Feb 12, 2012
  * @package kwalbum
  * @since 3.0 Jun 30, 2009
  */
@@ -28,12 +28,12 @@ class Controller_Kwalbum extends Controller_Template
 		// get location from URL
 		if ( $this->request->param('location'))
 		{
-			$this->location = Security::xss_clean(urldecode($this->request->param('location')));
+			$this->location = urldecode($this->request->param('location'));
 			Model_Kwalbum_Item::append_where('location', $this->location);
 		}
 		else if ( ! empty($_GET['location']))
 		{
-			$this->location = Security::xss_clean($_GET['location']);
+			$this->location = $_GET['location'];
 			Model_Kwalbum_Item::append_where('location', $this->location);
 		}
 
@@ -54,28 +54,28 @@ class Controller_Kwalbum extends Controller_Template
 		}
 
 		// tags
-		$this->tags = explode(',', Security::xss_clean(urldecode($this->request->param('tags'))));
+		$this->tags = explode(',', urldecode($this->request->param('tags')));
 		if ($this->tags[0] != '')
 		{
 			Model_Kwalbum_Item::append_where('tags', $this->tags);
 		}
 		else if ( ! empty($_GET['tags']))
 		{
-			$this->tags = explode(',', Security::xss_clean($_GET['tags']));
+			$this->tags = explode(',', $_GET['tags']);
 			Model_Kwalbum_Item::append_where('tags', $this->tags);
 		}
 		else
 			$this->tags = null;
 
 		// people names
-		$this->people = explode(',', Security::xss_clean(urldecode($this->request->param('people'))));
+		$this->people = explode(',', urldecode($this->request->param('people')));
 		if ($this->people[0] != '')
 		{
 			Model_Kwalbum_Item::append_where('people', $this->people);
 		}
 		else if ( ! empty($_GET['people']))
 		{
-			$this->people = explode(',', Security::xss_clean($_GET['people']));
+			$this->people = explode(',', $_GET['people']);
 			Model_Kwalbum_Item::append_where('people', $this->people);
 		}
 		else
@@ -84,10 +84,10 @@ class Controller_Kwalbum extends Controller_Template
 		// created timestamp
 		if ($this->request->param('created_date'))
 		{
-			$this->create_dt = Security::xss_clean(urldecode($this->request->param('created_date')));
+			$this->create_dt = urldecode($this->request->param('created_date'));
 			if ($this->request->param('created_time'))
 			{
-				$this->create_dt .= ' '.Security::xss_clean(urldecode($this->request->param('created_time')));
+				$this->create_dt .= ' '.urldecode($this->request->param('created_time'));
 				Model_Kwalbum_Item::append_where('create_dt', $this->create_dt);
 			}
 			else
@@ -97,10 +97,10 @@ class Controller_Kwalbum extends Controller_Template
 		}
 		else if ( ! empty($_GET['created_date']))
 		{
-			$this->create_dt = Security::xss_clean($_GET['created_date']);
+			$this->create_dt = $_GET['created_date'];
 			if ($_GET['created_time'])
 			{
-				$this->create_dt .= ' '.Security::xss_clean($_GET['created_time']);
+				$this->create_dt .= ' '.$_GET['created_time'];
 				Model_Kwalbum_Item::append_where('create_dt', $this->create_dt);
 			}
 			else
@@ -115,7 +115,7 @@ class Controller_Kwalbum extends Controller_Template
 
 		// Set up user if logged in
 		$this->user = Model::factory('kwalbum_user');
-		$this->user->load_from_cookie($this->request->action);
+		$this->user->load_from_cookie($this->request->action());
 
 		// item id
 		if (0 < $this->request->param('id'))
@@ -135,7 +135,7 @@ class Controller_Kwalbum extends Controller_Template
 			.($this->people ? 'people/'.implode(',', $this->people).'/' : null)
 			.($this->create_dt ? 'created/'.implode('/', explode(' ', $this->create_dt)).'/' : null);
 
-		if ($this->request->action != 'media' and $this->request->controller != 'install')
+		if ($this->request->action() != 'media' and $this->request->controller() != 'install')
 		{
 			$this->total_items = Model_Kwalbum_Item::get_total_items();
 			$this->total_pages = Model_Kwalbum_Item::get_page_number($this->total_items);
@@ -184,8 +184,9 @@ class Controller_Kwalbum extends Controller_Template
 		$this->template->set_global('user', $this->user);
 	}
 
-	public function action_media($file)
+	public function action_media()
 	{
+		$file = $this->request->param('file');
 		$this->auto_render = false;
 
 		// Find the file extension
@@ -195,19 +196,32 @@ class Controller_Kwalbum extends Controller_Template
 		$file = substr($file, 0, -(strlen($ext) + 1));
 		
 		$file = Kohana::find_file('media', $file, $ext);
-		if ($file)
+		if (is_file($file))
 		{
-			// Send the file content as the response
-			$this->request->response = str_replace('KWALBUM_URL', $this->url, file_get_contents($file));
-			$this->request->response = str_replace('SESSION_ID', session_id(), $this->request->response);
-		}
-		else
-		{
-			// Return a 404 status
-			$this->request->status = 404;
-		}
+			// Set the content type for this extension
+			$response = $this->request->create_response();
+			$response->headers('Content-Type', File::mime_by_ext($ext));
+			$response->send_headers();
 
-		// Set the content type for this extension
-		$this->request->headers['Content-Type'] = File::mime_by_ext($ext);
+			// Send the file content as the response
+			if ($ext == 'css' || $ext == 'js')
+			{
+				$body = str_replace('KWALBUM_URL', $this->url, file_get_contents($file));
+				$body = str_replace('SESSION_ID', session_id(), $body);
+				echo $body;
+				exit;
+			}
+			else
+			{
+				$img = @ fopen($file, 'rb');
+				if ($img)
+				{
+					fpassthru($img);
+					exit;
+				}
+			}
+		}
+		// Return a 404 status
+		$this->request->status(404);
 	}
 }

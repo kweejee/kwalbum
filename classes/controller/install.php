@@ -6,7 +6,7 @@
  * administrator.
  *
  * @author Tim Redmond <kweejee@tummycaching.com>
- * @copyright Copyright 2009 Tim Redmond
+ * @copyright Copyright 2009-2012 Tim Redmond
  * @license GNU General Public License version 3 <http://www.gnu.org/licenses/>
  * @version 3.0 Jul 8, 2009
  * @package kwalbum
@@ -59,15 +59,17 @@ class Controller_Install extends Controller_Kwalbum
 		if ($_POST)
 		{
 			// TODO: add rules for login_name, email, and password
-			$post = Validate::factory($_POST)
-				->filter(true, 'trim')
-				->filter(true, 'htmlspecialchars')
+			$_POST['name'] = htmlspecialchars(trim($_POST['name']));
+			$_POST['login_name'] = htmlspecialchars(trim($_POST['login_name']));
+			$_POST['email'] = htmlspecialchars(trim($_POST['email']));
+			$_POST['password'] = htmlspecialchars(trim($_POST['password']));
+			$post = Validation::factory($_POST)
 				->rule('name', 'not_empty')
 				->rule('login_name', 'not_empty')
 				->rule('email', 'not_empty')
 				->rule('password', 'not_empty')
-				->rule('name', 'min_length', array($this->_user['minNameLength']))
-				->rule('name', 'max_length', array($this->_user['maxNameLength']));
+				->rule('name', 'min_length', array(':value', $this->_user['minNameLength']))
+				->rule('name', 'max_length', array(':value', $this->_user['maxNameLength']));
 
 			if ($post->check())
 			{
@@ -119,7 +121,8 @@ class Controller_Install extends Controller_Kwalbum
 				}
 				catch (Exception $e)
 				{
-					$errors = array('db', 'There was an error creating the database tables.');
+//					echo '<pre>'.print_r($e, 1).'</pre>';
+					$errors = array('db'=>'There was an error creating the database tables.');
 				}
 			}
 			else // Did not validate
@@ -185,7 +188,7 @@ class Controller_Install extends Controller_Kwalbum
 				  PRIMARY KEY (`id`)
 		        ) ENGINE = InnoDB
 		        DEFAULT CHARACTER SET = utf8
-		        PACK_KEYS = DEFAULT;')
+		        PACK_KEYS = DEFAULT')
 			->execute();
 
 		// Locations
@@ -233,7 +236,7 @@ class Controller_Install extends Controller_Kwalbum
 		            FOREIGN KEY (`location_id` )
 		            REFERENCES `kwalbum_locations` (`id` )
 		        ) ENGINE = InnoDB
-		        DEFAULT CHARACTER SET = utf8;')
+		        DEFAULT CHARACTER SET = utf8')
 			->execute();
 
 		// Comments
@@ -253,7 +256,7 @@ class Controller_Install extends Controller_Kwalbum
 		            ON DELETE CASCADE
 		            ON UPDATE CASCADE
 		        ) ENGINE = InnoDB
-		        DEFAULT CHARACTER SET = utf8;')
+		        DEFAULT CHARACTER SET = utf8')
 			->execute();
 
 		// Tags
@@ -264,7 +267,7 @@ class Controller_Install extends Controller_Kwalbum
 		          PRIMARY KEY (`id`) ,
 		          INDEX `tag` (`name`(10) ASC)
 		        ) ENGINE = InnoDB
-		        DEFAULT CHARACTER SET = utf8;')
+		        DEFAULT CHARACTER SET = utf8')
 			->execute();
 
 		// Items_Tags relationship
@@ -285,7 +288,7 @@ class Controller_Install extends Controller_Kwalbum
 		            ON DELETE CASCADE
 		            ON UPDATE CASCADE
 		        ) ENGINE = InnoDB
-		        DEFAULT CHARACTER SET = utf8;')
+		        DEFAULT CHARACTER SET = utf8')
 			->execute();
 
 		// Persons
@@ -296,7 +299,7 @@ class Controller_Install extends Controller_Kwalbum
 		          PRIMARY KEY (`id`) ,
 		          INDEX `person` (`name`(10) ASC)
 		        ) ENGINE = InnoDB
-		        DEFAULT CHARACTER SET = utf8;')
+		        DEFAULT CHARACTER SET = utf8')
 			->execute();
 
 		// Items_Persons relationship
@@ -317,7 +320,7 @@ class Controller_Install extends Controller_Kwalbum
 		            ON DELETE CASCADE
 		            ON UPDATE CASCADE
 		        ) ENGINE = InnoDB
-		        DEFAULT CHARACTER SET = utf8;')
+		        DEFAULT CHARACTER SET = utf8')
 			->execute();
 
 		// Sites, external sites to import items from
@@ -328,7 +331,7 @@ class Controller_Install extends Controller_Kwalbum
 		          `import_dt` DATETIME NOT NULL ,
 		          PRIMARY KEY (`id`)
 		        ) ENGINE = InnoDB
-		        DEFAULT CHARACTER SET = utf8;')
+		        DEFAULT CHARACTER SET = utf8')
 			->execute();
 
 		// Items_Sites relationship for imported items
@@ -351,7 +354,7 @@ class Controller_Install extends Controller_Kwalbum
 		            ON DELETE RESTRICT
 		            ON UPDATE CASCADE
 		        ) ENGINE = InnoDB
-		        DEFAULT CHARACTER SET = utf8;')
+		        DEFAULT CHARACTER SET = utf8')
 			->execute();
 	}
 }

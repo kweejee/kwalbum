@@ -3,7 +3,7 @@
  * A standard way for all Kwalbum model objects to behave.
  *
  * @author Tim Redmond <kweejee@tummycaching.com>
- * @copyright Copyright 2009 Tim Redmond
+ * @copyright Copyright 2009-2012 Tim Redmond
  * @license GNU General Public License version 3 <http://www.gnu.org/licenses/>
  * @package kwalbum
  * @since Jul 28, 2009
@@ -12,12 +12,13 @@
 abstract class Kwalbum_Model extends Model
 {
 	public $loaded = false;
+	static public $config;
 
-	public function __construct($db = null)
-	{
-		$this->clear();
-		parent::__construct($db);
-	}
+//	public function __construct($db = null)
+//	{
+//		$this->clear();
+//		parent::__construct($db);
+//	}
 
 	/**
 	 * Reload all data for the current object.
@@ -27,6 +28,14 @@ abstract class Kwalbum_Model extends Model
 		$id = $this->id;
 		$this->clear();
 		return $this->load($id);
+	}
+
+	static public function get_config($key) {
+		if (!self::$config)
+		{
+			self::$config = Kohana::$config->load('kwalbum');
+		}
+		return self::$config->$key;
 	}
 
 	/**

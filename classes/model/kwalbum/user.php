@@ -3,7 +3,7 @@
  *
  *
  * @author Tim Redmond <kweejee@tummycaching.com>
- * @copyright Copyright 2009 Tim Redmond
+ * @copyright Copyright 2009-2012 Tim Redmond
  * @license GNU General Public License version 3 <http://www.gnu.org/licenses/>
  * @version 3.0 Jul 6, 2009
  * @package kwalbum
@@ -93,10 +93,10 @@ class Model_Kwalbum_User extends Kwalbum_Model
 			->param(':login_name', $this->login_name)
 			->param(':email', $this->email)
 			->param(':password', $this->_password)
-			->param(':token', $this->token)
+			->param(':token', $this->token ? $this->token : '')
 			->param(':visit_dt', $this->visit_date)
 			->param(':permission_level', $this->permission_level)
-			->param(':reset_code', $this->reset_code);
+			->param(':reset_code', $this->reset_code ? $this->reset_code : '');
 
 		$result = $query->execute();
 		if ($this->loaded == false)
