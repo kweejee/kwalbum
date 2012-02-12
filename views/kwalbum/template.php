@@ -52,7 +52,7 @@ if ($summary)
 
 	<?php
 		echo html::style($kwalbum_url.'/media/css/default.css');
-		echo html::script($kwalbum_url.'/media/ajax/jquery.js');
+		echo html::script('https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js');
 		echo isset($head) ? $head : null;
 	?>
 

@@ -13,8 +13,9 @@
 <?php
 if ( ! empty($message))
 	echo $message.'<br/>';
+echo $kwalbum_url_params;
 ?>
-<form action="<?php echo $kwalbum_url.'/'.$kwalbum_url_params ?>/~user/write" method="post" autocomplete="off">
+<form action="<?php echo $kwalbum_url.($kwalbum_url_params ? '/'.$kwalbum_url_params : '')?>/~user/write" method="post" autocomplete="off">
 		<table>
 		<tr>
 			<td colspan="2">

@@ -243,13 +243,13 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 			->param(':user_id', $this->user_id)
 			->param(':description', $this->description)
 			->param(':path', str_replace(self::get_config('item_path'), '', $this->path))
-			->param(':filename', $this->filename)
+			->param(':filename', $this->filename ? $this->filename : '')
 			->param(':update_date', $this->update_date)
 			->param(':visible_date', $this->visible_date)
 			->param(':sort_date', $this->sort_date)
-			->param(':count', $this->count)
-			->param(':latitude', $this->latitude)
-			->param(':longitude', $this->longitude)
+			->param(':count', $this->count ? $this->count : 0)
+			->param(':latitude', $this->latitude ? $this->latitude : 0)
+			->param(':longitude', $this->longitude ? $this->longitude : 0)
 			->param(':hide_level', $this->hide_level)
 			->param(':is_external', (int)$this->is_external);
 
