@@ -32,5 +32,6 @@ REQUIREMENTS
 ------------
 
 Kohana 3.2
-Same PHP requirements as Kohana
+PHP 5.3+
+GD module for PHP
 MySQL 5.1+

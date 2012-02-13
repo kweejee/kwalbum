@@ -80,7 +80,7 @@ class Controller_Item extends Controller_Kwalbum
 		if ( ! $filepath = realpath($filepathname))
 		{
 			// Return a 404 status
-			$request->status(404);
+			$request->response()->status(404);
 			Kohana::$log->add('~item/_send_file', '404: '.$filepathname);
 			return;
 		}
@@ -150,14 +150,15 @@ class Controller_Item extends Controller_Kwalbum
 		$file = fopen($filepath, 'rb');
 
 		// Set the headers for a download
-		$request->headers('Content-Disposition', ( $download ? 'attachment; ' : null)
+		$response = $request->response();
+		$response->headers('Content-Disposition', ( $download ? 'attachment; ' : null)
 			.'filename="'.$filename.$filename_addition
 			.'.'.$extension.'"');
-		$request->headers('Content-Type', $mime);
-		$request->headers('Content-Length', $size);
+		$response->headers('Content-Type', $mime);
+		$response->headers('Content-Length', $size);
 
 		// Send all headers now
-		$request->send_headers();
+		$response->send_headers();
 
 		while (ob_get_level())
 		{

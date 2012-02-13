@@ -36,8 +36,7 @@ class Kwalbum_ItemAdder
 			$tags[$i] = trim($tags[$i]);
 		}
 		$item->tags = $tags;
-
-		$item->visible_date = $item->sort_date = Kwalbum_Helper :: replaceBadDate(@ $_POST['date']);
+		$item->visible_date = $item->sort_date = Kwalbum_Helper :: replaceBadDate(@ $_POST['date'].$_POST['time']);
 
 		$this->_item = $item;
 	}
@@ -147,6 +146,7 @@ class Kwalbum_ItemAdder
 		$item->path = $this->make_path();
 
 		$item->filename = $this->replace_bad_filename_characters($targetFile);
+
 		while ( ! Model_Kwalbum_Item::check_unique_filename($item->path, $item->filename))
 		{
 			if (!$name)
@@ -161,7 +161,7 @@ class Kwalbum_ItemAdder
 		$item->type = $this->get_filetype($item->filename);
 
 		if ( $_FILES['Filedata']['error'] == 1) {
-			throw new Kohana_Exception('File not uploaded.  Size greater than '.MAX_FILE_SIZE.'?');
+			throw new Kohana_Exception('File not uploaded.  Is the file too large?');
 		}
 		if ( ! Upload :: save($_FILES['Filedata'], $item->filename, $item->path))
 		{

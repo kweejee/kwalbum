@@ -202,7 +202,7 @@ class Controller_Ajax extends Controller_Kwalbum
 	{
 		if ( ! $this->user->can_add)
 		{
-			$this->request->status(400);
+			$this->request->response()->status(400);
 			Kohana::$log->add('~ajax/upload', 'invalid permission for user id '.$this->user->id);
 			return;
 		}
@@ -217,12 +217,12 @@ class Controller_Ajax extends Controller_Kwalbum
 			}
 			else
 			{
-				$this->request->status(400);
+				$this->request->response()->status(400);
 				Kohana::$log->add('~ajax/upload', 'ItemAdder failed to save_upload item');
 				return;
 			}
 		}
-		$this->request->status(400);
+		$this->request->response()->status(400);
 		Kohana::$log->add('~ajax/upload', 'empty FILES sent');
 	}
 

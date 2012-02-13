@@ -1,14 +1,63 @@
 // Kwalbum 3.0
-$(document).ready(function(){ 
-	$("#loc").focus().autocomplete('KWALBUM_URL/~ajax/getInputLocations',{
-		max:10,cacheLength:1,matchSubset:false,autoFill:true,matchCase:true
+var loc = {
+	lastXhr: null,
+	cache: {}
+};
+var tags = {
+	lastXhr: null,
+	cache: {}
+};
+$(document).ready(function(){
+	$("#loc").focus().autocomplete({
+		minLength: 2,
+		source: function( request, response ) {
+			var term = request.term;
+			if ( term in loc.cache ) {
+				response( loc.cache[ term ] );
+				return;
+			}
+
+			loc.lastXhr = $.getJSON( "KWALBUM_URL/~ajax/getInputLocations", request, function( data, status, xhr ) {
+				loc.cache[ term ] = data;
+				if ( xhr === loc.lastXhr ) {
+					response( data );
+				}
+			});
+		}
 	});
-	$("#tags").autocomplete('KWALBUM_URL/~ajax/getInputTags',{
-		max:10,cacheLength:1,matchSubset:false,autoFill:true,matchCase:true
+	$("#tags").autocomplete({
+		minLength: 2,
+		source: function( request, response ) {
+			var term = request.term;
+			if ( term in tags.cache ) {
+				response( tags.cache[ term ] );
+				return;
+			}
+
+			tags.lastXhr = $.getJSON( "KWALBUM_URL/~ajax/getInputTags", request, function( data, status, xhr ) {
+				tags.cache[ term ] = data;
+				if ( xhr === tags.lastXhr ) {
+					response( data );
+				}
+			});
+		}
 	});
 	$('#fileInput').uploadify({
 		'uploader':'KWALBUM_URL/media/ajax/uploadify/uploadify.swf',
-		'onComplete':kwablum_refresh_upload_data,
+		'onComplete':function(event, ID, fileObj, response, data){
+			console.log('complete');
+			console.log(ID);
+			console.log(fileObj);
+			console.log(response);
+			console.log(data);
+			kwablum_refresh_upload_data();
+		},
+		'onError':function(event,ID,fileObj,errorObj){
+			console.log('error');
+			console.log(ID);
+			console.log(fileObj);
+			console.log(errorObj);
+		},
 		'cancelImg':'KWALBUM_URL/media/ajax/uploadify/cancel.png',
 		'script':'KWALBUM_URL/~ajax/upload.php',
 		'multi':true,
@@ -16,6 +65,7 @@ $(document).ready(function(){
 		'fileExt':'*.jpg;*.JPG;*.jpe;*.JPE;*.jpeg;*.JPEG;*.png;*.PNG;*.gif;*.GIF',
 		'fileDesc':'Image Files Only'
 	});
+	$("#date").datepicker();
 });
 var kwablum_refresh_upload_data = function()
 {
@@ -24,6 +74,7 @@ var kwablum_refresh_upload_data = function()
 		'tags':$("#tags").val(),
 		'vis':$('#vis').val(),
 		'date':$('#date').val(),
+		'time':$('#time').val(),
 		'group_option':$('#group_option').val(),
 		'session_id':'SESSION_ID'
 	});

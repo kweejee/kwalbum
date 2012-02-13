@@ -32,7 +32,7 @@
 			<label>Tags:</label>
 			<input type="text" class="text" name="tags" id="tags" value="<?php echo $tags?>" size="20" />
 		</td>
-		<td>Date if not found on picture: <input type="text" class="text" name="date" id="date" value="<?php echo $date ?>" size="15" /></td>
+		<td>Date if not found on picture: <input type="text" class="text" name="date" id="date" value="<?php echo $date ?>" size="10" /> <input type="text" class="text" name="time" id="time" value="<?php echo $time ?>" size="3" /></td>
 	</tr>
 
 	<tr>

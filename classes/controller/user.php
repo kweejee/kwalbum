@@ -80,7 +80,8 @@ class Controller_User extends Controller_Kwalbum
 		$url = $this->url;
 
 		if (!$date = $this->date)
-			$date = date('Y-m-d H:i');
+			$date = '0000-00-00';
+		$time = '00:00';
 
 		$content = new View('kwalbum/user/upload');
 		$content->user_is_admin = $user->is_admin;
@@ -88,16 +89,15 @@ class Controller_User extends Controller_Kwalbum
 		if (isset($this->tags))
 			$content->tags = implode(',', $this->tags);
 		$content->date = $date;
+		$content->time = $time;
 
 		$template = $this->template;
 		$template->content = $content;
 		$template->title = 'Upload';
-		$template->head .= html::style($this->url.'/media/ajax/jqueryautocomplete/jquery.autocomplete.min.css')
-			.html::script($this->url.'/media/ajax/jqueryautocomplete/jquery.autocomplete.pack.js')
-			.html::script($this->url.'/media/ajax/uploadify/swfobject.js')
+		$template->head .= html::script($this->url.'/media/ajax/uploadify/swfobject.js')
 		//	.html::script('http://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject_src.js')
-			.html::style($this->url.'/media/ajax/uploadify/uploadify.min.css')
-			.html::script($this->url.'/media/ajax/uploadify/jquery.uploadify.v2.1.0.min.js')
+			.html::style($this->url.'/media/ajax/uploadify/uploadify.css')
+			.html::script($this->url.'/media/ajax/uploadify/jquery.uploadify.v2.1.4.min.js')
 			.html::script($this->url.'/media/ajax/upload.js')
 		;
 	}
@@ -160,9 +160,7 @@ class Controller_User extends Controller_Kwalbum
 		$template = $this->template;
 		$template->content = $content;
 		$template->title = 'Write';
-		$template->head .= html::style('kwalbum/media/ajax/jqueryautocomplete/jquery.autocomplete.min.css')
-			.html::script('kwalbum/media/ajax/jqueryautocomplete/jquery.autocomplete.pack.js')
-			.html::script('kwalbum/media/ajax/write.js')
+		$template->head .= html::script('kwalbum/media/ajax/write.js')
 		;
 	}
 
