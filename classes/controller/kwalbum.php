@@ -222,6 +222,6 @@ class Controller_Kwalbum extends Controller_Template
 			}
 		}
 		// Return a 404 status
-		$this->request->status(404);
+		$this->request->response()->status(404);
 	}
 }

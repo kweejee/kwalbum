@@ -25,13 +25,9 @@ class Controller_Ajax extends Controller_Kwalbum
 	public function action_GetInputLocations()
 	{
 		$this->_testPermission();
-		$userInput = trim(@$_GET['q']);
+		$userInput = trim(@$_GET['term']);
 		$locations = Model_Kwalbum_Location::getNameArray(0, 10, 0, $userInput, 'count DESC');
-
-		foreach($locations as $location)
-		{
-			echo "$location\n";
-		}
+		echo json_encode($locations);
 	}
 
 	public function action_SetLocation()
@@ -47,15 +43,24 @@ class Controller_Ajax extends Controller_Kwalbum
 	{
 		$item = Model :: factory('kwalbum_item')->load((int)$_POST['item']);
 		$this->_testPermission($item);
-		$date = Kwalbum_Helper :: replaceBadDate($_POST['value']);
-		if ($date != '0000-00-00 00:00:00')
-		{
-			if ($item->visible_date == $item->sort_date)
-				$item->sort_date = $date;
-			$item->visible_date = $date;
-			$item->save();
-		}
-		echo $item->visible_date;
+		$date = Kwalbum_Helper::replaceBadDate($_POST['value'].' '.$item->time);
+		if ($item->visible_date == $item->sort_date)
+			$item->sort_date = $date;
+		$item->visible_date = $date;
+		$item->save();
+		echo $item->date;
+	}
+
+	public function action_SetTime()
+	{
+		$item = Model :: factory('kwalbum_item')->load((int)$_POST['item']);
+		$this->_testPermission($item);
+		$date = Kwalbum_Helper::replaceBadDate($item->date.' '.$_POST['value']);
+		if ($item->visible_date == $item->sort_date)
+			$item->sort_date = $date;
+		$item->visible_date = $date;
+		$item->save();
+		echo $item->time;
 	}
 
 	public function action_SetSortDate()
@@ -63,11 +68,8 @@ class Controller_Ajax extends Controller_Kwalbum
 		$item = Model :: factory('kwalbum_item')->load((int)$_POST['item']);
 		$this->_testPermission($item);
 		$date = Kwalbum_Helper :: replaceBadDate($_POST['value']);
-		if ($date != '0000-00-00 00:00:00')
-		{
-			$item->sort_date = $date;
-			$item->save();
-		}
+		$item->sort_date = $date;
+		$item->save();
 		echo $item->sort_date;
 	}
 	public function action_GetRawDescription()
@@ -245,7 +247,7 @@ class Controller_Ajax extends Controller_Kwalbum
 	private function _getInputList($class, $function)
 	{
 		$this->_testPermission();
-		$tags = explode(',', @$_GET['q']);
+		$tags = explode(',', @$_GET['term']);
 		if (!$size = count($tags))
 			exit;
 
@@ -269,10 +271,12 @@ class Controller_Ajax extends Controller_Kwalbum
 
 		$tags = call_user_func_array(array($class, $function), array(0, 10, 0, $tag, 'count DESC', $not_included));
 
+		$output_tags = array();
 		foreach($tags as $tag)
 		{
-			echo "$old_tags$tag\n";
+			$output_tags[] = $old_tags.$tag;
 		}
+		echo json_encode($output_tags);
 	}
 
 	public function action_SetItemMapLocation()

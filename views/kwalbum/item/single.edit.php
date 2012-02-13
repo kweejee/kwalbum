@@ -41,8 +41,11 @@ echo ' <span class="kwalbumPageNumbers">(item '.$item_index.' of '.$total_items.
 		echo '<strong id="location_label">Location:</strong> ';
 		echo '<span id="location">'.$item->location.'</span>';
 
-		echo '<br/><strong id="date_label">Date &amp; Time:</strong> ';
-		echo '<span id="date">'.$item->visible_date.'</span>';
+		echo '<br/><strong id="date_label">Date:</strong> ';
+		echo '<span id="date">'.$item->date.'</span>';
+
+		echo '<br/><strong id="time_label">Time:</strong> ';
+		echo '<span id="time">'.$item->time.'</span>';
 
 		if ($item->type != 'description only')
 			echo "<br/><strong id='description_label'>Description:</strong>
@@ -71,9 +74,7 @@ echo ' <span class="kwalbumPageNumbers">(item '.$item_index.' of '.$total_items.
 
 		echo '<br/><span id="delete"><input type="button" id="delete_button" value="Delete Item"/></span><br/><br/>';
 
-	echo html::style($kwalbum_url.'/media/ajax/jqueryautocomplete/jquery.autocomplete.min.css')
-		.html::script($kwalbum_url.'/media/ajax/jqueryautocomplete/jquery.autocomplete.pack.js')
-		.html::script($kwalbum_url.'/media/ajax/jquery.jeditable.mini.js')
+	echo html::script($kwalbum_url.'/media/ajax/jquery.jeditable.mini.js')
 		.html::script($kwalbum_url.'/media/ajax/edit.js');
 
 	?>

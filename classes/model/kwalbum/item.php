@@ -472,153 +472,149 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 
 	public function __get($id)
 	{
-		if ($id == 'tags')
+		switch ($id)
 		{
-			if ($this->_tags === null)
-			{
-				$this->_tags = array();
-				$result = DB::query(Database::SELECT,
-					"SELECT name
-					FROM kwalbum_items_tags
-						LEFT JOIN kwalbum_tags ON tag_id = id
-					WHERE item_id = :id
-					ORDER BY name")
-					->param(':id', $this->id)
-					->execute();
-				foreach($result as $row)
+			case 'tags':
+				if ($this->_tags === null)
 				{
-					$this->_tags[] = $row['name'];
+					$this->_tags = array();
+					$result = DB::query(Database::SELECT,
+						"SELECT name
+						FROM kwalbum_items_tags
+							LEFT JOIN kwalbum_tags ON tag_id = id
+						WHERE item_id = :id
+						ORDER BY name")
+						->param(':id', $this->id)
+						->execute();
+					foreach($result as $row)
+					{
+						$this->_tags[] = $row['name'];
+					}
 				}
-			}
 
-			return $this->_tags;
-		}
-		else if ($id == 'persons')
-		{
-			if ($this->_persons === null)
-			{
-				$this->_persons = array();
-				$result = DB::query(Database::SELECT,
-					"SELECT name
-					FROM kwalbum_items_persons
-						LEFT JOIN kwalbum_persons ON person_id = id
-					WHERE item_id = :id
-					ORDER BY name")
-					->param(':id', $this->id)
-					->execute();
-				foreach($result as $row)
+				return $this->_tags;
+			case 'persons':
+				if ($this->_persons === null)
 				{
-					$this->_persons[] = $row['name'];
+					$this->_persons = array();
+					$result = DB::query(Database::SELECT,
+						"SELECT name
+						FROM kwalbum_items_persons
+							LEFT JOIN kwalbum_persons ON person_id = id
+						WHERE item_id = :id
+						ORDER BY name")
+						->param(':id', $this->id)
+						->execute();
+					foreach($result as $row)
+					{
+						$this->_persons[] = $row['name'];
+					}
 				}
-			}
 
-			return $this->_persons;
-		}
-		else if ($id == 'comments')
-		{
-			if ($this->_comments === null)
-			{
-				$this->_comments = $this->_load_comments($this->id);
-			}
-			return $this->_comments;
-		}
-		else if ($id == 'pretty_date')
-		{
-			$date = explode(' ', $this->visible_date);
-
-			if (count($date) > 1) {
-				$time = explode(':', $date[1]);
-				$hour = $time[0];
-				$minute = $time[1];
-			} else {
-				$hour = '';
-				$minute = '';
-			}
-			$date = explode('-', $date[0]);
-			$year = $date[0];
-			$month = $date[1];
-				$day = $date[2];
-
-			if (0 == $month)
-			{
-				if ((int)$year)
-					$pretty_date = $year;
-				else
-					$pretty_date = '';
-			}
-			else if (0 == $day)
-			{
-				$pretty_date = date('F Y', strtotime("$year-$month-1"));
-			}
-			else
-			{
-				$pretty_date = date('F j, Y', strtotime($this->visible_date));
-			}
-
-			if ($hour != '00' or $minute != '00')
-			{
-				$pretty_date .= " $hour:$minute";
-			}
-
-			return $pretty_date;
-		}
-		else if ($id == 'user_name')
-		{
-			if ($this->_user_name === null)
-			{
-				$result = DB::query(Database::SELECT,
-					"SELECT name
-					FROM kwalbum_users
-					WHERE id = :id
-					LIMIT 1")
-					->param(':id', $this->user_id)
-					->execute();
-				$this->_user_name = $result[0]['name'];
-			}
-			return $this->_user_name;
-		}
-		else if ($id == 'external_site' or $id == 'external_id')
-		{
-			if ($this->_external_site === null)
-			{
-				if ($this->is_external === false)
+				return $this->_persons;
+			case 'comments':
+				if ($this->_comments === null)
 				{
-					if ($id == 'external_site')
-						return null;
+					$this->_comments = $this->_load_comments($this->id);
+				}
+				return $this->_comments;
+			case 'pretty_date':
+				$date = explode(' ', $this->visible_date);
+
+				if (count($date) > 1) {
+					$time = explode(':', $date[1]);
+					$hour = $time[0];
+					$minute = $time[1];
+				} else {
+					$hour = '';
+					$minute = '';
+				}
+				$date = explode('-', $date[0]);
+				$year = $date[0];
+				$month = $date[1];
+					$day = $date[2];
+
+				if (0 == $month)
+				{
+					if ((int)$year)
+						$pretty_date = $year;
 					else
-						return 0;
+						$pretty_date = '';
 				}
-				$result = DB::query(Database::SELECT,
-					"SELECT site_id, external_item_id
-					FROM kwalbum_items_sites
-					WHERE item_id = :id
-					LIMIT 1")
+				else if (0 == $day)
+				{
+					$pretty_date = date('F Y', strtotime("$year-$month-1"));
+				}
+				else
+				{
+					$pretty_date = date('F j, Y', strtotime($this->visible_date));
+				}
+
+				if ($hour != '00' or $minute != '00')
+				{
+					$pretty_date .= " $hour:$minute";
+				}
+
+				return $pretty_date;
+			case 'date':
+				$date = explode(' ', $this->visible_date);
+				return $date[0];
+			case 'time':
+				$date = explode(' ', $this->visible_date);
+				return $date[1];
+			case 'user_name':
+				if ($this->_user_name === null)
+				{
+					$result = DB::query(Database::SELECT,
+						"SELECT name
+						FROM kwalbum_users
+						WHERE id = :id
+						LIMIT 1")
+						->param(':id', $this->user_id)
+						->execute();
+					$this->_user_name = $result[0]['name'];
+				}
+				return $this->_user_name;
+			case 'external_site':
+			case 'external_id':
+				if ($this->_external_site === null)
+				{
+					if ($this->is_external === false)
+					{
+						if ($id == 'external_site')
+							return null;
+						else
+							return 0;
+					}
+					$result = DB::query(Database::SELECT,
+						"SELECT site_id, external_item_id
+						FROM kwalbum_items_sites
+						WHERE item_id = :id
+						LIMIT 1")
+						->param(':id', $this->id)
+						->execute();
+					$site_id = $result[0]['site_id'];
+					$this->_external_id = (int)$result[0]['external_item_id'];
+					$this->_external_site = Model::factory('kwalbum_site')->load($site_id);
+				}
+				if ($id == 'external_site')
+					return $this->_external_site;
+				else
+					return $this->_external_id;
+			case 'comment_count':
+				if ($this->_comment_count)
+					return $this->_comment_count;
+				if ( ! $this->has_comments)
+					return 0;
+
+				$query = "SELECT count(*)
+					FROM kwalbum_comments
+					WHERE item_id = :id";
+				$result = DB::query(Database::SELECT, $query)
 					->param(':id', $this->id)
 					->execute();
-				$site_id = $result[0]['site_id'];
-				$this->_external_id = (int)$result[0]['external_item_id'];
-				$this->_external_site = Model::factory('kwalbum_site')->load($site_id);
-			}
-			if ($id == 'external_site')
-				return $this->_external_site;
-			else
-				return $this->_external_id;
-		}
-		else if ($id == 'comment_count')
-		{
-			if ($this->_comment_count)
+				$this->_comment_count = (int)$result[0]['count(*)'];
 				return $this->_comment_count;
-			if ( ! $this->has_comments)
-				return 0;
-
-			$query = "SELECT count(*)
-				FROM kwalbum_comments
-				WHERE item_id = :id";
-			$result = DB::query(Database::SELECT, $query)
-				->param(':id', $this->id)
-				->execute();
-			$this->_comment_count = (int)$result[0]['count(*)'];
-			return $this->_comment_count;
 		}
 	}
 

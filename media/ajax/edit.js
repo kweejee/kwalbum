@@ -1,11 +1,41 @@
 // Kwalbum 3.0
-$(document).ready(function(){ 	
+$(document).ready(function(){
 	$.editable.addInputType('autocomplete', {
 		element:$.editable.types.text.element,
 		plugin:function(settings, original) {
-			$('input', this).autocomplete(settings.autocomplete.data, {
-				max:10,cacheLength:1,matchSubset:false,matchCase:true,
-				autoFill:true});
+			var data = {
+				minLength: 2,
+				source: function( request, response ) {
+					var term = request.term;
+					if ( term in settings.cache ) {
+						response( settings.cache[ term ] );
+						return;
+					}
+
+					settings.lastXhr = $.getJSON( "KWALBUM_URL/~ajax/"+settings.autocomplete_action, request, function( data, status, xhr ) {
+						settings.cache[ term ] = data;
+						if ( xhr === settings.lastXhr ) {
+							response( data );
+						}
+					});
+				}
+			}
+			$('input').autocomplete(data);
+		}
+	});
+	$.editable.addInputType('datepicker', {
+		element:$.editable.types.text.element,
+		plugin : function(settings, original) {
+		$("input", this)
+		.datepicker({
+			defaultDate: settings.data,
+			dateFormat: 'yy-mm-dd'
+		})
+		.bind('dateSelected', function(e, selectedDate, $td) {
+		    $(form).submit();
+		})
+		.trigger('change')
+		.click();
 		}
 	});
 	$('#location_label').click(function(){$('#location').click();});
@@ -14,9 +44,12 @@ $(document).ready(function(){
 		tooltip:"Click to edit...",
 		indicator:"Saving...",
 		onblur:"submit",
-		width:200, 
+		width:200,
+		style:"inherit",
 		submitdata:{item:item_id},
-		autocomplete: {data: 'KWALBUM_URL/~ajax/GetInputLocations'}
+		autocomplete_action: 'GetInputLocations',
+		cache: {},
+		lastXhr: null
 	});
 	$('#description_label').click(function(){$('#description').click();});
 	$('#description').editable( 'KWALBUM_URL/~ajax/SetDescription',{
@@ -27,7 +60,8 @@ $(document).ready(function(){
 		submit:'Save',
 		onblur:"submit",
 		cols:35,
-		rows:20, 
+		rows:20,
+		style:"inherit",
 		submitdata:{item:item_id}
 	});
 	$('#large_description').editable( 'KWALBUM_URL/~ajax/SetDescription',{
@@ -38,7 +72,8 @@ $(document).ready(function(){
 		submit:'Save',
 		onblur:"submit",
 		cols:60,
-		rows:20, 
+		rows:20,
+		style:"inherit",
 		submitdata:{item:item_id}
 	});
 	$('#tags_label').click(function(){$('#tags').click();});
@@ -49,7 +84,10 @@ $(document).ready(function(){
 		onblur:"submit",
 		width:200, 
 		submitdata:{item:item_id},
-		autocomplete: {data: 'KWALBUM_URL/~ajax/GetInputTags'}
+		autocomplete_action: 'GetInputTags',
+		style:"inherit",
+		cache: {},
+		lastXhr: null
 	});
 	$('#persons_label').click(function(){$('#persons').click();});
 	$('#persons').editable('KWALBUM_URL/~ajax/SetPersons',
@@ -60,16 +98,34 @@ $(document).ready(function(){
 		onblur:"submit",
 		width:200, 
 		submitdata:{item:item_id},
-		autocomplete: {data: 'KWALBUM_URL/~ajax/GetInputPersons'}
+		style:"inherit",
+		autocomplete_action: 'GetInputPersons',
+		cache: {},
+		lastXhr: null
 	});
 	$('#date_label').click(function(){$('#date').click();});
 	$('#date').editable('KWALBUM_URL/~ajax/SetDate',
+	{
+		type:"datepicker",
+		data:$("#date").html(),
+		tooltip:"Click to edit...",
+		indicator:"Saving...",
+		submit:'Save',
+		cancel:'Cancel',
+		onblur:'ignore',
+		width:80,
+		style:"inherit",
+		submitdata:{item:item_id}
+	});
+	$('#time_label').click(function(){$('#time').click();});
+	$('#time').editable('KWALBUM_URL/~ajax/SetTime',
 	{
 		type:"text",
 		tooltip:"Click to edit...",
 		indicator:"Saving...",
 		onblur:"submit",
-		width:150, 
+		width:70,
+		style:"inherit",
 		submitdata:{item:item_id}
 	});
 	$('#sortdate_label').click(function(){$('#sortdate').click();});
@@ -79,7 +135,8 @@ $(document).ready(function(){
 		tooltip:"Click to edit...",
 		indicator:"Saving...",
 		onblur:"submit",
-		width:150, 
+		width:150,
+		style:"inherit",
 		submitdata:{item:item_id}
 	});
 	$('#visibility_label').click(function(){$('#visibility').click();});
@@ -89,6 +146,7 @@ $(document).ready(function(){
 		tooltip:"Click to edit...",
 		indicator:"Saving...",
 		onblur:"submit",
+		style:"inherit",
 		submitdata:{item:item_id},
 		loadurl:'KWALBUM_URL/~ajax/GetVisibility?item='+item_id
 	});

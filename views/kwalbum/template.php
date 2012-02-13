@@ -51,8 +51,10 @@ if ($summary)
 	<title><?php echo htmlspecialchars(isset($title) ? $title.$config->title_separator.$config->title : $config->title) ?></title>
 
 	<?php
+		echo html::style('kwalbum/media/css/jquery-ui/jquery-ui-1.8.17.custom.css');
 		echo html::style($kwalbum_url.'/media/css/default.css');
 		echo html::script('https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js');
+		echo html::script($kwalbum_url.'/media/ajax/jquery-ui-1.8.17.custom.min.js');
 		echo isset($head) ? $head : null;
 	?>
 
