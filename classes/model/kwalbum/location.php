@@ -5,14 +5,14 @@
  * @author Tim Redmond <kweejee@tummycaching.com>
  * @copyright Copyright 2009-2012 Tim Redmond
  * @license GNU General Public License version 3 <http://www.gnu.org/licenses/>
- * @version 3.0 Jul 6, 2009
  * @package kwalbum
  * @since 3.0 Jul 6, 2009
  */
 
 class Model_Kwalbum_Location extends Kwalbum_Model
 {
-	public $id, $name, $latitude, $longitude, $count;
+	public $id, $name, $latitude, $longitude, $count, $thumbnail_item_id, $parent_id,
+		$name_hide_level, $coordinate_hide_level, $description;
 
 	public function load($id = null, $field = 'id')
 	{
@@ -23,7 +23,7 @@ class Model_Kwalbum_Location extends Kwalbum_Model
 		}
 
 		$query = DB::query(Database::SELECT,
-			"SELECT id, name, latitude, longitude, count
+			"SELECT *
 			FROM kwalbum_locations
 			WHERE $field = :id
 			LIMIT 1")
@@ -44,6 +44,11 @@ class Model_Kwalbum_Location extends Kwalbum_Model
 		$this->latitude = (float)$row['latitude'];
 		$this->longitude = (float)$row['longitude'];
 		$this->count = (int)$row['count'];
+		$this->thumbnail_item_id = (int)$row['thumbnail_item_id'];
+		$this->parent_id = (int)$row['parent_location_id'];
+		$this->name_hide_level = (int)$row['name_hide_level'];
+		$this->coordinate_hide_level = (int)$row['coordinate_hide_level'];
+		$this->description = $row['description'];
 		$this->loaded = true;
 
 		return $this;
@@ -58,43 +63,61 @@ class Model_Kwalbum_Location extends Kwalbum_Model
 			$result = DB::query(Database::SELECT,
 				"SELECT id, latitude, longitude, count
 				FROM kwalbum_locations
-				WHERE name = :name
+				WHERE name = :name AND parent_location_id = :parent_id
 				LIMIT 1")
 				->param(':name', $this->name)
+				->param(':parent_id', (int)$this->parent_id)
 				->execute();
 			if ($result->count() == 0)
 			{
 				$result = DB::query(Database::INSERT,
 					"INSERT INTO kwalbum_locations
-					(name, latitude, longitude, count)
-					VALUES (:name, :latitude, :longitude, :count)")
+					(name, latitude, longitude, count, thumbnail_item_id, parent_location_id,
+						name_hide_level, coordinate_hide_level, description)
+					VALUES (:name, :latitude, :longitude, :count, :thumbnail_item_id, :parent_id,
+						:name_hide_level, :coordinate_hide_level, :description)")
 					->param(':name', $this->name)
 					->param(':latitude', $this->latitude ? $this->latitude : 0)
 					->param(':longitude', $this->longitude ? $this->longitude : 0)
-					->param(':count', $this->count)
+					->param(':count', (int)$this->count)
+					->param(':thumbnail_item_id', $this->thumbnail_item_id ? $this->thumbnail_item_id : 0)
+					->param(':parent_id', (int)$this->parent_id)
+					->param(':name_hide_level', (int)$this->name_hide_level)
+					->param(':coordinate_hide_level', (int)$this->coordinate_hide_level)
+					->param(':description', $this->description ? $this->description : '')
 					->execute();
 				$this->id = $result[0];
 				return;
 			}
-			$this->id = $id = (int)$result[0]['id'];
-			if ($this->latitude == 0)
-				$this->latitude = (float)$result[0]['latitude'];
-			if ($this->longitude == 0)
-				$this->longitude = (float)$result[0]['longitude'];
-			if ($this->count == 0)
-				$this->count = (int)$result[0]['count'];
+
+			$row = $result[0];
+			$this->id = $id = (int)$row['id'];
+			if (!$this->latitude)
+				$this->latitude = (float)$row['latitude'];
+			if (!$this->longitude)
+				$this->longitude = (float)$row['longitude'];
+			if (!$this->count)
+				$this->count = (int)$row['count'];
 		}
 		else
 		{
 			$query = DB::query(Database::UPDATE,
 				"UPDATE kwalbum_locations
-				SET name = :name, latitude = :latitude, longitude = :longitude, count= :count
+				SET name = :name, latitude = :latitude, longitude = :longitude, count= :count,
+					thumbnail_item_id = :thumbnail_item_id, parent_location_id = :parent_id,
+					name_hide_level = :name_hide_level, coordinate_hide_level = :coordinate_hide_level,
+					description = :description
 				WHERE id = :id")
 				->param(':id', $id)
-			->param(':name', $this->name)
-			->param(':latitude', $this->latitude)
-			->param(':longitude', $this->longitude)
-			->param(':count', $this->count);
+				->param(':name', $this->name)
+				->param(':latitude', $this->latitude ? $this->latitude : 0)
+				->param(':longitude', $this->longitude ? $this->longitude : 0)
+				->param(':count', $this->count ? $this->count : 0)
+				->param(':thumbnail_item_id', $this->thumbnail_item_id ? $this->thumbnail_item_id : 0)
+				->param(':parent_id', $this->parent_id ? $this->parent_id : 0)
+				->param(':name_hide_level', $this->name_hide_level ? $this->name_hide_level : 0)
+				->param(':coordinate_hide_level', $this->coordinate_hide_level ? $this->coordinate_hide_level : 0)
+				->param(':description', $this->description ? $this->description : '');
 			$query->execute();
 		}
 	}
@@ -146,8 +169,9 @@ class Model_Kwalbum_Location extends Kwalbum_Model
 
 	public function clear()
 	{
-		$this->id = $this->latitude = $this->longitude = $this->count = 0;
-		$this->name = '';
+		$this->id = $this->latitude = $this->longitude = $this->count = $this->thumbnail_item_id
+			= $this->parent_location_id = $this->name_hide_level = $this->coordinate_hide_level = 0;
+		$this->name = $this->description = '';
 		$this->loaded = false;
 	}
 
@@ -262,7 +286,7 @@ class Model_Kwalbum_Location extends Kwalbum_Model
 			.($left>$right
 				? " AND (longitude >= '$left' OR longitude <= '$right')"
 				: " AND longitude >= '$left' AND longitude <= '$right'");
-		$query = 'SELECT id, name, latitude as lat, longitude as lon, count'
+		$query = 'SELECT id, name, latitude as lat, longitude as lon, count, thumbnail_item_id, description'
 			.' FROM kwalbum_locations'
 			.$where_query
 			.' ORDER BY count DESC'

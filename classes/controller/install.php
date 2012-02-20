@@ -174,7 +174,7 @@ class Controller_Install extends Controller_Kwalbum
 	{
 		// Users
 		DB::query('', 'CREATE  TABLE IF NOT EXISTS `kwalbum_users`(
-		          `id` SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT ,
+		          `id` MEDIUMINT UNSIGNED NOT NULL AUTO_INCREMENT ,
 		          `name` TINYTEXT NOT NULL ,
 				  `login_name` CHAR('.$this->_user['maxNameLength'].') NOT NULL ,
 				  `email` TINYTEXT NOT NULL ,
@@ -193,24 +193,30 @@ class Controller_Install extends Controller_Kwalbum
 
 		// Locations
 		DB::query('', 'CREATE TABLE IF NOT EXISTS `kwalbum_locations`(
-		          `id` SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT ,
+		          `id` MEDIUMINT UNSIGNED NOT NULL AUTO_INCREMENT ,
 		          `name` VARCHAR(100) NOT NULL ,
 		          `latitude` DECIMAL(10,7) NOT NULL DEFAULT 0,
 		          `longitude` DECIMAL(10,7) NOT NULL DEFAULT 0,
-		          `count` SMALLINT UNSIGNED NOT NULL DEFAULT 0 ,
+		          `count` MEDIUMINT UNSIGNED NOT NULL DEFAULT 0 ,
+			  `thumbnail_item_id` INT UNSIGNED NOT NULL DEFAULT 0 ,
+			  `parent_location_id` MEDIUMINT UNSIGNED NOT NULL DEFAULT 0 ,
+			  `name_hide_level` TINYINT UNSIGNED NOT NULL DEFAULT 0 ,
+			  `coordinate_hide_level` TINYINT UNSIGNED NOT NULL DEFAULT 0 ,
+			  `description` TEXT NOT NULL ,
 		          PRIMARY KEY (`id`) ,
 		          INDEX `location` (`name`(10) ASC) ,
-		          INDEX `coordinates` (`latitude` ASC, `longitude` ASC)
+		          INDEX `coordinates` (`latitude` ASC, `longitude` ASC) ,
+			  INDEX `parent_location` (`parent_location_id` ASC)
 		        ) ENGINE = InnoDB
 		        DEFAULT CHARACTER SET = utf8')
 			->execute();
 
 		// Items
 		DB::query('', 'CREATE  TABLE IF NOT EXISTS `kwalbum_items`(
-		          `id` MEDIUMINT UNSIGNED NOT NULL AUTO_INCREMENT ,
+		          `id` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
 		          `type_id` TINYINT UNSIGNED NOT NULL ,
-		          `user_id` SMALLINT UNSIGNED NOT NULL ,
-		          `location_id` SMALLINT UNSIGNED NOT NULL ,
+		          `user_id` MEDIUMINT UNSIGNED NOT NULL ,
+		          `location_id` MEDIUMINT UNSIGNED NOT NULL ,
 		          `visible_dt` DATETIME NOT NULL ,
 		          `sort_dt` DATETIME NOT NULL ,
 		          `description` TEXT NOT NULL ,
@@ -218,7 +224,7 @@ class Controller_Install extends Controller_Kwalbum
 		          `filename` TINYTEXT NOT NULL ,
 		          `has_comments` TINYINT NOT NULL DEFAULT 0 ,
 		          `hide_level` TINYINT UNSIGNED NOT NULL DEFAULT 0 ,
-		          `count` SMALLINT UNSIGNED NOT NULL DEFAULT 0 ,
+		          `count` MEDIUMINT UNSIGNED NOT NULL DEFAULT 0 ,
 		          `latitude` DECIMAL(10,7) NOT NULL DEFAULT 0,
 		          `longitude` DECIMAL(10,7) NOT NULL DEFAULT 0,
 		          `update_dt` DATETIME NOT NULL ,
@@ -242,11 +248,11 @@ class Controller_Install extends Controller_Kwalbum
 		// Comments
 		DB::query('', 'CREATE  TABLE IF NOT EXISTS `kwalbum_comments`(
 		          `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-		          `item_id` MEDIUMINT UNSIGNED NOT NULL,
+		          `item_id` INT UNSIGNED NOT NULL,
 		          `name` TINYTEXT NOT NULL,
 		          `text` TEXT NOT NULL,
 		          `create_dt` DATETIME NOT NULL,
-		          `ip` INT SIGNED NOT NULL,
+		          `ip` INT UNSIGNED NOT NULL,
 		          PRIMARY KEY (`id`) ,
 		          INDEX `item_id` (`item_id` ASC) ,
 		          INDEX `create_dt` (`create_dt` ASC) ,
@@ -263,7 +269,7 @@ class Controller_Install extends Controller_Kwalbum
 		DB::query('', 'CREATE  TABLE IF NOT EXISTS `kwalbum_tags`(
 		          `id` SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT ,
 		          `name` TINYTEXT NOT NULL ,
-		          `count` SMALLINT UNSIGNED NOT NULL ,
+		          `count` MEDIUMINT UNSIGNED NOT NULL ,
 		          PRIMARY KEY (`id`) ,
 		          INDEX `tag` (`name`(10) ASC)
 		        ) ENGINE = InnoDB
@@ -272,7 +278,7 @@ class Controller_Install extends Controller_Kwalbum
 
 		// Items_Tags relationship
 		DB::query('', 'CREATE  TABLE IF NOT EXISTS `kwalbum_items_tags`(
-		          `item_id` MEDIUMINT UNSIGNED NOT NULL ,
+		          `item_id` INT UNSIGNED NOT NULL ,
 		          `tag_id` SMALLINT UNSIGNED NOT NULL ,
 		          INDEX `item_id` (`item_id` ASC) ,
 		          INDEX `tag_id` (`tag_id` ASC) ,
@@ -295,7 +301,7 @@ class Controller_Install extends Controller_Kwalbum
 		DB::query('', 'CREATE  TABLE IF NOT EXISTS `kwalbum_persons`(
 		          `id` SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT ,
 		          `name` TINYTEXT NOT NULL ,
-		          `count` SMALLINT UNSIGNED NOT NULL ,
+		          `count` MEDIUMINT UNSIGNED NOT NULL ,
 		          PRIMARY KEY (`id`) ,
 		          INDEX `person` (`name`(10) ASC)
 		        ) ENGINE = InnoDB
@@ -304,7 +310,7 @@ class Controller_Install extends Controller_Kwalbum
 
 		// Items_Persons relationship
 		DB::query('', 'CREATE  TABLE IF NOT EXISTS `kwalbum_items_persons`(
-		          `item_id` MEDIUMINT UNSIGNED NOT NULL ,
+		          `item_id` INT UNSIGNED NOT NULL ,
 		          `person_id` SMALLINT UNSIGNED NOT NULL ,
 		          INDEX `item_id` (`item_id` ASC) ,
 		          INDEX `person_id` (`person_id` ASC) ,
@@ -325,7 +331,7 @@ class Controller_Install extends Controller_Kwalbum
 
 		// Sites, external sites to import items from
 		DB::query('', 'CREATE  TABLE IF NOT EXISTS `kwalbum_sites`(
-		          `id` TINYINT UNSIGNED NOT NULL AUTO_INCREMENT ,
+		          `id` SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT ,
 		          `url` VARCHAR(100) NOT NULL ,
 		          `site_key` VARCHAR(45) NOT NULL ,
 		          `import_dt` DATETIME NOT NULL ,
@@ -336,9 +342,9 @@ class Controller_Install extends Controller_Kwalbum
 
 		// Items_Sites relationship for imported items
 		DB::query('', 'CREATE  TABLE IF NOT EXISTS `kwalbum_items_sites`(
-		          `item_id` MEDIUMINT UNSIGNED NOT NULL ,
-		          `site_id` TINYINT UNSIGNED NOT NULL ,
-		          `external_item_id` MEDIUMINT UNSIGNED NOT NULL ,
+		          `item_id` INT UNSIGNED NOT NULL ,
+		          `site_id` SMALLINT UNSIGNED NOT NULL ,
+		          `external_item_id` INT UNSIGNED NOT NULL ,
 		          INDEX `item_id` (`item_id` ASC) ,
 		          PRIMARY KEY (`item_id`) ,
 		          INDEX `site_id` (`site_id` ASC) ,

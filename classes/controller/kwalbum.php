@@ -5,7 +5,6 @@
  * @author Tim Redmond <kweejee@tummycaching.com>
  * @copyright Copyright 2009-2012 Tim Redmond
  * @license GNU General Public License version 3 <http://www.gnu.org/licenses/>
- * @version 3.1 Feb 12, 2012
  * @package kwalbum
  * @since 3.0 Jun 30, 2009
  */
