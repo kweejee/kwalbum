@@ -23,7 +23,7 @@ From here you can <?php echo html::anchor($kwalbum_url.'/~browse', '<b>browse al
 		<select name="location" size="10">
 		<option value='' selected></option>
 		<?php
-		$locations = Model_Kwalbum_Location::getNameArray();
+		$locations = Model_Kwalbum_Location::getNameArray($user);
 		foreach ($locations as $name)
 			echo "<option value='$name'>$name</option>";
 		?>

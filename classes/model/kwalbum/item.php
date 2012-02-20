@@ -5,7 +5,6 @@
  * @author Tim Redmond <kweejee@tummycaching.com>
  * @copyright Copyright 2009-2012 Tim Redmond
  * @license GNU General Public License version 3 <http://www.gnu.org/licenses/>
- * @version 3.0 Jul 6, 2009
  * @package kwalbum
  * @since 3.0 Jul 6, 2009
  */
@@ -93,14 +92,14 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 		$this->is_external = (bool)$row['is_external'];
 
 		$result = DB::query(Database::SELECT,
-			"SELECT name
-			FROM kwalbum_locations
-			WHERE id = :id
+			"SELECT loc.name AS name, p.id, p.name AS parent
+			FROM kwalbum_locations loc
+			LEFT JOIN kwalbum_locations p ON (p.id = loc.parent_location_id)
+			WHERE loc.id = :id
 			LIMIT 1")
 			->param(':id', $this->_location_id)
 			->execute();
-		$this->location = $this->_original_location = $result[0]['name'];
-
+		$this->location = $this->_original_location = ($result[0]['parent'] ? $result[0]['parent'].': ' : '').$result[0]['name'];
 		$this->loaded = true;
 		return $this;
 	}
@@ -119,11 +118,11 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 		if ($this->_location_id)
 		{
 			// Update original location's item count if the name is different
-			if ($this->location != $this->_original_location)
+			if (trim($this->location) != $this->_original_location)
 			{
-				DB::query(Database::UPDATE, "UPDATE kwalbum_locations
-					SET count = count-1
-					WHERE id = :id")
+				DB::query(Database::UPDATE, "UPDATE kwalbum_locations loc LEFT JOIN kwalbum_locations p ON (p.id = loc.parent_location_id)
+					SET loc.count = loc.count-1, p.child_count = p.child_count-1
+					WHERE loc.id = :id")
 					->param(':id', $this->_location_id)
 					->execute();
 			}
@@ -156,24 +155,87 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 			// Get new location id for known name
 			else
 			{
+				$parent_loc_name = '';
+				$loc_name = '';
+				$names = explode(':', $this->location);
+				if (count($names) > 1)
+				{
+					$parent_loc_name = trim($names[0]);
+					array_shift($names);
+					foreach ($names as &$n)
+						$n = trim($n);
+					$loc_name = implode(': ', $names);
+				}
 				// Get id if new location already exists
-				$result = DB::query(Database::SELECT,
-					"SELECT id
-					FROM kwalbum_locations
-					WHERE name = :name
-					LIMIT 1")
-					->param(':name', $this->location)
-					->execute();
+				if ($parent_loc_name)
+				{
+					$result = DB::query(Database::SELECT,
+						"SELECT loc.id
+						FROM kwalbum_locations loc
+						LEFT JOIN kwalbum_locations p ON (p.id = loc.parent_location_id)
+						WHERE loc.name = :name AND p.name = :parent_name
+						LIMIT 1")
+						->param(':name', $loc_name)
+						->param(':parent_name', $parent_loc_name)
+						->execute();
+				}
+				else
+				{
+					$result = DB::query(Database::SELECT,
+						"SELECT id
+						FROM kwalbum_locations
+						WHERE name = :name
+						LIMIT 1")
+						->param(':name', $loc_name)
+						->execute();
+				}
 
 				// If new location does not exist then create it
 				if ($result->count() == 0)
 				{
-					$result = DB::query(Database::INSERT,
-						"INSERT INTO kwalbum_locations
-						(name)
-						VALUES (:name)")
-						->param(':name', $this->location)
-						->execute();
+					if ($parent_loc_name)
+					{
+						// Get parent location id
+						$result = DB::query(Database::SELECT,
+							"SELECT id
+							FROM kwalbum_locations
+							WHERE name = :name
+							LIMIT 1")
+							->param(':name', $parent_loc_name)
+							->execute();
+
+							// If new location's parent does not exist then create it
+							if ($result->count() == 0)
+							{
+								$result = DB::query(Database::INSERT,
+									"INSERT INTO kwalbum_locations
+									(name)
+									VALUES (:name)")
+									->param(':name', $parent_loc_name)
+									->execute();
+
+							}
+							$parent_loc_id = $result[0];
+						// Create new location with parent
+						$result = DB::query(Database::INSERT,
+							"INSERT INTO kwalbum_locations
+							(name, parent_location_id)
+							VALUES (:name, :parent_id)")
+							->param(':name', $loc_name)
+							->param(':parent_id', $parent_loc_id)
+							->execute();
+					}
+					else
+					{
+						// Create new location without parent
+						$result = DB::query(Database::INSERT,
+							"INSERT INTO kwalbum_locations
+							(name)
+							VALUES (:name)")
+							->param(':name', $loc_name)
+							->execute();
+					}
+
 					$location_id = $result[0];
 				}
 				else
@@ -184,9 +246,9 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 
 			// Update count on new location
 			DB::query(Database::UPDATE,
-				"UPDATE kwalbum_locations
-				SET count = count+1
-				WHERE id = :id")
+				"UPDATE kwalbum_locations loc LEFT JOIN kwalbum_locations p ON (p.id = loc.parent_location_id)
+				SET loc.count = loc.count+1, p.child_count = p.child_count+1
+				WHERE loc.id = :id")
 				->param(':id', $location_id)
 				->execute();
 		}
@@ -838,11 +900,37 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 		switch ($name)
 		{
 			case 'location':
-				$query = (string)DB::query(null, " location_id =
-					(SELECT id
-					FROM kwalbum_locations
-					WHERE name = :location)")
-					->param(':location', $value);
+				$parent_name = '';
+				$loc_name = '';
+				$names = explode(':', $value);
+				if (count($names) > 1)
+				{
+					$parent_name = trim($names[0]);
+					array_shift($names);
+					foreach ($names as &$n)
+						$n = trim($n);
+					$loc_name = implode(': ', $names);
+				}
+				if ($loc_name) {
+					$query = (string)DB::query(null, " location_id =
+						(SELECT loc.id
+						FROM kwalbum_locations loc
+						LEFT JOIN kwalbum_locations p ON (p.id = loc.parent_location_id)
+						WHERE loc.name = :location AND p.name = :parent_location)")
+						->param(':location', $loc_name)
+						->param(':parent_location', $parent_name);
+				}
+				else
+				{
+					if ($parent_name)
+						$value = $parent_name;
+					$query = (string)DB::query(null, " location_id IN (SELECT loc.id
+						    FROM kwalbum_locations loc
+						    LEFT JOIN kwalbum_locations p ON (p.id = loc.parent_location_id)
+						    WHERE loc.name = :location OR p.name = :location)")
+						->param(':location', $value);
+				}
+				print_r($query);
 				break;
 			case 'date':
 				$newDate = explode('-', $value);
