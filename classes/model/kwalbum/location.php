@@ -11,8 +11,9 @@
 
 class Model_Kwalbum_Location extends Kwalbum_Model
 {
-	public $id, $name, $latitude, $longitude, $count, $child_count, $thumbnail_item_id, $parent_id,
+	public $id, $name, $latitude, $longitude, $count, $child_count, $thumbnail_item_id, $parent_name,
 		$name_hide_level, $coordinate_hide_level, $description;
+	private $_display_name;
 
 	public function load($id = null, $field = 'id')
 	{
@@ -22,10 +23,12 @@ class Model_Kwalbum_Location extends Kwalbum_Model
 			return $this;
 		}
 
+		$field = mysql_escape_string($field);
 		$query = DB::query(Database::SELECT,
-			"SELECT *
-			FROM kwalbum_locations
-			WHERE $field = :id
+			"SELECT loc.*, p.name AS parent_name
+			FROM kwalbum_locations loc
+			LEFT JOIN kwalbum_locations p ON (p.id = loc.parent_location_id)
+			WHERE loc.{$field} = :id
 			LIMIT 1")
 			->param(':id', $id);
 
@@ -41,12 +44,13 @@ class Model_Kwalbum_Location extends Kwalbum_Model
 
 		$this->id = (int)$row['id'];
 		$this->name = $row['name'];
+		$this->parent_name = $row['parent_name'];
+		$this->_display_name = ($row['parent_name'] ? $row['parent_name'].': ' : '').$row['name'];
 		$this->latitude = (float)$row['latitude'];
 		$this->longitude = (float)$row['longitude'];
 		$this->count = (int)$row['count'];
 		$this->child_count = (int)$row['child_count'];
 		$this->thumbnail_item_id = (int)$row['thumbnail_item_id'];
-		$this->parent_id = (int)$row['parent_location_id'];
 		$this->name_hide_level = (int)$row['name_hide_level'];
 		$this->coordinate_hide_level = (int)$row['coordinate_hide_level'];
 		$this->description = $row['description'];
@@ -55,10 +59,36 @@ class Model_Kwalbum_Location extends Kwalbum_Model
 		return $this;
 	}
 
+	/**
+	 * Save location changes by either inserting or updating the location table in the database
+	 *
+	 * @return Model_Kwalbum_Location
+	 */
 	public function save()
 	{
 		$id = $this->id;
 
+		$parent_id = 0;
+		if ($this->parent_name)
+		{
+			$result = DB::query(Database::SELECT,
+				"SELECT id
+				FROM kwalbum_locations
+				WHERE name = :name")
+				->param(':name', $this->parent_name)
+				->execute();
+			if (count($result) == 1)
+			{
+				$parent_id = $result[0]['id'];
+			}
+			else
+			{
+				$parent = clone $this;
+				$parent->id = 0;
+				$parent->display_name = $this->parent_name;
+				$parent_id = $parent->save()->id;
+			}
+		}
 		if ($id == 0)
 		{
 			$result = DB::query(Database::SELECT,
@@ -67,7 +97,7 @@ class Model_Kwalbum_Location extends Kwalbum_Model
 				WHERE name = :name AND parent_location_id = :parent_id
 				LIMIT 1")
 				->param(':name', $this->name)
-				->param(':parent_id', (int)$this->parent_id)
+				->param(':parent_id', (int)$parent_id)
 				->execute();
 			if ($result->count() == 0)
 			{
@@ -83,13 +113,15 @@ class Model_Kwalbum_Location extends Kwalbum_Model
 					->param(':count', (int)$this->count)
 					->param(':child_count', (int)$this->child_count)
 					->param(':thumbnail_item_id', $this->thumbnail_item_id ? $this->thumbnail_item_id : 0)
-					->param(':parent_id', (int)$this->parent_id)
+					->param(':parent_id', (int)$parent_id)
 					->param(':name_hide_level', (int)$this->name_hide_level)
 					->param(':coordinate_hide_level', (int)$this->coordinate_hide_level)
 					->param(':description', $this->description ? $this->description : '')
 					->execute();
 				$this->id = $result[0];
-				return;
+
+				Model_Kwalbum_Location::updateCounts();
+				return $this;
 			}
 
 			$row = $result[0];
@@ -119,12 +151,15 @@ class Model_Kwalbum_Location extends Kwalbum_Model
 				->param(':count', (int)$this->count)
 				->param(':child_count', (int)$this->child_count)
 				->param(':thumbnail_item_id', $this->thumbnail_item_id ? $this->thumbnail_item_id : 0)
-				->param(':parent_id', $this->parent_id ? $this->parent_id : 0)
+				->param(':parent_id', (int)$parent_id)
 				->param(':name_hide_level', $this->name_hide_level ? $this->name_hide_level : 0)
 				->param(':coordinate_hide_level', $this->coordinate_hide_level ? $this->coordinate_hide_level : 0)
 				->param(':description', $this->description ? $this->description : '');
 			$query->execute();
 		}
+
+		Model_Kwalbum_Location::updateCounts();
+		return $this;
 	}
 
 	/**
@@ -146,18 +181,42 @@ class Model_Kwalbum_Location extends Kwalbum_Model
 			return false;
 		}
 
+		$parent_id = 0;
+		$result = DB::query(Database::SELECT,
+			"SELECT parent_location_id
+			FROM kwalbum_locations
+			WHERE id = :id")
+			->param(':id', $id)
+			->execute();
+		if (count($result) == 1)
+		{
+			$parent_id = $result[0]['parent_location_id'];
+		}
+		$new_location_id = $parent_id ? $parent_id : 1;
 		$count = DB::query(Database::UPDATE,
 			"UPDATE kwalbum_items
-			SET location_id = 1
+			SET location_id = :new_id
 			WHERE location_id = :id")
 			->param(':id', $id)
+			->param(':new_id', $new_location_id)
 			->execute();
 		DB::query(Database::UPDATE,
 			"UPDATE kwalbum_locations
 			SET count = count+:count
-			WHERE id = 1")
+			WHERE id = :new_id")
 			->param(':count', $count)
+			->param(':new_id', $new_location_id)
 			->execute();
+		if ($parent_id)
+		{
+			DB::query(Database::UPDATE,
+				"UPDATE kwalbum_locations
+				SET child_count = child_count-:count
+				WHERE id = :id")
+				->param(':id', $parent_id)
+				->param(':count', $count)
+				->execute();
+		}
 		DB::query(Database::DELETE,
 			"DELETE FROM kwalbum_locations
 			WHERE id = :id")
@@ -175,22 +234,45 @@ class Model_Kwalbum_Location extends Kwalbum_Model
 	public function clear()
 	{
 		$this->id = $this->latitude = $this->longitude = $this->count = $this->child_count = $this->thumbnail_item_id
-			= $this->parent_location_id = $this->name_hide_level = $this->coordinate_hide_level = 0;
-		$this->name = $this->description = '';
+			= $this->name_hide_level = $this->coordinate_hide_level = 0;
+		$this->name = $this->parent_name = $this->_display_name = $this->description = '';
 		$this->loaded = false;
 	}
 
 	public function __toString()
 	{
-		return $this->name;
+		return $this->_display_name;
 	}
 
-	static public function getAllArray($order = 'name ASC')
+	public function  __get($key) {
+		if ($key == 'display_name')
+			return $this->_display_name;
+	}
+	public function  __set($key, $value) {
+		if ($key == 'display_name') {
+			$names = explode(':', $value);
+			if (count($names) > 1) {
+				$parent_name = trim($names[0]);
+				array_shift($names);
+				foreach ($names as &$n)
+					$n = trim($n);
+				$this->name = implode(': ', $names);
+				$this->parent_name = $parent_name;
+				$this->_display_name = "{$this->parent_name}: {$this->name}";
+			} else {
+				$this->name = trim($value);
+				$this->parent_name = '';
+				$this->_display_name = $this->name;
+			}
+		}
+	}
+
+	static public function getAllArray($order_by = '')
 	{
 		$result = DB::query(Database::SELECT,
 			"SELECT *
 			FROM kwalbum_locations
-			ORDER BY $order")
+			{$order_by}")
 			->execute();
 		return $result;
 	}
@@ -348,5 +430,36 @@ class Model_Kwalbum_Location extends Kwalbum_Model
 			$data[] = $row;
 		}
 		return;
+	}
+
+	static public function updateCounts() {
+		DB::query(Database::UPDATE, "
+			UPDATE kwalbum_locations loc
+			SET count = (
+				SELECT count(*)
+				FROM kwalbum_items i
+				WHERE i.location_id = loc.id
+			)
+		")->execute();
+		DB::query(Database::UPDATE, "
+			UPDATE kwalbum_locations p
+			LEFT JOIN kwalbum_locations loc ON (loc.parent_location_id = p.id)
+			SET p.child_count = 0
+			WHERE loc.parent_location_id IS NULL
+		")->execute();
+		$result = DB::query(Database::SELECT, "
+			SELECT parent_location_id, count(*)
+			FROM kwalbum_items
+			JOIN kwalbum_locations loc ON (loc.id = location_id)
+			WHERE parent_location_id
+			GROUP BY parent_location_id
+			")->execute();
+		foreach ($result as $row) {
+			DB::query(Database::UPDATE,
+				"UPDATE kwalbum_locations a SET child_count = :count WHERE id=:id")
+				->param(':count',$row['count(*)'])
+				->param(':id',$row['parent_location_id'])
+				->execute();
+		}
 	}
 }

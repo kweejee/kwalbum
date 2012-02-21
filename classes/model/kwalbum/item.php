@@ -105,7 +105,10 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 	}
 
 	/**
-	 * Save object changes to the database
+	 * Save object changes to the database through inserts or updates
+	 *
+	 * @param boolean $update_update_date_with_update_date
+	 * @return Model_Kwalbum_Item
 	 */
 	public function save($update_update_date_with_update_date = true)
 	{
@@ -120,7 +123,9 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 			// Update original location's item count if the name is different
 			if (trim($this->location) != $this->_original_location)
 			{
-				DB::query(Database::UPDATE, "UPDATE kwalbum_locations loc LEFT JOIN kwalbum_locations p ON (p.id = loc.parent_location_id)
+				DB::query(Database::UPDATE, "
+					UPDATE kwalbum_locations loc
+					LEFT JOIN kwalbum_locations p ON (p.id = loc.parent_location_id)
 					SET loc.count = loc.count-1, p.child_count = p.child_count-1
 					WHERE loc.id = :id")
 					->param(':id', $this->_location_id)
@@ -143,8 +148,8 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 			if (empty($this->location))
 			{
 				$location_id = $this->_location_id = 1;
-				$result = DB::query(Database::SELECT,
-					"SELECT name
+				$result = DB::query(Database::SELECT, "
+					SELECT name
 					FROM kwalbum_locations
 					WHERE id = 1
 					LIMIT 1")
@@ -155,9 +160,8 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 			// Get new location id for known name
 			else
 			{
-				$parent_loc_name = '';
-				$loc_name = '';
-				$names = explode(':', $this->location);
+				$loc_name = $this->location;
+				$names = explode(':', $loc_name);
 				if (count($names) > 1)
 				{
 					$parent_loc_name = trim($names[0]);
@@ -167,10 +171,10 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 					$loc_name = implode(': ', $names);
 				}
 				// Get id if new location already exists
-				if ($parent_loc_name)
+				if (isset($parent_loc_name))
 				{
-					$result = DB::query(Database::SELECT,
-						"SELECT loc.id
+					$result = DB::query(Database::SELECT, "
+						SELECT loc.id
 						FROM kwalbum_locations loc
 						LEFT JOIN kwalbum_locations p ON (p.id = loc.parent_location_id)
 						WHERE loc.name = :name AND p.name = :parent_name
@@ -181,8 +185,8 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 				}
 				else
 				{
-					$result = DB::query(Database::SELECT,
-						"SELECT id
+					$result = DB::query(Database::SELECT, "
+						SELECT id
 						FROM kwalbum_locations
 						WHERE name = :name
 						LIMIT 1")
@@ -196,8 +200,8 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 					if ($parent_loc_name)
 					{
 						// Get parent location id
-						$result = DB::query(Database::SELECT,
-							"SELECT id
+						$result = DB::query(Database::SELECT, "
+							SELECT id
 							FROM kwalbum_locations
 							WHERE name = :name
 							LIMIT 1")
@@ -207,8 +211,8 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 							// If new location's parent does not exist then create it
 							if ($result->count() == 0)
 							{
-								$result = DB::query(Database::INSERT,
-									"INSERT INTO kwalbum_locations
+								$result = DB::query(Database::INSERT, "
+									INSERT INTO kwalbum_locations
 									(name)
 									VALUES (:name)")
 									->param(':name', $parent_loc_name)
@@ -217,8 +221,8 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 							}
 							$parent_loc_id = $result[0];
 						// Create new location with parent
-						$result = DB::query(Database::INSERT,
-							"INSERT INTO kwalbum_locations
+						$result = DB::query(Database::INSERT, "
+							INSERT INTO kwalbum_locations
 							(name, parent_location_id)
 							VALUES (:name, :parent_id)")
 							->param(':name', $loc_name)
@@ -228,8 +232,8 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 					else
 					{
 						// Create new location without parent
-						$result = DB::query(Database::INSERT,
-							"INSERT INTO kwalbum_locations
+						$result = DB::query(Database::INSERT, "
+							INSERT INTO kwalbum_locations
 							(name)
 							VALUES (:name)")
 							->param(':name', $loc_name)
@@ -428,7 +432,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 			}
 		}
 
-		//echo Kohana::debug($query);exit;
+		return $this;
 	}
 
 	/**
@@ -930,7 +934,6 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 						    WHERE loc.name = :location OR p.name = :location)")
 						->param(':location', $value);
 				}
-				print_r($query);
 				break;
 			case 'date':
 				$newDate = explode('-', $value);

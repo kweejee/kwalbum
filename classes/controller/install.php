@@ -198,6 +198,7 @@ class Controller_Install extends Controller_Kwalbum
 		          `latitude` DECIMAL(10,7) NOT NULL DEFAULT 0,
 		          `longitude` DECIMAL(10,7) NOT NULL DEFAULT 0,
 		          `count` MEDIUMINT UNSIGNED NOT NULL DEFAULT 0 ,
+		          `child_count` MEDIUMINT UNSIGNED NOT NULL DEFAULT 0 ,
 			  `thumbnail_item_id` INT UNSIGNED NOT NULL DEFAULT 0 ,
 			  `parent_location_id` MEDIUMINT UNSIGNED NOT NULL DEFAULT 0 ,
 			  `name_hide_level` TINYINT UNSIGNED NOT NULL DEFAULT 0 ,
@@ -206,6 +207,8 @@ class Controller_Install extends Controller_Kwalbum
 		          PRIMARY KEY (`id`) ,
 		          INDEX `location` (`name`(10) ASC) ,
 		          INDEX `coordinates` (`latitude` ASC, `longitude` ASC) ,
+			  INDEX `count` (`count` ASC) ,
+			  INDEX `child_count` (`child_count` ASC) ,
 			  INDEX `parent_location` (`parent_location_id` ASC)
 		        ) ENGINE = InnoDB
 		        DEFAULT CHARACTER SET = utf8')
