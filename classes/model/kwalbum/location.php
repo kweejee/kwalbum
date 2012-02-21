@@ -320,7 +320,7 @@ class Model_Kwalbum_Location extends Kwalbum_Model
 				WHERE loc.name = :name
 				  AND loc.name_hide_level <= :permission_level')
 				->param(':name', $name)
-				->param(':permission_level', $user->permission_level)
+				->param(':permission_level', (int)$user->permission_level)
 				->execute();
 			if ($result->count() > 0)
 			{
@@ -343,8 +343,8 @@ class Model_Kwalbum_Location extends Kwalbum_Model
 				.($limit ? ' LIMIT :limit' : null))
 				->param(':partName', $partName)
 				->param(':name', $name)
-				->param(':min_count', $min_count)
-				->param(':permission_level', $user->permission_level)
+				->param(':min_count', (int)$min_count)
+				->param(':permission_level', (int)$user->permission_level)
 				->param(':limit', $limit)
 				->execute();
 
@@ -374,8 +374,8 @@ class Model_Kwalbum_Location extends Kwalbum_Model
 					.($limit ? ' LIMIT :limit' : null))
 					->param(':partName', $partName)
 					->param(':name', $name)
-					->param(':min_count', $min_count)
-					->param(':permission_level', $user->permission_level)
+					->param(':min_count', (int)$min_count)
+					->param(':permission_level', (int)$user->permission_level)
 					->param(':limit', $limit)
 					->execute();
 
@@ -396,8 +396,8 @@ class Model_Kwalbum_Location extends Kwalbum_Model
 				{$order}"
 				.($limit ? ' LIMIT :offset,:limit' : null))
 				->param(':offset', $offset)
-				->param(':min_count', $min_count)
-				->param(':permission_level', $user->permission_level)
+				->param(':min_count', (int)$min_count)
+				->param(':permission_level', (int)$user->permission_level)
 				->param(':limit', $limit)
 				->execute();
 
