@@ -72,13 +72,16 @@ class Model_Kwalbum_Location extends Kwalbum_Model
 		$parent_id = 0;
 		if ($this->parent_name)
 		{
-			$result = DB::query(Database::SELECT,
-				"SELECT id
-				FROM kwalbum_locations
-				WHERE name = :name")
-				->param(':name', $this->parent_name)
-				->execute();
-			if (count($result) == 1)
+			if ($this->parent_name != $this->_original_name)
+			{
+				$result = DB::query(Database::SELECT,
+					"SELECT id
+					FROM kwalbum_locations
+					WHERE name = :name")
+					->param(':name', $this->parent_name)
+					->execute();
+			}
+			if (isset($result) and count($result) == 1)
 			{
 				$parent_id = $result[0]['id'];
 			}
@@ -86,10 +89,14 @@ class Model_Kwalbum_Location extends Kwalbum_Model
 			{
 				$parent = clone $this;
 				$parent->id = 0;
-				$parent->display_name = $this->parent_name;
+				$parent->name = '_____temporary name_____'.time();
+				$parent->parent_name = '';
 				$parent_id = $parent->save()->id;
+				$parent->name = $this->parent_name;
+				$parent->save();
 			}
 		}
+
 		if ($id == 0)
 		{
 			$result = DB::query(Database::SELECT,
