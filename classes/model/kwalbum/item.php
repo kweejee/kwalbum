@@ -99,7 +99,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 			LIMIT 1")
 			->param(':id', $this->_location_id)
 			->execute();
-		$this->location = $this->_original_location = ($result[0]['parent'] ? $result[0]['parent'].': ' : '').$result[0]['name'];
+		$this->location = $this->_original_location = ($result[0]['parent'] ? $result[0]['parent'].self::get_config('location_separator_1') : '').$result[0]['name'];
 		$this->loaded = true;
 		return $this;
 	}
@@ -142,7 +142,14 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 		// If there is no location id set then there is a change so get id for new location name
 		if ( ! isset($location_id))
 		{
-			$this->location = trim($this->location);
+			$names = explode(trim(self::get_config('location_separator_1')), $this->location);
+			foreach ($names as $i => $name)
+			{
+				$name = trim($name);
+				if (!$name)
+					unset($names[$i]);
+			}
+			$this->location = implode(trim(self::get_config('location_separator_1')), $names);
 
 			// The location name is unknown so use default unknown id and name
 			if (empty($this->location))
@@ -161,14 +168,23 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 			else
 			{
 				$loc_name = $this->location;
-				$names = explode(':', $loc_name);
+				$names = explode(trim(self::get_config('location_separator_1')), $loc_name);
 				if (count($names) > 1)
 				{
 					$parent_loc_name = trim($names[0]);
 					array_shift($names);
-					foreach ($names as &$n)
-						$n = trim($n);
-					$loc_name = implode(': ', $names);
+					foreach ($names as $i => $name)
+					{
+						$names[$i] = trim($name);
+						if (!$name)
+							unset($names[$i]);
+					}
+					$loc_name = implode(self::get_config('location_separator_2'), $names);
+					if (!$loc_name)
+					{
+						$loc_name = $parent_loc_name;
+						unset($parent_loc_name);
+					}
 				}
 				// Get id if new location already exists
 				if (isset($parent_loc_name))
@@ -588,7 +604,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 				$date = explode(' ', $this->visible_date);
 
 				if (count($date) > 1) {
-					$time = explode(':', $date[1]);
+					$time = explode(trim(self::get_config('location_separator_1')), $date[1]);
 					$hour = $time[0];
 					$minute = $time[1];
 				} else {
@@ -906,14 +922,14 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 			case 'location':
 				$parent_name = '';
 				$loc_name = '';
-				$names = explode(':', $value);
+				$names = explode(trim(self::get_config('location_separator_1')), $value);
 				if (count($names) > 1)
 				{
 					$parent_name = trim($names[0]);
 					array_shift($names);
 					foreach ($names as &$n)
 						$n = trim($n);
-					$loc_name = implode(': ', $names);
+					$loc_name = implode(self::get_config('location_separator_2'), $names);
 				}
 				if ($loc_name) {
 					$query = (string)DB::query(null, " location_id =

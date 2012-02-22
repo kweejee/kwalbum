@@ -13,7 +13,7 @@ class Model_Kwalbum_Location extends Kwalbum_Model
 {
 	public $id, $name, $latitude, $longitude, $count, $child_count, $thumbnail_item_id, $parent_name,
 		$name_hide_level, $coordinate_hide_level, $description;
-	private $_display_name;
+	private $_display_name, $_original_name;
 
 	public function load($id = null, $field = 'id')
 	{
@@ -44,8 +44,9 @@ class Model_Kwalbum_Location extends Kwalbum_Model
 
 		$this->id = (int)$row['id'];
 		$this->name = $row['name'];
+		$this->_original_name = $this->name;
 		$this->parent_name = $row['parent_name'];
-		$this->_display_name = ($row['parent_name'] ? $row['parent_name'].': ' : '').$row['name'];
+		$this->_display_name = ($row['parent_name'] ? $row['parent_name'].self::get_config('location_separator_1') : '').$row['name'];
 		$this->latitude = (float)$row['latitude'];
 		$this->longitude = (float)$row['longitude'];
 		$this->count = (int)$row['count'];
@@ -150,10 +151,10 @@ class Model_Kwalbum_Location extends Kwalbum_Model
 				->param(':longitude', $this->longitude ? $this->longitude : 0)
 				->param(':count', (int)$this->count)
 				->param(':child_count', (int)$this->child_count)
-				->param(':thumbnail_item_id', $this->thumbnail_item_id ? $this->thumbnail_item_id : 0)
+				->param(':thumbnail_item_id', (int)$this->thumbnail_item_id)
 				->param(':parent_id', (int)$parent_id)
-				->param(':name_hide_level', $this->name_hide_level ? $this->name_hide_level : 0)
-				->param(':coordinate_hide_level', $this->coordinate_hide_level ? $this->coordinate_hide_level : 0)
+				->param(':name_hide_level', (int)$this->name_hide_level)
+				->param(':coordinate_hide_level', (int)$this->coordinate_hide_level)
 				->param(':description', $this->description ? $this->description : '');
 			$query->execute();
 		}
@@ -249,18 +250,42 @@ class Model_Kwalbum_Location extends Kwalbum_Model
 			return $this->_display_name;
 	}
 	public function  __set($key, $value) {
-		if ($key == 'display_name') {
-			$names = explode(':', $value);
-			if (count($names) > 1) {
+		if ($key == 'display_name')
+		{
+			$names = explode(trim(self::get_config('location_separator_1')), $value);
+			$parent_name = '';
+			if (count($names) > 1)
+			{
 				$parent_name = trim($names[0]);
 				array_shift($names);
-				foreach ($names as &$n)
-					$n = trim($n);
-				$this->name = implode(': ', $names);
-				$this->parent_name = $parent_name;
-				$this->_display_name = "{$this->parent_name}: {$this->name}";
-			} else {
-				$this->name = trim($value);
+				foreach ($names as $i => $name)
+				{
+					$names[$i] = trim($name);
+					if (!$name)
+						unset($names[$i]);
+				}
+				$this->name = implode(self::get_config('location_separator_2'), $names);
+			}
+			else
+			{
+				$this->name = trim($names[0]);
+			}
+			if ($parent_name)
+			{
+				if (!$this->name)
+				{
+					$this->name = $parent_name;
+					$this->parent_name = '';
+					$this->_display_name = $this->name;
+				}
+				else
+				{
+					$this->parent_name = $parent_name;
+					$this->_display_name = $this->parent_name.self::get_config('location_separator_1').$this->name;
+				}
+			}
+			else
+			{
 				$this->parent_name = '';
 				$this->_display_name = $this->name;
 			}
@@ -299,17 +324,17 @@ class Model_Kwalbum_Location extends Kwalbum_Model
 			// Split the parent location name from the specific location name
 			$parent_name = '';
 			$parent_query = '';
-			$names = explode(':', $name);
+			$names = explode(trim(self::get_config('location_separator_1')), $name);
 			if (count($names) > 1) {
 				$parent_name = mysql_escape_string(trim($names[0]));
 				array_shift($names);
 				foreach ($names as &$n)
 					$n = trim($n);
-				$name = implode(': ', $names);
+				$name = implode(self::get_config('location_separator_2'), $names);
 			}
-			$partName = "{$name}%";
+			$part_name = "{$name}%";
 			if ($parent_name)
-				$parent_query = "OR p.name LIKE '{$parent_name}%'";
+				$parent_query = "AND p.name = '{$parent_name}'";
 			$not_query = 'loc.name != :name';
 
 			// Select almost exact (not case sensitive) match first
@@ -317,16 +342,17 @@ class Model_Kwalbum_Location extends Kwalbum_Model
 				'SELECT loc.name AS name, p.id, p.name AS parent
 				FROM kwalbum_locations loc
 				LEFT JOIN kwalbum_locations p ON (p.id = loc.parent_location_id)
-				WHERE loc.name = :name
+				WHERE (loc.name = :name OR p.name = :parent_name)
 				  AND loc.name_hide_level <= :permission_level')
 				->param(':name', $name)
+				->param(':parent_name', $parent_name)
 				->param(':permission_level', (int)$user->permission_level)
 				->execute();
 			if ($result->count() > 0)
 			{
 				foreach ($result as $row)
 				{
-					$locations[] = ($row['parent'] ? $row['parent'].': ' : '').$row['name'];
+					$locations[] = ($row['parent'] ? $row['parent'].self::get_config('location_separator_1') : '').$row['name'];
 					$not_query .= " AND loc.name != '{$row['name']}'";
 				}
 				$limit -= $result->count();
@@ -337,11 +363,11 @@ class Model_Kwalbum_Location extends Kwalbum_Model
 				"SELECT loc.name AS name, p.id, p.name AS parent
 				FROM kwalbum_locations loc
 				LEFT JOIN kwalbum_locations p ON (p.id = loc.parent_location_id)
-				WHERE {$not_query} AND (loc.name LIKE :partName {$parent_query}) AND (loc.count >= :min_count OR (!loc.parent_location_id AND loc.child_count >= :min_count))
+				WHERE {$not_query} AND loc.name LIKE :part_name AND loc.count >= :min_count {$parent_query}
 				  AND loc.name_hide_level <= :permission_level
 				{$order}"
 				.($limit ? ' LIMIT :limit' : null))
-				->param(':partName', $partName)
+				->param(':part_name', $part_name)
 				->param(':name', $name)
 				->param(':min_count', (int)$min_count)
 				->param(':permission_level', (int)$user->permission_level)
@@ -350,39 +376,44 @@ class Model_Kwalbum_Location extends Kwalbum_Model
 
 			if ($result->count() > 0)
 			{
+				$new_locations = array();
 				foreach ($result as $row)
 				{
-					$locations[] = ($row['parent'] ? $row['parent'].': ' : '').$row['name'];
+					$new_locations[] = ($row['parent'] ? $row['parent'].self::get_config('location_separator_1') : '').$row['name'];
 					$not_query .= " AND loc.name != '{$row['name']}'";
 				}
+				if (!$order)
+					usort($new_locations, 'strnatcasecmp');
+				$locations = array_merge($locations, $new_locations);
 				$limit -= $result->count();
 			}
 
 			// Select from any partial matches if the result limit hasn't been reached yet
 			if ($limit > 0)
 			{
-				$partName = "%{$name}%";
-				if ($parent_name)
-					$parent_query = "OR p.name LIKE '%{$parent_name}%'";
+				$part_name = "%{$name}%";
 				$result = DB::query(Database::SELECT,
 					"SELECT loc.name AS name, p.id, p.name AS parent
 					FROM kwalbum_locations loc
 					LEFT JOIN kwalbum_locations p ON (p.id = loc.parent_location_id)
-					WHERE {$not_query} AND (loc.name LIKE :partName {$parent_query}) AND (loc.count >= :min_count OR (!loc.parent_location_id AND loc.child_count >= :min_count))
+					WHERE {$not_query} AND loc.name LIKE :part_name {$parent_query} AND loc.count >= :min_count
 					  AND loc.name_hide_level <= :permission_level
 					{$order}"
 					.($limit ? ' LIMIT :limit' : null))
-					->param(':partName', $partName)
+					->param(':part_name', $part_name)
 					->param(':name', $name)
 					->param(':min_count', (int)$min_count)
 					->param(':permission_level', (int)$user->permission_level)
 					->param(':limit', $limit)
 					->execute();
-
+				$new_locations = array();
 				foreach ($result as $row)
 				{
-					$locations[] = ($row['parent'] ? $row['parent'].': ' : '').$row['name'];
+					$new_locations[] = ($row['parent'] ? $row['parent'].self::get_config('location_separator_1') : '').$row['name'];
 				}
+				if (!$order)
+					usort($new_locations, 'strnatcasecmp');
+				$locations = array_merge($locations, $new_locations);
 			}
 		}
 		else
@@ -403,12 +434,12 @@ class Model_Kwalbum_Location extends Kwalbum_Model
 
 			foreach ($result as $row)
 			{
-				$locations[] = ($row['parent'] ? $row['parent'].': ' : '').$row['name'];
+				$locations[] = ($row['parent'] ? $row['parent'].self::get_config('location_separator_1') : '').$row['name'];
+			}
+			if (!$order){
+				usort($locations, 'strnatcasecmp');
 			}
 		}
-
-		if (!$order)
-			sort($locations);
 
 		return $locations;
 	}

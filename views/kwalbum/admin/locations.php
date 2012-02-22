@@ -4,6 +4,7 @@
 <table border="1">
 	<tr><th>Count</th><th style="width:255px;">Name</th><th>Delete?</th><th>Mapping Coordinates</th></tr><pre>
 <?php
+$config = Kohana::$config->load('kwalbum');
 $all_locations = Model_Kwalbum_Location::getAllArray();
 $locations = array();
 foreach ($all_locations as $loc)
@@ -11,8 +12,8 @@ foreach ($all_locations as $loc)
 $all_locations = $locations;
 $locations = array();
 foreach ($all_locations as $loc)
-	$locations[($loc['parent_location_id'] ? $all_locations[$loc['parent_location_id']]['name'].': ' : '').$loc['name']] = $loc;
-ksort($locations);
+	$locations[($loc['parent_location_id'] ? $all_locations[$loc['parent_location_id']]['name'].$config->location_separator_1 : '').$loc['name']] = $loc;
+uksort($locations, 'strnatcasecmp');
 foreach ($locations as $full_name => $loc)
 {
 	echo "	<tr id='row{$loc['id']}'><td>"

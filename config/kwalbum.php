@@ -49,4 +49,15 @@ return array
 	 * not have a watermark added.
 	 */
 	'watermark_filesize_limit' => 3000000
+
+	/**
+	 * Separate a main location from a sublocation with this.  Spaces are ignored
+	 * when saving, but used when displaying.
+	 */
+	,'location_separator_1' => ': '
+	/**
+	 * If separator 1 is found more than once, all except the first will be
+	 * replaced with this to avoid confusing the system.
+	 */
+	,'location_separator_2' => ' - '
 );

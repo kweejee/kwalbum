@@ -26,7 +26,7 @@ class Controller_Ajax extends Controller_Kwalbum
 	{
 		$this->_testPermission();
 		$userInput = trim(@$_GET['term']);
-		$locations = Model_Kwalbum_Location::getNameArray($this->user, 0, 10, 0, $userInput, '(loc.count+loc.child_count) DESC');
+		$locations = Model_Kwalbum_Location::getNameArray($this->user, 0, 10, 0, $userInput, '(loc.count+loc.child_count) DESC, p.name ASC, loc.name ASC');
 		echo json_encode($locations);
 	}
 
