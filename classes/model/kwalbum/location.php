@@ -345,24 +345,25 @@ class Model_Kwalbum_Location extends Kwalbum_Model
 			$not_query = 'loc.name != :name';
 
 			// Select almost exact (not case sensitive) match first
-			$result = DB::query(Database::SELECT,
-				'SELECT loc.name AS name, p.id, p.name AS parent
-				FROM kwalbum_locations loc
-				LEFT JOIN kwalbum_locations p ON (p.id = loc.parent_location_id)
-				WHERE (loc.name = :name OR p.name = :parent_name)
-				  AND loc.name_hide_level <= :permission_level')
-				->param(':name', $name)
-				->param(':parent_name', $parent_name)
-				->param(':permission_level', (int)$user->permission_level)
-				->execute();
-			if ($result->count() > 0)
-			{
-				foreach ($result as $row)
+			if (strlen($name) > 0) {
+				$result = DB::query(Database::SELECT,
+					'SELECT loc.name AS name, p.id, p.name AS parent
+					FROM kwalbum_locations loc
+					LEFT JOIN kwalbum_locations p ON (p.id = loc.parent_location_id)
+					WHERE loc.name = :name
+					  AND loc.name_hide_level <= :permission_level')
+					->param(':name', $name)
+					->param(':permission_level', (int)$user->permission_level)
+					->execute();
+				if ($result->count() > 0)
 				{
-					$locations[] = ($row['parent'] ? $row['parent'].self::get_config('location_separator_1') : '').$row['name'];
-					$not_query .= " AND loc.name != '{$row['name']}'";
+					foreach ($result as $row)
+					{
+						$locations[] = ($row['parent'] ? $row['parent'].self::get_config('location_separator_1') : '').$row['name'];
+						$not_query .= " AND loc.name != '{$row['name']}'";
+					}
+					$limit -= $result->count();
 				}
-				$limit -= $result->count();
 			}
 
 			// Select from starting matches if searching by name or select from all
@@ -417,10 +418,45 @@ class Model_Kwalbum_Location extends Kwalbum_Model
 				foreach ($result as $row)
 				{
 					$new_locations[] = ($row['parent'] ? $row['parent'].self::get_config('location_separator_1') : '').$row['name'];
+					$not_query .= " AND loc.name != '{$row['name']}'";
 				}
 				if (!$order)
 					usort($new_locations, 'strnatcasecmp');
 				$locations = array_merge($locations, $new_locations);
+				$limit -= $result->count();
+			}
+
+			// Select from starting matches of parent if the result limit hasn't been reached yet
+			if (!$parent_name) {
+				$part_name = "{$name}%";
+				$result = DB::query(Database::SELECT,
+					"SELECT loc.name AS name, p.id, p.name AS parent
+					FROM kwalbum_locations loc
+					LEFT JOIN kwalbum_locations p ON (p.id = loc.parent_location_id)
+					WHERE {$not_query} AND p.name LIKE :part_name AND p.child_count >= :min_count
+					  AND loc.name_hide_level <= :permission_level
+					{$order}"
+					.($limit ? ' LIMIT :limit' : null))
+					->param(':part_name', $part_name)
+					->param(':name', $name)
+					->param(':min_count', (int)$min_count)
+					->param(':permission_level', (int)$user->permission_level)
+					->param(':limit', $limit)
+					->execute();
+
+				if ($result->count() > 0)
+				{
+					$new_locations = array();
+					foreach ($result as $row)
+					{
+						$new_locations[] = ($row['parent'] ? $row['parent'].self::get_config('location_separator_1') : '').$row['name'];
+						$not_query .= " AND loc.name != '{$row['name']}'";
+					}
+					if (!$order)
+						usort($new_locations, 'strnatcasecmp');
+					$locations = array_merge($locations, $new_locations);
+					$limit -= $result->count();
+				}
 			}
 		}
 		else
