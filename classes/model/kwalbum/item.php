@@ -213,7 +213,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 				// If new location does not exist then create it
 				if ($result->count() == 0)
 				{
-					if ($parent_loc_name)
+					if (isset($parent_loc_name))
 					{
 						// Get parent location id
 						$result = DB::query(Database::SELECT, "
