@@ -187,7 +187,7 @@ class Controller_User extends Controller_Kwalbum
 			$_POST['login_name'] = htmlspecialchars(trim($_POST['login_name']));
 			$_POST['email'] = htmlspecialchars(trim($_POST['email']));
 			$_POST['password'] = htmlspecialchars(trim($_POST['password']));
-			$post = Validate::factory($_POST)
+			$post = Validation::factory($_POST)
 				->rule('name', 'not_empty')
 				->rule('login_name', 'not_empty')
 				->rule('email', 'not_empty')
