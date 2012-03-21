@@ -1,9 +1,46 @@
 // Kwalbum 3.0
-$(document).ready(function(){ 
-	$("#loc").focus().autocomplete('KWALBUM_URL/~ajax/getInputLocations',{
-		max:10,cacheLength:1,matchSubset:false,autoFill:true,matchCase:true
+var loc = {
+	lastXhr: null,
+	cache: {}
+};
+var tags = {
+	lastXhr: null,
+	cache: {}
+};
+$(document).ready(function(){
+	$("#loc").focus().autocomplete({
+		minLength: 2,
+		source: function( request, response ) {
+			var term = request.term;
+			if ( term in loc.cache ) {
+				response( loc.cache[ term ] );
+				return;
+			}
+
+			loc.lastXhr = $.getJSON( "KWALBUM_URL/~ajax/getInputLocations", request, function( data, status, xhr ) {
+				loc.cache[ term ] = data;
+				if ( xhr === loc.lastXhr ) {
+					response( data );
+				}
+			});
+		}
 	});
-	$("#tags").autocomplete('KWALBUM_URL/~ajax/getInputTags',{
-		max:10,cacheLength:1,matchSubset:false,autoFill:true,matchCase:true
+	$("#tags").autocomplete({
+		minLength: 2,
+		source: function( request, response ) {
+			var term = request.term;
+			if ( term in tags.cache ) {
+				response( tags.cache[ term ] );
+				return;
+			}
+
+			tags.lastXhr = $.getJSON( "KWALBUM_URL/~ajax/getInputTags", request, function( data, status, xhr ) {
+				tags.cache[ term ] = data;
+				if ( xhr === tags.lastXhr ) {
+					response( data );
+				}
+			});
+		}
 	});
+	$("#date").datepicker();
 });

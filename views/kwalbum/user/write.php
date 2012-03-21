@@ -40,7 +40,8 @@ echo $kwalbum_url_params;
 			</td>
 			<td>
 				<label for="date">Date of entry:</label>
-				<input type="text" class="text" name="date" id="date" value="<?php echo $date?>" size="15" />
+				<input type="text" class="text" name="date" id="date" value="<?php echo $date ?>" size="10" />
+				<input type="text" class="text" name="time" id="time" value="<?php echo $time ?>" size="3" />
 			</td>
 		</tr>
 		<tr style="vertical-align:top">

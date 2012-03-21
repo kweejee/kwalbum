@@ -114,9 +114,8 @@ class Controller_User extends Controller_Kwalbum
 		$url = $this->url;
 
 		if (!$date = $this->date)
-		{
-			$date = date('Y-m-d H:i');
-		}
+			$date = date('Y-m-d');
+		$time = date('H:i');
 
 		$content = new View('kwalbum/user/write');
 		$content->user_is_admin = $user->is_admin;
@@ -136,6 +135,7 @@ class Controller_User extends Controller_Kwalbum
 			$content->tags .= implode(',', $this->tags);
 		}
 		$content->date = $date;
+		$content->time = $time;
 
 		if (isset($_POST['act']))
 		{
@@ -153,6 +153,7 @@ class Controller_User extends Controller_Kwalbum
 				$content->location = $_POST['loc'];
 				$content->tags = $_POST['tags'];
 				$content->date = $_POST['date'];
+				$content->time = $_POST['time'];
 				$content->description = $_POST['description'];
 			}
 		}
