@@ -62,7 +62,7 @@ class Kwalbum_ItemAdder
 			$fullpath = $item->path.$item->filename;
 
 			// TODO: use a library like PEL or PJMT
-			$data = exif_read_data($fullpath);
+			$data = @exif_read_data($fullpath);
 			if ($data)
 			{
 				//Kohana::$log->add('var', Kohana::debug($data));
