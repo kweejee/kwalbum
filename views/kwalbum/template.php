@@ -79,6 +79,7 @@ $meta_image = isset($thumbnail_image) ? '<meta property="og:image" content="'.$t
 		echo html::style($kwalbum_url.'/media/css/default.css');
 		echo html::script('https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js');
 		echo html::script($kwalbum_url.'/media/ajax/jquery-ui-1.8.17.custom.min.js');
+		echo html::script('http://static.ak.fbcdn.net/connect.php/js/FB.Share');
 		echo isset($head) ? $head : null;
 	?>
 

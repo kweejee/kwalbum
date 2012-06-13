@@ -26,7 +26,9 @@ echo ' <span class="kwalbumPageNumbers">(item '.$item_index.' of '.$total_items.
 	.($kwalbum_url_params ? $kwalbum_url_params : null)
 	.($page_number > 1 ? 'page/'.$page_number.'/' : null)
 	.(($kwalbum_url_params or $page_number > 1) ? null : '~browse/'),
-	'back to browsing').'</span><br/>';
+	'back to browsing').'</span>'
+	.'<span class="kwalbumShareIcons"><a name="fb_share" type="button"></a></span>'
+	.'<br/>';
 ?>
 
 	<?php echo html::anchor($kwalbum_url.'/'.$item->location, $item->location); ?>
