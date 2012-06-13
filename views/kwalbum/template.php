@@ -41,6 +41,26 @@ if ($people)
 if ($summary)
 	$title = $summary;
 
+$title = htmlspecialchars(isset($title) ? $title.$config->title_separator.$config->title : $config->title);
+
+if (isset($content->item) && $content->item instanceof Model_Kwalbum_Item)
+{
+	$description = ($content->item->description
+		? $content->item->description
+		: ($date
+			? ($location
+				? $content->item->filename
+				: $content->item->location
+			)
+			:$content->item->pretty_date
+		)
+	);
+	if ($item->type == 'jpeg' or $item->type == 'gif' or $item->type == 'png')
+		$thumbnail_image = "{$kwalbum_url}/~{$item->id}/~item/thumbnail.{$item->filename}";
+}
+
+$meta_description = isset($description) ? '<meta property="og:description" content="'.htmlspecialchars($description).'" />' : '';
+$meta_image = isset($thumbnail_image) ? '<meta property="og:image" content="'.$thumbnail_image.'" />' : '';
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
@@ -48,7 +68,11 @@ if ($summary)
 <head>
 
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-	<title><?php echo htmlspecialchars(isset($title) ? $title.$config->title_separator.$config->title : $config->title) ?></title>
+	<meta property="og:title" content="<?php echo $title ?>" />
+	<?php echo $meta_description ?>
+	<?php echo $meta_image ?>
+
+	<title><?php echo $title ?></title>
 
 	<?php
 		echo html::style('kwalbum/media/css/jquery-ui/jquery-ui-1.8.17.custom.css');
