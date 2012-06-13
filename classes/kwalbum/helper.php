@@ -100,13 +100,6 @@ class Kwalbum_Helper
 		{
 			$item->type = ($item->type == 'jpeg' ? 'jpg' : $item->type);
 			$link_text = "<img src='{$kwalbum_url}/~{$item->id}/~item/thumbnail.{$item->filename}' title='{$item->filename}'/>";
-
-			if (strlen($cleaned_description) > 30)
-				$description .= '<div class="box-thumbnail-description">';
-			$description .= substr($cleaned_description, 0, 50)
-				.(strlen($cleaned_description) > 50 ? '...' : null);
-			if (strlen($cleaned_description) > 30)
-				$description .= '</div>';
 		}
 		else if ($item->type == 'description only')
 		{
@@ -117,10 +110,23 @@ class Kwalbum_Helper
 		{
 			$link_text = 'Unknown Filetype';
 		}
+		if ($item->type != 'description only')
+		{
+			$description .= substr($cleaned_description, 0, 50)
+				.(strlen($cleaned_description) > 50 ? '...' : null);
+			if (!$description) {
+				$tags = implode(', ', $item->tags);
+				if (strlen($tags > 53)) {
+					$tags = substr($tags, 0, 50).'...';
+				}
+				$description = $tags;
+			}
+		}
+
 
 		return html::anchor("{$kwalbum_url}/~{$item->id}/{$kwalbum_url_params}", $link_text)
 			."<br/>\n"
-			.$description
+			.($description ? '<div class="box-thumbnail-description">'.$description.'</div>' : '')
 			.($item->has_comments ? '<span class="kwalbumHasComments">*has comments</span>' : null);
 	}
 

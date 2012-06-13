@@ -15,11 +15,11 @@ function initMap(lat,lon,loc_id){
 		maxExtent:new OpenLayers.Bounds(-20037508.34,-20037508.34,20037508.34,20037508.34),
 		controls:[new OpenLayers.Control.Navigation(),new OpenLayers.Control.PanZoomBar(),new OpenLayers.Control.ScaleLine(),	new OpenLayers.Control.MousePosition()]
 	});
-	var tah = new OpenLayers.Layer.OSM.Osmarender("Tiles@Home",{transitionEffect:'resize'});
+//	var tah = new OpenLayers.Layer.OSM.Osmarender("Tiles@Home",{transitionEffect:'resize'});
 	var mapnik = new OpenLayers.Layer.OSM.Mapnik("Mapnik",{transitionEffect:'resize'});
 	var cycle = new OpenLayers.Layer.OSM.CycleMap("Cycle Map",{transitionEffect:'resize'});
 
-	map.addLayers([mapnik,tah,cycle]);
+	map.addLayers([mapnik,cycle]);
 	map.addControl(new OpenLayers.Control.LayerSwitcher());
 	
 	loc.transform(proj,map.getProjectionObject());

@@ -50,21 +50,22 @@ function initMap(lon,lat,zoom){
 
 	// LAYERS
 	//var gmap = new OpenLayers.Layer.Google("Google");
-	var tah = new OpenLayers.Layer.OSM.Osmarender("Tiles@Home",{
-		attribution:'<a href="http://www.openstreetmap.org/">OpenStreetMap</a>',
-		transitionEffect:'resize'
-	});
-	tah.setIsBaseLayer(true);
+//	var tah = new OpenLayers.Layer.OSM.Osmarender("Tiles@Home",{
+//		attribution:'<a href="http://www.openstreetmap.org/">OpenStreetMap</a>',
+//		transitionEffect:'resize'
+//	});
+//	tah.setIsBaseLayer(true);
 	var mapnik = new OpenLayers.Layer.OSM.Mapnik("Mapnik",{
 		attribution:'<a href="http://www.openstreetmap.org/">OpenStreetMap</a>',
 		transitionEffect:'resize'
 	});
+	mapnik.setIsBaseLayer(true);
 	var cycle = new OpenLayers.Layer.OSM.CycleMap("Cycle Map",{
 		attribution:'<a href="http://www.opencyclemap.org/">OpenCycleMap</a>',
 		transitionEffect:'resize'
 	});
 
-	map.addLayers([mapnik,tah,cycle]);
+	map.addLayers([mapnik,cycle]);
 
 	// create POI layer
 	itemPOI = new OpenLayers.Layer.MarkerGrid("Items",{
