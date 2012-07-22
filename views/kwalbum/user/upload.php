@@ -52,10 +52,16 @@
 			</select>
 		</td>
 	</tr>
+	<tr>
+		<td colspan="2">
+			<input type="file" name="fileInput" id="fileInput" />
+			<a href="javascript:kwalbum_upload();">Upload Files</a> | <a href="javascript:$('#fileInput').uploadifyClearQueue();">Clear Queue</a> | <a href="<?php echo $kwalbum_url ?>/~user/write">Ignore Queue and Write Text Item</a>
+		</td>
+		<td style="vertical-align:top;">
+			<input type="checkbox" name="import_caption" id="import_caption">Copy IPTC Caption to Description</input><br/>
+			<input type="checkbox" name="import_keywords" id="import_keywords">Copy IPTC Keywords to Tags</input>
+		</td>
+	</tr>
 	</table>
-	<p>
-		<input type="file" name="fileInput" id="fileInput" />
-		<a href="javascript:kwalbum_upload();">Upload Files</a> | <a href="javascript:$('#fileInput').uploadifyClearQueue();">Clear Queue</a> | <a href="<?php echo $kwalbum_url ?>/~user/write">Ignore Queue and Write Text Item</a>
-	</p>
 </form>
 </div>

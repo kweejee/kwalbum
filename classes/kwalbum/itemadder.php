@@ -61,7 +61,37 @@ class Kwalbum_ItemAdder
 		{
 			$fullpath = $item->path.$item->filename;
 
-			// TODO: use a library like PEL or PJMT
+			$import_caption = false;
+			$import_keywords = false;
+			if (isset($_POST['import_caption']) && $_POST['import_caption'] == 1)
+				$import_caption = true;
+			if (isset($_POST['import_keywords']) && $_POST['import_keywords'] == 1)
+				$import_keywords = true;
+			
+			if ($import_caption || $import_keywords)
+			{
+				$info = null;
+				$size = getimagesize($fullpath, $info);
+				if (isset($info['APP13']))
+				{
+					$iptc = iptcparse($info['APP13']);
+					foreach ($iptc as $key=>$data)
+					{
+						if ($key == '2#120' && $import_caption)
+							$item->description = trim($data[0]);
+						if ($key == '2#025' && $import_keywords)
+						{
+							if (!is_array($data))
+								$data = array($data);
+							foreach ($data as $keyword)
+							{
+								$item->tags = htmlspecialchars(trim($keyword));
+							}
+						}
+					}
+				}
+			}
+
 			$data = @exif_read_data($fullpath);
 			if ($data)
 			{
@@ -149,7 +179,7 @@ class Kwalbum_ItemAdder
 
 		while ( ! Model_Kwalbum_Item::check_unique_filename($item->path, $item->filename))
 		{
-			if (!$name)
+			if (!isset($name))
 			{
 				$i = 0;
 				$name = pathinfo($item->filename, PATHINFO_FILENAME);

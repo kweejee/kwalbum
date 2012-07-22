@@ -67,6 +67,8 @@ var kwablum_refresh_upload_data = function()
 		'date':$('#date').val(),
 		'time':$('#time').val(),
 		'group_option':$('#group_option').val(),
+		'import_caption':($('#import_caption').attr('checked') ? 1 : 0),
+		'import_keywords':($('#import_keywords').attr('checked') ? 1 : 0),
 		'session_id':'SESSION_ID'
 	});
 }
