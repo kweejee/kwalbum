@@ -30,7 +30,7 @@ class Controller_Kwalbum extends Controller_Template
 			$this->location = urldecode($this->request->param('location'));
 			Model_Kwalbum_Item::append_where('location', $this->location);
 		}
-		else if ( ! empty($_GET['location']))
+		elseif ( ! empty($_GET['location']))
 		{
 			$this->location = $_GET['location'];
 			Model_Kwalbum_Item::append_where('location', $this->location);
@@ -45,7 +45,7 @@ class Controller_Kwalbum extends Controller_Template
 			$this->date = ($year ? abs($year) : '0000').'-'.($month ? abs($month) : '00').'-'.($day ? abs($day) : '00');
 			Model_Kwalbum_Item::append_where('date', $this->date);
 		}
-		else if ( ! empty($_GET['date']))
+		elseif ( ! empty($_GET['date']))
 		{
 			$date = explode('-', $_GET['date']);
 			$this->date = ((int)@$date[0] ? abs($date[0]) : '0000').'-'.((int)@$date[1] ? abs($date[1]) : '00').'-'.((int)@$date[2] ? abs($date[2]) : '00');
@@ -58,7 +58,7 @@ class Controller_Kwalbum extends Controller_Template
 		{
 			Model_Kwalbum_Item::append_where('tags', $this->tags);
 		}
-		else if ( ! empty($_GET['tags']))
+		elseif ( ! empty($_GET['tags']))
 		{
 			$this->tags = explode(',', $_GET['tags']);
 			Model_Kwalbum_Item::append_where('tags', $this->tags);
@@ -72,7 +72,7 @@ class Controller_Kwalbum extends Controller_Template
 		{
 			Model_Kwalbum_Item::append_where('people', $this->people);
 		}
-		else if ( ! empty($_GET['people']))
+		elseif ( ! empty($_GET['people']))
 		{
 			$this->people = explode(',', $_GET['people']);
 			Model_Kwalbum_Item::append_where('people', $this->people);
@@ -94,7 +94,7 @@ class Controller_Kwalbum extends Controller_Template
 				Model_Kwalbum_Item::append_where('create_date', $this->create_dt);
 			}
 		}
-		else if ( ! empty($_GET['created_date']))
+		elseif ( ! empty($_GET['created_date']))
 		{
 			$this->create_dt = $_GET['created_date'];
 			if ($_GET['created_time'])
@@ -120,7 +120,7 @@ class Controller_Kwalbum extends Controller_Template
 		if (0 < $this->request->param('id'))
 		{
 			$this->item = Model::factory('kwalbum_item')
-				->load((int)$this->request->param('id'));
+				->load((int) $this->request->param('id'));
 			$this->item->hide_if_needed($this->user);
 			$this->template->set_global('item', $this->item);
 		}
@@ -134,12 +134,13 @@ class Controller_Kwalbum extends Controller_Template
 			.($this->people ? 'people/'.implode(',', $this->people).'/' : null)
 			.($this->create_dt ? 'created/'.implode('/', explode(' ', $this->create_dt)).'/' : null);
 
-		if ($this->request->action() != 'media' and $this->request->controller() != 'install')
+		if ($this->request->action() != 'media' and
+		    $this->request->controller() != 'install')
 		{
 			$this->total_items = Model_Kwalbum_Item::get_total_items();
 			$this->total_pages = Model_Kwalbum_Item::get_page_number($this->total_items);
 			$this->item_index = 0;
-			$page_number = (int)$this->request->param('page');
+			$page_number = (int) $this->request->param('page');
 
 			if ($page_number < 1 or $page_number > $this->total_pages)
 			{
@@ -175,7 +176,7 @@ class Controller_Kwalbum extends Controller_Template
 			$this->template->set_global('item_index', $this->item_index);
 			$this->template->set_global('page_number', $this->page_number);
 
-			$this->in_edit_mode = !empty($_SESSION['kwalbum_edit']);
+			$this->in_edit_mode = ! empty($_SESSION['kwalbum_edit']);
 			$this->template->set_global('in_edit_mode', $this->in_edit_mode);
 			$this->template->set_global('head', html::script($this->url.'/media/ajax/toggle.edit.js'));
 		}

@@ -210,17 +210,19 @@ class Controller_Ajax extends Controller_Kwalbum
 		if ( ! empty($_FILES))
 		{
 			$adder = new Kwalbum_ItemAdder($this->user);
-			if ($adder->save_upload())
-			{
-				echo 'success';
-				return;
+			$error = 'unknown error';
+			try {
+				if ($adder->save_upload())
+				{
+					echo 'success';
+					return;
+				}
+			} catch (Exception $e) {
+				$error = $e->getMessage();
 			}
-			else
-			{
-				$this->request->response()->status(400);
-				Kohana::$log->add('~ajax/upload', 'ItemAdder failed to save_upload item');
-				return;
-			}
+			$this->request->response()->status(400);
+			echo $error;
+			return;
 		}
 		$this->request->response()->status(400);
 		Kohana::$log->add('~ajax/upload', 'empty FILES sent');
@@ -292,7 +294,7 @@ class Controller_Ajax extends Controller_Kwalbum
 		echo 1;
 		exit;
 	}
-	
+
 	public function action_GetMapLocations()
 	{
 		//$zoom = (int)$_GET["z"];
@@ -304,7 +306,7 @@ class Controller_Ajax extends Controller_Kwalbum
 			echo "\n{$d['lon']},{$d['lat']}	l	{$d['name']}	{$this->url}/".urlencode($d['name']);
 		}
 	}
-	
+
 	public function action_GetMapItems()
 	{
 		$zoom = (int)$_GET["z"];
@@ -318,7 +320,7 @@ class Controller_Ajax extends Controller_Kwalbum
 			$where = ' WHERE 1=1 ';
 		$data = array();
 		Model_Kwalbum_Item::getMarkers((float)$_GET["l"], (float)$_GET["r"], (float)$_GET["t"], (float)$_GET["b"], $where, $data, $limit, 1);
-				
+
 		echo "point	type	title	description";
 		foreach($data as $d) {
 			echo "\n{$d['lon']},{$d['lat']}	";

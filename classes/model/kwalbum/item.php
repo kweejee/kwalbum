@@ -892,9 +892,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 			->param(':filename', $filename)
 			->execute();
 		if ($result->count() == 0)
-		{
 			return true;
-		}
 
 		return false;
 	}
@@ -904,10 +902,9 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 		$query = '';
 		foreach (Model_Kwalbum_Item::$_where as $where)
 		{
-			if ($query)
-				$query .= ' AND '.$where;
-			else
-				$query = ' WHERE '.$where;
+			$query .= $query
+			        ? ' AND '.$where
+			        : ' WHERE '.$where;
 		}
 
 		return $query;
@@ -932,7 +929,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 					$loc_name = implode(self::get_config('location_separator_2'), $names);
 				}
 				if ($loc_name) {
-					$query = (string)DB::query(null, " location_id =
+					$query = (string) DB::query(null, " location_id =
 						(SELECT loc.id
 						FROM kwalbum_locations loc
 						LEFT JOIN kwalbum_locations p ON (p.id = loc.parent_location_id)
@@ -973,7 +970,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 						$date1 = "$value 00:00:00";
 						$date2 = "$value 23:59:59";
 					}
-					$query = (string)DB::query(null, 'sort_dt >= :date1 AND sort_dt <= :date2')
+					$query = (string) DB::query(null, 'sort_dt >= :date1 AND sort_dt <= :date2')
 						->param(':date1', $date1)
 						->param(':date2', $date2);
 				}
@@ -982,7 +979,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 				foreach($value as $tag)
 				{
 					$query .= ($query ? ' AND ' : null).
-						(string)DB::query(null, " 0 < (SELECT count(*) FROM kwalbum_items_tags
+						(string) DB::query(null, " 0 < (SELECT count(*) FROM kwalbum_items_tags
 						LEFT JOIN kwalbum_tags ON kwalbum_items_tags.tag_id = kwalbum_tags.id
 						WHERE kwalbum_tags.name=:tag AND kwalbum_items_tags.item_id=kwalbum_items.id)")
 						->param(':tag', $tag);
@@ -992,7 +989,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 				foreach($value as $tag)
 				{
 					$query .= ($query ? ' AND ' : null).
-						(string)DB::query(null, " 0 < (SELECT count(*) FROM kwalbum_items_persons
+						(string) DB::query(null, " 0 < (SELECT count(*) FROM kwalbum_items_persons
 						LEFT JOIN kwalbum_persons ON kwalbum_items_persons.person_id = kwalbum_persons.id
 						WHERE kwalbum_persons.name LIKE :tag AND kwalbum_items_persons.item_id=kwalbum_items.id)")
 						->param(':tag', $tag.'%');
@@ -1001,22 +998,22 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 			case 'type':
 				$types = array_flip(Model_Kwalbum_Item::$types);
 				$type_id = $types[$value];
-				$query = (string)DB::query(null, " type_id = :type_id")
+				$query = (string) DB::query(null, " type_id = :type_id")
 					->param(':type_id', $type_id);
 			case 'hide_level':
-				$query = (string)DB::query(null, " hide_level = :hide_level")
+				$query = (string) DB::query(null, " hide_level = :hide_level")
 					->param(':hide_level', (int)$value);
 				break;
 			case 'user_id':
-				$query = (string)DB::query(null, " user_id = :user_id")
+				$query = (string) DB::query(null, " user_id = :user_id")
 					->param(':user_id', (int)$value);
 				break;
 			case 'create_dt':
-				$query = (string)DB::query(null, " create_dt = :create_dt")
+				$query = (string) DB::query(null, " create_dt = :create_dt")
 					->param(':create_dt', $value);
 				break;
 			case 'create_date':
-				$query = (string)DB::query(null, " DATE(create_dt) = :create_date")
+				$query = (string) DB::query(null, " DATE(create_dt) = :create_date")
 					->param(':create_date', $value);
 				break;
 			default:
@@ -1117,16 +1114,15 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 			->param(':sort_value', $sort_value)
 			->param(':id', $id)
 			->execute();
-		return (int)$result[0]['count(*)']+1;
+		return (int) $result[0]['count(*)']+1;
 	}
 
 	static public function get_previous_item($id, $sort_value)
 	{
 		$where_query = Model_Kwalbum_Item::get_where_query();
-		if ( ! $where_query)
-			$where_query = ' WHERE ';
-		else
-			$where_query .= ' AND ';
+		$where_query .= $where_query
+		             ? ' AND '
+		             : ' WHERE ';
 
 		$sort_field = Model_Kwalbum_Item::$_sort_field;
 		$sort_direction = Model_Kwalbum_Item::$_sort_direction;
@@ -1214,37 +1210,33 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 			Model_Kwalbum_Item::getMarkers($left, $centerLat, $centerLon, $bottom, $where, $data, $limit, $depth);
 			Model_Kwalbum_Item::getMarkers($centerLat, $right, $centerLon, $bottom, $where, $data, $limit, $depth);
 		}
-		else
+		elseif ($limit >= $count)
 		{
-			if ($limit >= $count)
-			{
-				$query = 'SELECT id, latitude as lat, longitude as lon, count(*) as count, visible_dt as date, description'
-					.' FROM kwalbum_items'
-					.$where_query
-					.' GROUP BY latitude, longitude'
-					.' ORDER BY latitude'
-					.' LIMIT '.$limit;
-				$result = DB::query(Database::SELECT, $query)
-					->execute();
-				foreach($result as $row) {
-					$row['group'] = false;
-					$data[] = $row;
-				}
-			}
-			else
-			{
-				$query = 'SELECT AVG(latitude) as lat, AVG(longitude) as lon'
-					.' FROM kwalbum_items'
-					.$where_query
-					.' LIMIT 1';
-				$result = DB::query(Database::SELECT, $query)
-					->execute();
-				$row = $result[0];
-				$row['group'] = true;
-				$row['count'] = $count;
+			$query = 'SELECT id, latitude as lat, longitude as lon, count(*) as count, visible_dt as date, description'
+				.' FROM kwalbum_items'
+				.$where_query
+				.' GROUP BY latitude, longitude'
+				.' ORDER BY latitude'
+				.' LIMIT '.$limit;
+			$result = DB::query(Database::SELECT, $query)
+				->execute();
+			foreach($result as $row) {
+				$row['group'] = false;
 				$data[] = $row;
 			}
 		}
-		return;
+		else
+		{
+			$query = 'SELECT AVG(latitude) as lat, AVG(longitude) as lon'
+				.' FROM kwalbum_items'
+				.$where_query
+				.' LIMIT 1';
+			$result = DB::query(Database::SELECT, $query)
+				->execute();
+			$row = $result[0];
+			$row['group'] = true;
+			$row['count'] = $count;
+			$data[] = $row;
+		}
 	}
 }

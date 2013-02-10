@@ -17,7 +17,8 @@ class Controller_Item extends Controller_Kwalbum
 	{
 		$this->auto_render = false;
 		parent::before();
-		if ($this->request->action() != 'index' and $this->item->hide_level > $this->user->permission_level)
+		if ($this->request->action() != 'index' and
+		    $this->item->hide_level > $this->user->permission_level)
 		{
 			$this->request->action('hidden');
 		}
@@ -99,7 +100,7 @@ class Controller_Item extends Controller_Kwalbum
 		$mime = $mimes[$extension][0];
 		if (!$this->user->can_see_all) {
 			$watermark = Kwalbum_Model::get_config('watermark_filename');
-			if ($watermark && $size < Kwalbum_Model::get_config('watermark_filesize_limit'))
+			if ($watermark and $size < Kwalbum_Model::get_config('watermark_filesize_limit'))
 			{
 				$watermark = Kwalbum_Model::get_config('item_path').$watermark;
 				$watermark = @imagecreatefrompng($watermark);

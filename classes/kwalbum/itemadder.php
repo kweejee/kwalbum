@@ -63,11 +63,11 @@ class Kwalbum_ItemAdder
 
 			$import_caption = false;
 			$import_keywords = false;
-			if (isset($_POST['import_caption']) && $_POST['import_caption'] == 1)
+			if (isset($_POST['import_caption']) and $_POST['import_caption'] == 1)
 				$import_caption = true;
-			if (isset($_POST['import_keywords']) && $_POST['import_keywords'] == 1)
+			if (isset($_POST['import_keywords']) and $_POST['import_keywords'] == 1)
 				$import_keywords = true;
-			
+
 			if ($import_caption || $import_keywords)
 			{
 				$info = null;
@@ -77,9 +77,9 @@ class Kwalbum_ItemAdder
 					$iptc = iptcparse($info['APP13']);
 					foreach ($iptc as $key=>$data)
 					{
-						if ($key == '2#120' && $import_caption)
+						if ($key == '2#120' and $import_caption)
 							$item->description = trim($data[0]);
-						if ($key == '2#025' && $import_keywords)
+						if ($key == '2#025' and $import_keywords)
 						{
 							if (!is_array($data))
 								$data = array($data);
@@ -146,7 +146,7 @@ class Kwalbum_ItemAdder
 			$this->ResizeImage($item->path, $item->filename);
 		}
 
-		if (isset($_POST['group_option']) && $_POST['group_option'] == 'existing')
+		if (isset($_POST['group_option']) and $_POST['group_option'] == 'existing')
 		{
 			$result = DB::query(Database::SELECT,
 			"SELECT update_dt
@@ -156,7 +156,7 @@ class Kwalbum_ItemAdder
 			->execute();
 			$item->update_date = $result[0]['update_dt'];
 			$item->save(false);
-		} 
+		}
 		else
 		{
 			$item->save();
@@ -179,7 +179,7 @@ class Kwalbum_ItemAdder
 
 		while ( ! Model_Kwalbum_Item::check_unique_filename($item->path, $item->filename))
 		{
-			if (!isset($name))
+			if ( ! isset($name))
 			{
 				$i = 0;
 				$name = pathinfo($item->filename, PATHINFO_FILENAME);
@@ -190,13 +190,10 @@ class Kwalbum_ItemAdder
 		}
 		$item->type = $this->get_filetype($item->filename);
 
-		if ( $_FILES['Filedata']['error'] == 1) {
+		if ($_FILES['Filedata']['error'] == 1)
 			throw new Kohana_Exception('File not uploaded.  Is the file too large?');
-		}
 		if ( ! Upload :: save($_FILES['Filedata'], $item->filename, $item->path))
-		{
 			throw new Kohana_Exception('upload could not be saved');
-		}
 
 		return $this->save();
 	}
@@ -211,9 +208,7 @@ class Kwalbum_ItemAdder
 
 		$item->description = trim($_POST['description']);
 		if (empty($item->description))
-		{
 			return false;
-		}
 		$item->type = Model_Kwalbum_Item :: $types[255];
 
 		return $this->save();
@@ -309,7 +304,7 @@ class Kwalbum_ItemAdder
 	*/
 	private function make_path($existingPath = '')
 	{
-		if (!$existingPath)
+		if ( ! $existingPath)
 		{
 			$path = Kwalbum_Model::get_config('item_path');
 			$dirs = explode('-', date('y-m'));
@@ -317,16 +312,14 @@ class Kwalbum_ItemAdder
 			$pathMonth = $dirs[1];
 
 			$path = $path.$pathYear;
-			if ( ! file_exists($path)
-					and ! mkdir($path))
+			if ( ! file_exists($path) and ! mkdir($path))
 			{
 				throw new Kohana_Exception('Directory :dir could not be created', array (
 					':dir' => Kohana :: debug_path($path)
 				));
 			}
 			$path .= '/'.$pathMonth;
-			if ( ! file_exists($path)
-					and ! mkdir($path))
+			if ( ! file_exists($path) and ! mkdir($path))
 			{
 				throw new Kohana_Exception('Directory :dir could not be created', array (
 					':dir' => Kohana :: debug_path($path)

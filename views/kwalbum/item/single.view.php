@@ -35,7 +35,11 @@ echo ' <span class="kwalbumPageNumbers">(item '.$item_index.' of '.$total_items.
 	<br/>
 	<?php echo $item->pretty_date; ?>
 	<hr/>
-	<?php echo (($item->description and $item->type != 'description only') ? $item->description.'<hr/>' : null); ?>
+	<?php echo (
+			($item->description and $item->type != 'description only')
+			? $item->description.'<hr/>'
+			: null
+		); ?>
 
 	<?php
 		if (count($item->tags) > 0)

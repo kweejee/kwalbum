@@ -43,7 +43,7 @@ if ($summary)
 
 $title = htmlspecialchars(isset($title) ? $title.$config->title_separator.$config->title : $config->title);
 
-if (isset($content->item) && $content->item instanceof Model_Kwalbum_Item)
+if (isset($content->item) and $content->item instanceof Model_Kwalbum_Item)
 {
 	$description = ($content->item->description
 		? $content->item->description

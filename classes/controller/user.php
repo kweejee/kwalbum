@@ -129,7 +129,7 @@ class Controller_User extends Controller_Kwalbum
 		{
 			$content->same_group = false;
 		}
-		
+
 		if (isset($this->tags))
 		{
 			$content->tags .= implode(',', $this->tags);
@@ -280,7 +280,7 @@ class Controller_User extends Controller_Kwalbum
 				$user->save();
 				$this->template->content->message = '<span class="errors">This address is no longer valid for changing your password.</span>';
 			}
-			else if (isset($_POST['act']))
+			elseif (isset($_POST['act']))
 			{
 				$pw = $_POST['pw'];
 				if (strlen($pw) > 5)

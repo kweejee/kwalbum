@@ -96,12 +96,14 @@ class Kwalbum_Helper
 		$cleaned_description = strip_tags($item->description,'<br><br/>');
 		$description = '';
 
-		if ($item->type == 'jpeg' or $item->type == 'gif' or $item->type == 'png')
+		if ($item->type == 'jpeg' or
+		    $item->type == 'gif' or
+		    $item->type == 'png')
 		{
 			$item->type = ($item->type == 'jpeg' ? 'jpg' : $item->type);
 			$link_text = "<img src='{$kwalbum_url}/~{$item->id}/~item/thumbnail.{$item->filename}' title='{$item->filename}'/>";
 		}
-		else if ($item->type == 'description only')
+		elseif ($item->type == 'description only')
 		{
 			$link_text = '<div class="box-thumbnail-description">'.substr($cleaned_description, 0, 200)
 				.(strlen($cleaned_description) > 200 ? '...' : null).'</div>';
