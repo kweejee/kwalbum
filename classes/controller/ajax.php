@@ -13,9 +13,11 @@ class Controller_Ajax extends Controller_Kwalbum
 {
 	public function before()
 	{
-		if ($this->request->action() == 'upload')
+		if ($this->request->action() == 'upload' and
+		    isset($_POST['session_id']))
+		{
 			session_id($_POST['session_id']);
-		//session_name(Kohana::$config->load('session.name'));
+		}
 
 		$this->auto_render = false;
 
@@ -200,32 +202,66 @@ class Controller_Ajax extends Controller_Kwalbum
 
 	public function action_upload()
 	{
+		if ( ! $this->user->is_logged_in)
+		{
+			if ( ! isset($_SERVER['PHP_AUTH_USER']))
+			{
+				header('WWW-Authenticate: Basic realm="Upload"');
+				header('HTTP/1.1 401 Unauthorized');
+				die('Invalid login');
+			}
+			$this->user = Model_Kwalbum_User::login(
+				$_SERVER['PHP_AUTH_USER'],
+				$_SERVER['PHP_AUTH_PW']);
+			if (!$this->user)
+			{
+				die('Invalid login');
+			}
+		}
 		if ( ! $this->user->can_add)
 		{
-			$this->request->response()->status(400);
-			Kohana::$log->add('~ajax/upload', 'invalid permission for user id '.$this->user->id);
-			return;
+			$this->request->response()->status(500);
+			die('You do not have permission to add items');
 		}
 
 		if ( ! empty($_FILES))
 		{
 			$adder = new Kwalbum_ItemAdder($this->user);
-			$error = 'unknown error';
+			$errors = array();
+
+			$files = array();
+			if (isset($_FILES['files']))
+			{
+				$files = is_array($_FILES['files'])
+				       ? $_FILES['files']
+				       : array($_FILES['files']);
+			}
+			elseif (isset($_FILES['userfile']))
+			{
+				$files = array($_FILES['userfile']);
+			}
 			try {
-				if ($adder->save_upload())
+				foreach ($files as $file)
 				{
-					echo 'success';
-					return;
+					$result = $adder->save_upload($file);
+					if ($result != (int) $result)
+					{
+						$errors []= $result;
+					}
 				}
 			} catch (Exception $e) {
-				$error = $e->getMessage();
+				$errors []= $e->getMessage();
 			}
-			$this->request->response()->status(400);
-			echo $error;
+			if (!empty($errors)) {
+				$this->request->response()->status(500);
+				echo json_encode(array('errors'=>$errors));
+			} else {
+				echo 'success';
+			}
 			return;
 		}
-		$this->request->response()->status(400);
-		Kohana::$log->add('~ajax/upload', 'empty FILES sent');
+		$this->request->response()->status(500);
+		echo 'No files sent';
 	}
 
 	private function _testPermission($item =  null)

@@ -42,7 +42,7 @@ $(document).ready(function(){
 			});
 		}
 	});
-	$('#fileInput').uploadify({
+	$('#files').uploadify({
 		'uploader':'KWALBUM_URL/media/ajax/uploadify/uploadify.swf',
 		'onComplete':function(event, ID, fileObj, response, data){
 			kwablum_refresh_upload_data();
@@ -53,6 +53,7 @@ $(document).ready(function(){
 		'script':'KWALBUM_URL/~ajax/upload.php',
 		'multi':true,
 		'buttonText':'Browse Files',
+		'fileDataName':'userfile',
 		'fileExt':'*.jpg;*.JPG;*.jpe;*.JPE;*.jpeg;*.JPEG;*.png;*.PNG;*.gif;*.GIF',
 		'fileDesc':'Image Files Only'
 	});
@@ -60,7 +61,7 @@ $(document).ready(function(){
 });
 var kwablum_refresh_upload_data = function()
 {
-	$('#fileInput').uploadifySettings('scriptData',{
+	$('#files').uploadifySettings('scriptData',{
 		'loc':$("#loc").val(),
 		'tags':$("#tags").val(),
 		'vis':$('#vis').val(),
@@ -76,5 +77,5 @@ function kwalbum_upload()
 {
 	kwablum_refresh_upload_data();
 	$('#group_option').val('existing');
-	$('#fileInput').uploadifyUpload();
+	$('#files').uploadifyUpload();
 }

@@ -166,13 +166,20 @@ class Kwalbum_ItemAdder
 
 	/**
 	 * Clean filename, check/set filetype, create path, move uploaded file, save
+	 * @param array $file a single file from $_FILES
+	 * @return mixed error string or id of new item
 	 * @since 3.0
 	 */
-	public function save_upload()
+	public function save_upload($file)
 	{
+		if (empty($file))
+			return 'Missing file';
+		if ($file['error'] == 1)
+			return 'File not uploaded.  Is the file too large?';
+
 		$item = $this->_item;
 
-		$targetFile = trim($_FILES['Filedata']['name']);
+		$targetFile = trim($file['name']);
 		$item->path = $this->make_path();
 
 		$item->filename = $this->replace_bad_filename_characters($targetFile);
@@ -190,10 +197,8 @@ class Kwalbum_ItemAdder
 		}
 		$item->type = $this->get_filetype($item->filename);
 
-		if ($_FILES['Filedata']['error'] == 1)
-			throw new Kohana_Exception('File not uploaded.  Is the file too large?');
-		if ( ! Upload :: save($_FILES['Filedata'], $item->filename, $item->path))
-			throw new Kohana_Exception('upload could not be saved');
+		if ( ! Upload :: save($file, $item->filename, $item->path))
+			return 'Upload could not be saved';
 
 		return $this->save();
 	}

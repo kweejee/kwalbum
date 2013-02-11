@@ -194,7 +194,7 @@ class Controller_Kwalbum extends Controller_Template
 
 		// Remove the extension from the filename
 		$file = substr($file, 0, -(strlen($ext) + 1));
-		
+
 		$file = Kohana::find_file('media', $file, $ext);
 		if (is_file($file))
 		{

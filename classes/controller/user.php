@@ -20,37 +20,18 @@ class Controller_User extends Controller_Kwalbum
 
 		if (isset($_POST['act']))
 		{
-			$user = Model::factory('kwalbum_user')
-				->load($_POST['name'], 'login_name');
-
-			if ($user->password_equals($_POST['password']))
+			$user = Model_Kwalbum_User::login(
+				$_POST['name'],
+				$_POST['password'],
+				$_POST['length']);
+			if ($user)
 			{
-				$loginLength = (int)$_POST['length'];
-				$user->visit_date = date('Y-m-d H:i:s');
-				$user->token = Kwalbum_Helper::getRandomHash();
-				$user->save();
-
-				if ($loginLength != 0)
-					setcookie('kwalbum',
-						$user->id.':'.$user->token,
-						time() + $loginLength,
-						'/');
-
-				session_start();
-				$_SESSION['kwalbum_id'] = $user->id;
-				session_write_close();
-
 				$this->template->content->success = true;
 				$this->user = $user;
 				$this->template->set_global('user', $this->user);
 			}
 			else
 			{
-				session_start();
-				unset($_SESSION['kwalbum_id']);
-				unset($_SESSION['kwalbum_edit']);
-				setcookie('kwalbum', '', time() - 36000, '/');
-				session_write_close();
 				$this->template->content->error = '<p class="error">You\'re login name or password was wrong.</p>';
 			}
 		}

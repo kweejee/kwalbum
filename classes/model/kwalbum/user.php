@@ -26,11 +26,10 @@ class Model_Kwalbum_User extends Kwalbum_Model
 	{
 		$this->clear();
 		if ($id === null)
-		{
 			return $this;
-		}
 
-		try {
+		try
+		{
 			$result = DB::query(Database::SELECT,
 				"SELECT id, name, login_name, email, password, token, visit_dt, permission_level, reset_code
 				FROM kwalbum_users
@@ -39,12 +38,13 @@ class Model_Kwalbum_User extends Kwalbum_Model
 				->param(':id', $id)
 				->execute();
 		}
-		catch (Exception $e){ return $this;}
-
-		if ($result->count() == 0)
+		catch (Exception $e)
 		{
 			return $this;
 		}
+
+		if ($result->count() == 0)
+			return $this;
 
 		$row = $result[0];
 
@@ -313,5 +313,45 @@ class Model_Kwalbum_User extends Kwalbum_Model
 		{
 			$this->_password = sha1($value);
 		}
+	}
+
+	/**
+	 *
+	 * @param string $username
+	 * @param string $password
+	 * @param int $length length for cookie if using a cookie
+	 * @return Model_Kwalbum_User if login was successful
+	 */
+	public static function login($username, $password, $length=0)
+	{
+		$user = Model::factory('kwalbum_user')
+			->load($username, 'login_name');
+
+		if ( ! $user->password_equals($password))
+		{
+			session_start();
+			unset($_SESSION['kwalbum_id']);
+			unset($_SESSION['kwalbum_edit']);
+			setcookie('kwalbum', '', time() - 36000, '/');
+			session_write_close();
+			return null;
+		}
+
+		$loginLength = (int) $length;
+		$user->visit_date = date('Y-m-d H:i:s');
+		$user->token = Kwalbum_Helper::getRandomHash();
+		$user->save();
+
+		if ($loginLength != 0)
+			setcookie('kwalbum',
+				$user->id.':'.$user->token,
+				time() + $loginLength,
+				'/');
+
+		session_start();
+		$_SESSION['kwalbum_id'] = $user->id;
+		session_write_close();
+
+		return $user;
 	}
 }
