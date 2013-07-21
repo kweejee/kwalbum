@@ -82,7 +82,7 @@ $(document).ready(function(){
 		tooltip:"Click to edit...",
 		indicator:"Saving...",
 		onblur:"submit",
-		width:200, 
+		width:200,
 		submitdata:{item:item_id},
 		autocomplete_action: 'GetInputTags',
 		style:"inherit",
@@ -96,7 +96,7 @@ $(document).ready(function(){
 		tooltip:"Click to edit...",
 		indicator:"Saving...",
 		onblur:"submit",
-		width:200, 
+		width:200,
 		submitdata:{item:item_id},
 		style:"inherit",
 		autocomplete_action: 'GetInputPersons',
@@ -157,3 +157,13 @@ $(document).ready(function(){
 		}
 	});
 });
+var rotate = function (degrees) {
+	$.post(
+		"KWALBUM_URL/~ajax/RotateItem",
+		{item: item_id, degrees: degrees},
+		function () {
+			location.reload(true);
+		}
+	);
+	$("#kwalbumRotateOptions").text("rotating...");
+};

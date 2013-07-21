@@ -57,34 +57,31 @@ class Kwalbum_ItemAdder
 		$item = $this->_item;
 
 		// get exif data from jpeg files
-		if ($item->type == 'jpeg')
-		{
+		if ($item->type == 'jpeg') {
 			$fullpath = $item->path.$item->filename;
 
 			$import_caption = false;
 			$import_keywords = false;
-			if (isset($_POST['import_caption']) and $_POST['import_caption'] == 1)
+			if (isset($_POST['import_caption']) and $_POST['import_caption'] == 1) {
 				$import_caption = true;
-			if (isset($_POST['import_keywords']) and $_POST['import_keywords'] == 1)
+			}
+			if (isset($_POST['import_keywords']) and $_POST['import_keywords'] == 1) {
 				$import_keywords = true;
+			}
 
-			if ($import_caption || $import_keywords)
-			{
+			if ($import_caption || $import_keywords) {
 				$info = null;
 				$size = getimagesize($fullpath, $info);
-				if (isset($info['APP13']))
-				{
+				if (isset($info['APP13'])) {
 					$iptc = iptcparse($info['APP13']);
-					foreach ($iptc as $key=>$data)
-					{
-						if ($key == '2#120' and $import_caption)
+					foreach ($iptc as $key => $data) {
+						if ($key == '2#120' and $import_caption) {
 							$item->description = trim($data[0]);
-						if ($key == '2#025' and $import_keywords)
-						{
+						}
+						if ($key == '2#025' and $import_keywords) {
 							if (!is_array($data))
 								$data = array($data);
-							foreach ($data as $keyword)
-							{
+							foreach ($data as $keyword) {
 								$item->tags = htmlspecialchars(trim($keyword));
 							}
 						}
@@ -92,48 +89,40 @@ class Kwalbum_ItemAdder
 				}
 			}
 
-			$data = @exif_read_data($fullpath);
-			if ($data)
-			{
-				//Kohana::$log->add('var', Kohana::debug($data));
+			$exif = @exif_read_data($fullpath);
+			if ($exif) {
+				//Kohana::$log->add('var', Kohana::debug($exif));
 				/*
-				if ($irb = get_Photoshop_IRB($jpeg_header_data))
-				{
+				if ($irb = get_Photoshop_IRB($jpeg_header_data)) {
 				    $xmp = Read_XMP_array_from_text(get_XMP_text($jpeg_header_data));
-				    $pinfo = get_photoshop_file_info($data, $xmp, $irb);
-				    foreach ($pinfo['keywords'] as $keyword)
-				    {
-					$item->tags = trim($keyword);
+				    $pinfo = get_photoshop_file_info($exif, $xmp, $irb);
+				    foreach ($pinfo['keywords'] as $keyword) {
+						$item->tags = trim($keyword);
 				    }
 				    //echo '<pre>'.Kohana::debug( $pinfo );exit;
 				}*/
 
 				// replace the set date if one is found in the picture's exif data
-				if (isset($data['DateTimeOriginal']))
-				{
-					$item->visible_date = $item->sort_date = Kwalbum_Helper :: replaceBadDate($data['DateTimeOriginal']);
+				if (isset($exif['DateTimeOriginal'])) {
+					$item->visible_date = $item->sort_date = Kwalbum_Helper :: replaceBadDate($exif['DateTimeOriginal']);
 				}
 
-				$latitude = @ $data['GPSLatitude'];
-				if ($latitude)
-				{
+				if (!empty($exif['GPSLatitude'])) {
+					$latitude = $exif['GPSLatitude'];
 					$sec = explode('/', $latitude[2]);
 					$lat = @ ((int)$latitude[0] + ((int)$latitude[1] / 60)
 					       + (((int)$sec[0] / (int)$sec[1]) / 3600));
-					if ('S' == $data['GPSLatitudeRef'])
-					{
+					if (!empty($exif['GPSLatitudeRef']) && 'S' == $exif['GPSLatitudeRef']) {
 						$lat = - ($lat);
 					}
 					$item->latitude = $lat;
 				}
-				$longitude = @ $data['GPSLongitude'];
-				if ($longitude)
-				{
+				if (!empty($data['GPSLongitude'])) {
+					$longitude = $data['GPSLongitude'];
 					$sec = explode('/', $longitude[2]);
 					$lon = @ ((int)$longitude[0] + ((int)$longitude[1] / 60)
 					       + (((int)$sec[0] / (int)$sec[1]) / 3600));
-					if ('W' == $data['GPSLongitudeRef'])
-					{
+					if (!empty($data['GPSLongitudeRef']) && 'W' == $data['GPSLongitudeRef']) {
 						$lon = - ($lon);
 					}
 					$item->longitude = $lon;
@@ -141,13 +130,24 @@ class Kwalbum_ItemAdder
 			}
 		}
 
-		if ($item->type == 'jpeg' or $item->type == 'png' or $item->type == 'gif')
-		{
-			$this->ResizeImage($item->path, $item->filename);
+		if ($item->type == 'jpeg' or $item->type == 'png' or $item->type == 'gif') {
+			$this->resizeImage($item->path, $item->filename);
+			if (!empty($exif['Orientation'])) {
+				switch($exif['Orientation']) {
+					case 8:
+						$item->rotate(270);
+						break;
+					case 3:
+						$item->rotate(180);
+						break;
+					case 6:
+						$item->rotate(90);
+						break;
+				}
+			}
 		}
 
-		if (isset($_POST['group_option']) and $_POST['group_option'] == 'existing')
-		{
+		if (isset($_POST['group_option']) and $_POST['group_option'] == 'existing') {
 			$result = DB::query(Database::SELECT,
 			"SELECT update_dt
 			FROM kwalbum_items
@@ -156,9 +156,7 @@ class Kwalbum_ItemAdder
 			->execute();
 			$item->update_date = $result[0]['update_dt'];
 			$item->save(false);
-		}
-		else
-		{
+		} else {
 			$item->save();
 		}
 		return $item->id;
@@ -354,24 +352,22 @@ class Kwalbum_ItemAdder
 	}
 
 	/**
-	* Check if thumbnail and resized versions of an image file
-	* exist and create them if not.
-	*
-	* @param string $path
-	* @param string $filename
-	* @since 2.1.1
-	*/
-	private function ResizeImage($path, $filename)
+	 * Check if thumbnail and resized versions of an image file
+	 * exist and create them if not.
+	 *
+	 * @param string $path
+	 * @param string $filename
+	 * @since 2.1.1
+	 */
+	private function resizeImage($path, $filename)
 	{
 		$image = Image::factory($path.$filename);
 		$image->resize(null, 480);
-		if ( ! $image->save($path.'r/'.$filename, 80))
-		{
+		if (!$image->save($path.'r/'.$filename, 80)) {
 			throw new Kohana_Exception('Could not resize image to "resized" version');
 		}
 		$image->resize(null, 112);
-		if ( ! $image->save($path.'t/'.$filename, 80))
-		{
+		if (!$image->save($path.'t/'.$filename, 80)) {
 			throw new Kohana_Exception('Could not resize image to "thumbnail" version');
 		}
 	}

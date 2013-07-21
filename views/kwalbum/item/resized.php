@@ -11,7 +11,6 @@
 
 if ($item->type == 'jpeg' or $item->type == 'gif' or $item->type == 'png')
 {
-	$item->type = ($item->type == 'jpeg' ? 'jpg' : $item->type);
 	echo html::anchor($kwalbum_url.'/~'.$item->id.'/~item/original.'.$item->filename,
 		"<img src='$kwalbum_url/~$item->id/~item/resized.$item->filename' title='$item->filename' alt='$item->filename' />")
 		.'<br/>'.html::anchor($kwalbum_url.'/~'.$item->id.'/~item/download.'.$item->filename, 'download');

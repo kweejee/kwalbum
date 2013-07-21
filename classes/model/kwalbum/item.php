@@ -45,7 +45,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 
 	/**
 	 * Load an item based on $field matching $id
-	 * 
+	 *
 	 * @param mixed $id
 	 * @param string $field
 	 * @return Model_Kwalbum_Item
@@ -454,7 +454,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 	/**
 	 * Delete an item from the database along with any relationships to other
 	 * tables in the database.  If it is the current object, clear it also.
-	 * 
+	 *
 	 * @param int $id optional id for an item that is not the current object
 	 */
 	public function delete($id = NULL)
@@ -521,6 +521,86 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 		if ($id == $this->id)
 		{
 			$this->clear();
+		}
+	}
+
+	/**
+	 * This function is mostly copied from a comment in the php.net documentation
+	 * @param resource $img
+	 * @param int $rotation
+	 * @return resource|boolean
+	 */
+	protected function rotateImage($img, $rotation) {
+		$width = imagesx($img);
+		$height = imagesy($img);
+		switch ($rotation) {
+			case 90:
+				$newimg= imagecreatetruecolor($height , $width);
+				break;
+			case 180:
+				$newimg= imagecreatetruecolor($width , $height);
+				break;
+			case 270:
+				$newimg= imagecreatetruecolor($height , $width);
+				break;
+			default:
+				$newimg = false;
+		}
+		if ($newimg) {
+			for ($i = 0;$i < $width ; $i++) {
+				for ($j = 0;$j < $height ; $j++) {
+					$reference = imagecolorat($img, $i, $j);
+					switch ($rotation) {
+						case 90:
+							if (!@imagesetpixel($newimg, ($height - 1) - $j, $i, $reference )) {
+								return false;
+							}
+							break;
+						case 180:
+							if (!@imagesetpixel($newimg, $width - $i, ($height - 1) - $j, $reference )) {
+								return false;
+							}
+							break;
+						case 270:
+							if (!@imagesetpixel($newimg, $j, $width - $i, $reference )) {
+								return false;
+							}
+							break;
+					}
+				}
+			}
+			return $newimg;
+		}
+		return false;
+	}
+	/**
+	 *
+	 * @param string $path
+	 * @param int $rotation
+	 */
+	protected function rotateJpeg($path, $rotation)
+	{
+		$img = imagecreatefromjpeg($path);
+		if (!$img) {
+			return;
+		}
+		$img = $this->rotateImage($img, $rotation);
+		if (!$img) {
+			return;
+		}
+		imagejpeg($img, $path);
+		imagedestroy($img);
+	}
+
+	/**
+	 * Rotate the resized and thumbnail versions of the item if it's an image
+	 * @param int $degrees
+	 */
+	public function rotate($degrees)
+	{
+		if ($this->type == 'jpeg' and $degrees > 0) {
+			$this->rotateJpeg($this->path.'r/'.$this->filename, $degrees);
+			$this->rotateJpeg($this->path.'t/'.$this->filename, $degrees);
 		}
 	}
 
@@ -1066,10 +1146,10 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 	{
 		switch ($sort_field)
 		{
-			case 'update': 
+			case 'update':
 				$sort_field = 'update_dt';
 				break;
-			case 'create': 
+			case 'create':
 				$sort_field = 'create_dt';
 				break;
 			case 'count':
@@ -1174,7 +1254,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 
 	/**
 	 * recursive function to find items to be used as markers on a map
-	 * 
+	 *
 	 * @param float $left
 	 * @param float $right
 	 * @param float $top

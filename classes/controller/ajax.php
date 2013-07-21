@@ -190,13 +190,31 @@ class Controller_Ajax extends Controller_Kwalbum
 
 	public function action_DeleteItem()
 	{
+		if (empty($_POST['item'])) {
+			echo 0;
+			return;
+		}
 		$item = Model::factory('kwalbum_item')->load((int)$_POST['item']);
-		if ( ! $this->user->can_edit_item($item))
-		{
+		if (!$this->user->can_edit_item($item)) {
 			echo 0;
 			return;
 		}
 		$item->delete();
+		echo 1;
+	}
+
+	public function action_RotateItem()
+	{
+		if (empty($_POST['item']) || empty($_POST['degrees'])) {
+			echo 0;
+			return;
+		}
+		$item = Model::factory('kwalbum_item')->load((int)$_POST['item']);
+		if (!$this->user->can_edit_item($item)) {
+			echo 0;
+			return;
+		}
+		$item->rotate((int)$_POST['degrees']);
 		echo 1;
 	}
 

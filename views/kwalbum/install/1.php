@@ -9,7 +9,7 @@
  * @package kwalbum
  * @since 3.0 Jun 30, 2009
  */
-print_r($errors);
+//var_export($errors);
 ?>
 <div class="box">
 	<h2>setup stage 1</h2>

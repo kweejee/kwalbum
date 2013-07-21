@@ -100,7 +100,6 @@ class Kwalbum_Helper
 		    $item->type == 'gif' or
 		    $item->type == 'png')
 		{
-			$item->type = ($item->type == 'jpeg' ? 'jpg' : $item->type);
 			$link_text = "<img src='{$kwalbum_url}/~{$item->id}/~item/thumbnail.{$item->filename}' title='{$item->filename}'/>";
 		}
 		elseif ($item->type == 'description only')

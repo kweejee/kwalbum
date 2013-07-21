@@ -18,6 +18,13 @@
 			$resizedview = new View('kwalbum/item/resized');
 			$resizedview->item = $item;
 			echo $resizedview->render();
+			if ($item->type == 'jpeg') {
+				echo '<span id="kwalbumRotateOptions" style="float:right" title="rotates thumbnail and resized only">rotate '
+					.'<a href="javascript:void(rotate(90))">90&deg;</a> '
+					.'<a href="javascript:void(rotate(180))">180&deg;</a> '
+					.'<a href="javascript:void(rotate(270))">270&deg;</a>'
+					.'</span>';
+			}
 		}
 		else
 			echo "<div id='large_description'>$item->description</div>";
@@ -79,7 +86,7 @@ echo ' <span class="kwalbumPageNumbers">(item '.$item_index.' of '.$total_items.
 
 	?>
 	<strong>Views:</strong> <?php echo $item->count; ?><br/>
-	
+
 	<div>
 		<div class="box box-thumbnail">
 		Previous Item:<br/>
