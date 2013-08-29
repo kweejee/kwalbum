@@ -178,7 +178,7 @@ class Kwalbum_ItemAdder
 		$item = $this->_item;
 
 		$targetFile = trim($file['name']);
-		$item->path = $this->make_path();
+		$item->path = $this->makePath();
 
 		$item->filename = $this->replaceAnnoyingFilenameCharacters($targetFile);
 
@@ -298,62 +298,53 @@ class Kwalbum_ItemAdder
         );
     }
 
-	/**
-	* Create a path if one does not already exist and create
-	* any directories in the path that do not already exist.
-	*
-	* Echo errors labled with css class "error"
-	*
-	* @param string $existingPath optional predetermined directory
-	* @return string path if successful, empty string if not
-	* @version 3.0
-	* @since 2.0
-	*/
-	private function make_path($existingPath = '')
-	{
-		if ( ! $existingPath)
-		{
-			$path = Kwalbum_Model::get_config('item_path');
-			$dirs = explode('-', date('y-m'));
-			$pathYear = $dirs[0];
-			$pathMonth = $dirs[1];
+    /**
+     * Create a path if one does not already exist and create
+     * any directories in the path that do not already exist.
+     *
+     * Echo errors labled with css class "error"
+     *
+     * @return string path if successful
+     * @throws Kohana_Exception
+     * @version 3.0
+     * @since 2.0
+     */
+    private function makePath()
+    {
+        $path = Kwalbum_Model::get_config('item_path');
+        $dirs = explode('-', date('y-m'));
 
-			$path = $path.$pathYear;
-			if ( ! file_exists($path) and ! mkdir($path))
-			{
-				throw new Kohana_Exception('Directory :dir could not be created', array (
-					':dir' => Kohana :: debug_path($path)
-				));
-			}
-			$path .= '/'.$pathMonth;
-			if ( ! file_exists($path) and ! mkdir($path))
-			{
-				throw new Kohana_Exception('Directory :dir could not be created', array (
-					':dir' => Kohana :: debug_path($path)
-				));
-			}
-			$path .= '/';
-		}
-		else
-		{
-			$path = $existingPath;
-		}
+        $path = $path.$dirs[0];
+        if (!file_exists($path) and !mkdir($path)) {
+            throw new Kohana_Exception(
+                'Directory :dir could not be created',
+                array(':dir' => Kohana :: debug_path($path))
+            );
+        }
+        $path .= '/'.$dirs[1];
+        if (!file_exists($path) and !mkdir($path)) {
+            throw new Kohana_Exception(
+                'Directory :dir could not be created',
+                array(':dir' => Kohana :: debug_path($path))
+            );
+        }
+        $path .= '/';
 
-		if ( ! file_exists($path.'t') and ! @ mkdir($path.'t'))
-		{
-			throw new Kohana_Exception('Directory :dir could not be created', array (
-				':dir' => Kohana :: debug_path($path.'t')
-			));
-		}
-		if ( ! file_exists($path.'r') and ! @ mkdir($path.'r'))
-		{
-			throw new Kohana_Exception('Directory :dir could not be created', array (
-				':dir' => Kohana :: debug_path($path.'r')
-			));
-		}
+        if (!file_exists($path.'t') and !@ mkdir($path.'t')) {
+            throw new Kohana_Exception(
+                'Directory :dir could not be created',
+                array(':dir' => Kohana :: debug_path($path.'t'))
+            );
+        }
+        if (!file_exists($path.'r') and !@ mkdir($path.'r')) {
+            throw new Kohana_Exception(
+                'Directory :dir could not be created',
+                array(':dir' => Kohana :: debug_path($path.'r'))
+            );
+        }
 
-		return $path;
-	}
+        return $path;
+    }
 
 	/**
 	 * Check if thumbnail and resized versions of an image file
