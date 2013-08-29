@@ -180,7 +180,7 @@ class Kwalbum_ItemAdder
 		$targetFile = trim($file['name']);
 		$item->path = $this->make_path();
 
-		$item->filename = $this->replace_bad_filename_characters($targetFile);
+		$item->filename = $this->replaceAnnoyingFilenameCharacters($targetFile);
 
 		while ( ! Model_Kwalbum_Item::check_unique_filename($item->path, $item->filename))
 		{
@@ -262,37 +262,41 @@ class Kwalbum_ItemAdder
 		));
 	}
 
-	/**
-	* Remove characters that may cause errors when resizing.
-	*
-	* Also convert file extension to all lowercase.
-	* @param string $oldName original filename submitted by the
-	* user
-	* @return string modified filename with characters replaced
-	* @since 2.0
-	*/
-	private function replace_bad_filename_characters($oldName)
-	{
-		if (get_magic_quotes_gpc())
-		{
-			$oldName = stripslashes($oldName);
-		}
-		return strtr($oldName, array (
-			' ' => '_',
-			'&' => 'and',
-			'+' => 'plus',
-			'\''=> '_',
-			'"' => '_',
-			'<' => '_',
-			'>' => '_',
-			'$' => '_',
-			'!' => '_',
-			'*' => '_',
-			'(' => '-',
-			')' => '-',
-			pathinfo($oldName, PATHINFO_EXTENSION) => strtolower(pathinfo($oldName, PATHINFO_EXTENSION))
-		));
-	}
+    /**
+     * Remove characters that may cause errors when resizing and convert file
+     * extension to all lowercase
+     * @param string $old_name original filename submitted by the user
+     * @return string modified filename with characters replaced
+     * @version 3.0
+     * @since 2.0
+     */
+    private function replaceAnnoyingFilenameCharacters($old_name)
+    {
+        if (get_magic_quotes_gpc()) {
+            $old_name = stripslashes($old_name);
+        }
+        return strtr(
+            $old_name,
+            array (
+                ' ' => '_',
+                '&' => 'and',
+                '+' => 'plus',
+                '\''=> '_',
+                '"' => '_',
+                '<' => '_',
+                '>' => '_',
+                '$' => '_',
+                '!' => '_',
+                '*' => '_',
+                '(' => '-',
+                ')' => '-',
+                pathinfo(
+                    $old_name,
+                    PATHINFO_EXTENSION) => strtolower(pathinfo($old_name, PATHINFO_EXTENSION)
+                ),
+            )
+        );
+    }
 
 	/**
 	* Create a path if one does not already exist and create
