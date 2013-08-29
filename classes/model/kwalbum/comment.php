@@ -113,53 +113,35 @@ class Model_Kwalbum_Comment extends Kwalbum_Model
 		}
 	}
 
-	public function delete($id = null)
+	public function delete()
 	{
-		if ($id === null)
-		{
-			$id = $this->id;
-		}
+		// Update item->has_comments if needed
+		$result = DB::query(Database::SELECT,
+			"SELECT count(*)
+			FROM kwalbum_comments
+			WHERE item_id = :item_id")
+			->param(':item_id', $this->item_id)
+			->execute();
 
-		// get item_id if needed
-		if ($id != $this->id)
-		{
-			$result = DB::query(Database::SELECT,
-				"SELECT item_id
-				FROM kwalbum_comments
-				WHERE id = :id")
-				->param(':id', $id)
+		if (0 == $result[0]['count(*)']) {
+			DB::query(Database::UPDATE,
+				"UPDATE kwalbum_items
+				SET has_comments = 0
+				WHERE id = :item_id")
+				->param(':item_id', $this->item_id)
 				->execute();
-			$item_id = $result[0]['item_id'];
-		}
-		else
-		{
-			$item_id = $this->item_id;
-			$this->clear();
 		}
 
 		// Delete comment
 		$query = DB::query(Database::DELETE,
 			"DELETE FROM kwalbum_comments
 			WHERE id = :id")
-			->param(':id', $id);
-			$query->execute();
-		// Update item->has_comments if needed
-		$result = DB::query(Database::SELECT,
-			"SELECT count(*)
-			FROM kwalbum_comments
-			WHERE item_id = :item_id")
-			->param(':item_id', $item_id)
-			->execute();
+			->param(':id', $this->id);
+        $query->execute();
 
-		if (0 == $result[0]['count(*)'])
-		{
-			DB::query(Database::UPDATE,
-				"UPDATE kwalbum_items
-				SET has_comments = 0
-				WHERE id = :item_id")
-				->param(':item_id', $item_id)
-				->execute();
-		}
+        $this->clear();
+
+        return true;
 	}
 
 	static public function set_sort_field($sort_field)

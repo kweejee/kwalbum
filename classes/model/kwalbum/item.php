@@ -453,55 +453,33 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 
 	/**
 	 * Delete an item from the database along with any relationships to other
-	 * tables in the database.  If it is the current object, clear it also.
-	 *
-	 * @param int $id optional id for an item that is not the current object
+	 * tables in the database. Move the original file to a trash directory
+	 * and remove the thumbnail and resized images if they exist.
 	 */
-	public function delete($id = NULL)
+	public function delete()
 	{
-		if ($id === NULL)
-		{
-			$id = $this->id;
-		}
-
 		// Remove item from location count
-		if ($id == $this->id)
-		{
-			$location_id = $this->_location_id;
-			$persons = $this->persons;
-			$tags = $this->tags;
-		}
-		else
-		{
-			$result = DB::query(Database::SELECT, 'SELECT location_id
-				FROM kwalbum_items
-				WHERE item_id = :id')
-				->param(':id', $id)
-				->execute();
-			$location_id = $result[0]['location_id'];
-		}
 		DB::query(Database::UPDATE, 'UPDATE kwalbum_locations
 			SET count = count-1
 			WHERE id = :location_id AND count > 0')
-			->param(':location_id', $location_id)
+			->param(':location_id', $this->_location_id)
 			->execute();
 
 		// Delete relation between item and external site if it exists
 		DB::query(Database::DELETE, "DELETE FROM kwalbum_items_sites
 			WHERE item_id = :id")
-			->param(':id', $id)
+			->param(':id', $this->id)
 			->execute();
 
 		// Remove item-person relations and reduce persons' item counts
-		$this->_delete_person_relations($id);
+		$this->_delete_person_relations();
 
 		// Remove item-tag relations and reduce tags' item counts
-		$this->_delete_tag_relations($id);
+		$this->_delete_tag_relations();
 
 		// Delete comments
-		$comments = $this->_load_comments($id);
-		foreach ($comments as $comment)
-		{
+		$comments = $this->_load_comments();
+		foreach ($comments as $comment) {
 			$comment->delete();
 		}
 
@@ -509,19 +487,16 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 		DB::query(Database::DELETE,
 			"DELETE FROM kwalbum_items_sites
 			WHERE item_id = :id")
-			->param(':id', $id)
+			->param(':id', $this->id)
 			->execute();
 
 		// Delete the item
 		DB::query(Database::DELETE, "DELETE FROM kwalbum_items
 			WHERE id = :id")
-			->param(':id', $id)
+			->param(':id', $this->id)
 			->execute();
 
-		if ($id == $this->id)
-		{
-			$this->clear();
-		}
+		$this->clear();
 	}
 
 	/**
@@ -677,7 +652,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 			case 'comments':
 				if ($this->_comments === null)
 				{
-					$this->_comments = $this->_load_comments($this->id);
+					$this->_comments = $this->_load_comments();
 				}
 				return $this->_comments;
 			case 'pretty_date':
@@ -874,13 +849,8 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 		}
 	}
 
-	private function _delete_person_relations($id = null)
+	private function _delete_person_relations()
 	{
-		if ($id === NULL)
-		{
-			$id = $this->id;
-		}
-
 		// Remove item from person counts
 		$result = DB::query(Database::UPDATE,
 			"UPDATE kwalbum_persons
@@ -890,7 +860,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 					FROM kwalbum_items_persons
 					WHERE item_id = :id
 				)")
-			->param(':id', $id)
+			->param(':id', $this->id)
 			->execute();
 
 		if ($result > 0)
@@ -899,18 +869,13 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 			$result = DB::query(Database::DELETE,
 				"DELETE FROM kwalbum_items_persons
 				WHERE item_id = :id")
-				->param(':id', $id)
+				->param(':id', $this->id)
 				->execute();
 		}
 	}
 
-	private function _delete_tag_relations($id = null)
+	private function _delete_tag_relations()
 	{
-		if ($id === NULL)
-		{
-			$id = $this->id;
-		}
-
 		// Remove item from tag counts
 		$result = DB::query(Database::UPDATE,
 			"UPDATE kwalbum_tags
@@ -920,41 +885,31 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 					FROM kwalbum_items_tags
 					WHERE item_id = :id
 				)")
-			->param(':id', $id)
+			->param(':id', $this->id)
 			->execute();
-
 		if ($result > 0)
 		{
 			// Remove relations between item and tags
 			$result = DB::query(Database::DELETE,
 				"DELETE FROM kwalbum_items_tags
 				WHERE item_id = :id")
-				->param(':id', $id)
+				->param(':id', $this->id)
 				->execute();
 		}
 	}
 
-	private function _load_comments($id = null)
+	private function _load_comments()
 	{
-		if ($id === NULL)
-		{
-			$id = $this->id;
-		}
-
 		$comments = array();
-
 		$result = DB::query(Database::SELECT,
 			"SELECT id
 			FROM kwalbum_comments
 			WHERE item_id = :id")
 			->param(':id', $this->id)
 			->execute();
-
-		foreach ($result as $row)
-		{
+		foreach ($result as $row) {
 			$comments[] = Model::factory('kwalbum_comment')->load($row['id']);
 		}
-
 		return $comments;
 	}
 

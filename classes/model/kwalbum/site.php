@@ -97,28 +97,16 @@ class Model_Kwalbum_Site extends Kwalbum_Model
 			->execute();
 	}
 
-	public function delete($id = null)
+	public function delete()
 	{
-		if ($id === null)
-		{
-			$id = $this->id;
-		}
-
-		// Remore item-site relationships
-
-
-
 		// Delete the site
 		DB::query(Database::DELETE,
 			"DELETE FROM kwalbum_sites
 			WHERE id = :id")
-			->param(':id', $id)
+			->param(':id', $this->id)
 			->execute();
-
-		if ($id == $this->id)
-		{
-			$this->clear();
-		}
+        $this->clear();
+        return true;
 	}
 
 	public function clear()

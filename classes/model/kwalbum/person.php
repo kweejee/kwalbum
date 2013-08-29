@@ -87,31 +87,23 @@ class Model_Kwalbum_Person extends Kwalbum_Model
 			->execute();
 	}
 
-	public function delete($id = NULL)
+	public function delete()
 	{
-		if ($id === NULL)
-		{
-			$id = $this->id;
-		}
-
 		// Delete relations between the person and items
 		DB::query(Database::DELETE,
 			"DELETE FROM kwalbum_items_persons
 			WHERE person_id = :id")
-			->param(':id', $id)
+			->param(':id', $this->id)
 			->execute();
 
 		// Delete the person
 		DB::query(Database::DELETE,
 			"DELETE FROM kwalbum_persons
 			WHERE id = :id")
-			->param(':id', $id)
+			->param(':id', $this->id)
 			->execute();
 
-		if ($id == $this->id)
-		{
-			$this->clear();
-		}
+		$this->clear();
 	}
 
 	public function clear()

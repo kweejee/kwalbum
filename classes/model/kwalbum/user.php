@@ -133,16 +133,10 @@ class Model_Kwalbum_User extends Kwalbum_Model
 	 * @param int $id
 	 * @return boolean
 	 */
-	public function delete($id = NULL)
+	public function delete()
 	{
-		if ($id === NULL)
-		{
-			$id = $this->id;
-		}
-
 		// do not delete main admin user or default "deleted user" account
-		if ($id < 3)
-		{
+		if ($this->id < 3) {
 			return false;
 		}
 
@@ -150,19 +144,16 @@ class Model_Kwalbum_User extends Kwalbum_Model
 		DB::query(Database::UPDATE, "UPDATE kwalbum_items
 			SET user_id=2, hide_level=100
 			WHERE user_id = :id")
-			->param(':id', $id)
+			->param(':id', $this->id)
 			->execute();
 
 		// Delete the user
 		DB::query(Database::DELETE, "DELETE FROM kwalbum_users
 			WHERE id = :id")
-			->param(':id', $id)
+			->param(':id', $this->id)
 			->execute();
 
-		if ($id == $this->id)
-		{
-			$this->clear();
-		}
+        $this->clear();
 
 		return true;
 	}

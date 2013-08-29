@@ -172,20 +172,13 @@ class Model_Kwalbum_Location extends Kwalbum_Model
 
 	/**
 	 * Delete a location and all connections it has to items.
-	 * 
-	 * @param int $id
+	 *
 	 * @return boolean
 	 */
-	public function delete($id = null)
+	public function delete()
 	{
-		if ($id === null)
-		{
-			$id = $this->id;
-		}
-
 		// do not delete the "unknown" location
-		if ($id == 1)
-		{
+		if ($this->id === 1) {
 			return false;
 		}
 
@@ -194,10 +187,9 @@ class Model_Kwalbum_Location extends Kwalbum_Model
 			"SELECT parent_location_id
 			FROM kwalbum_locations
 			WHERE id = :id")
-			->param(':id', $id)
+			->param(':id', $this->id)
 			->execute();
-		if (count($result) == 1)
-		{
+		if (count($result) == 1) {
 			$parent_id = $result[0]['parent_location_id'];
 		}
 		$new_location_id = $parent_id ? $parent_id : 1;
@@ -205,7 +197,7 @@ class Model_Kwalbum_Location extends Kwalbum_Model
 			"UPDATE kwalbum_items
 			SET location_id = :new_id
 			WHERE location_id = :id")
-			->param(':id', $id)
+			->param(':id', $this->id)
 			->param(':new_id', $new_location_id)
 			->execute();
 		DB::query(Database::UPDATE,
@@ -215,8 +207,7 @@ class Model_Kwalbum_Location extends Kwalbum_Model
 			->param(':count', $count)
 			->param(':new_id', $new_location_id)
 			->execute();
-		if ($parent_id)
-		{
+		if ($parent_id) {
 			DB::query(Database::UPDATE,
 				"UPDATE kwalbum_locations
 				SET child_count = child_count-:count
@@ -228,13 +219,10 @@ class Model_Kwalbum_Location extends Kwalbum_Model
 		DB::query(Database::DELETE,
 			"DELETE FROM kwalbum_locations
 			WHERE id = :id")
-			->param(':id', $id)
+			->param(':id', $this->id)
 			->execute();
 
-		if ($id == $this->id)
-		{
-			$this->clear();
-		}
+        $this->clear();
 
 		return true;
 	}

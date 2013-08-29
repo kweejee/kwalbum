@@ -87,31 +87,25 @@ class Model_Kwalbum_Tag extends Kwalbum_Model
 			->execute();
 	}
 
-	public function delete($id = NULL)
+	public function delete()
 	{
-		if ($id === NULL)
-		{
-			$id = $this->id;
-		}
-
 		// Delete relations between the tag and items
 		DB::query(Database::DELETE,
 			"DELETE FROM kwalbum_items_tags
 			WHERE tag_id = :id")
-			->param(':id', $id)
+			->param(':id', $this->id)
 			->execute();
 
 		// Delete the tag
 		DB::query(Database::DELETE,
 			"DELETE FROM kwalbum_tags
 			WHERE id = :id")
-			->param(':id', $id)
+			->param(':id', $this->id)
 			->execute();
 
-		if ($id == $this->id)
-		{
-			$this->clear();
-		}
+        $this->clear();
+
+        return true;
 	}
 
 	public function clear()

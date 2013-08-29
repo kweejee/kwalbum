@@ -61,12 +61,10 @@ abstract class Kwalbum_Model extends Model
 	abstract public function save();
 
 	/**
-	 * Delete the object with $id or $this->id from the database.
+	 * Delete the object from the database.
 	 *
-	 * If $id is null and $this->id is used, $this->clear should be called at
-	 * the end.
 	 */
-	abstract public function delete($id = null);
+	abstract public function delete();
 
 	/**
 	 * Set empty values for all fields.
