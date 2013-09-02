@@ -156,10 +156,8 @@ class Controller_Install extends Controller_Kwalbum
 		DB::query('', 'DROP TABLE IF EXISTS `kwalbum_comments`')->execute();
 		DB::query('', 'DROP TABLE IF EXISTS `kwalbum_items_tags`')->execute();
 		DB::query('', 'DROP TABLE IF EXISTS `kwalbum_items_persons`')->execute();
-		DB::query('', 'DROP TABLE IF EXISTS `kwalbum_items_sites`')->execute();
 		DB::query('', 'DROP TABLE IF EXISTS `kwalbum_tags`')->execute();
 		DB::query('', 'DROP TABLE IF EXISTS `kwalbum_persons`')->execute();
-		DB::query('', 'DROP TABLE IF EXISTS `kwalbum_sites`')->execute();
 		DB::query('', 'DROP TABLE IF EXISTS `kwalbum_items`')->execute();
 		DB::query('', 'DROP TABLE IF EXISTS `kwalbum_users`')->execute();
 		DB::query('', 'DROP TABLE IF EXISTS `kwalbum_locations`')->execute();
@@ -232,7 +230,6 @@ class Controller_Install extends Controller_Kwalbum
 		          `longitude` DECIMAL(10,7) NOT NULL DEFAULT 0,
 		          `update_dt` DATETIME NOT NULL ,
 		          `create_dt` DATETIME NOT NULL ,
-		          `is_external` TINYINT NOT NULL DEFAULT 0 ,
 		          PRIMARY KEY (`id`) ,
 		          INDEX `location_id` (`location_id` ASC) ,
 		          INDEX `user_id` (`user_id` ASC) ,
@@ -327,40 +324,6 @@ class Controller_Install extends Controller_Kwalbum
 		            FOREIGN KEY (`person_id` )
 		            REFERENCES `kwalbum_persons` (`id` )
 		            ON DELETE CASCADE
-		            ON UPDATE CASCADE
-		        ) ENGINE = InnoDB
-		        DEFAULT CHARACTER SET = utf8')
-			->execute();
-
-		// Sites, external sites to import items from
-		DB::query('', 'CREATE  TABLE IF NOT EXISTS `kwalbum_sites`(
-		          `id` SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT ,
-		          `url` VARCHAR(100) NOT NULL ,
-		          `site_key` VARCHAR(45) NOT NULL ,
-		          `import_dt` DATETIME NOT NULL ,
-		          PRIMARY KEY (`id`)
-		        ) ENGINE = InnoDB
-		        DEFAULT CHARACTER SET = utf8')
-			->execute();
-
-		// Items_Sites relationship for imported items
-		DB::query('', 'CREATE  TABLE IF NOT EXISTS `kwalbum_items_sites`(
-		          `item_id` INT UNSIGNED NOT NULL ,
-		          `site_id` SMALLINT UNSIGNED NOT NULL ,
-		          `external_item_id` INT UNSIGNED NOT NULL ,
-		          INDEX `item_id` (`item_id` ASC) ,
-		          PRIMARY KEY (`item_id`) ,
-		          INDEX `site_id` (`site_id` ASC) ,
-		          INDEX `external_item_id` (`external_item_id` ASC) ,
-		          CONSTRAINT `item_id_s`
-		            FOREIGN KEY (`item_id` )
-		            REFERENCES `kwalbum_items` (`id` )
-		            ON DELETE CASCADE
-		            ON UPDATE CASCADE,
-		          CONSTRAINT `site_id`
-		            FOREIGN KEY (`site_id` )
-		            REFERENCES `kwalbum_sites` (`id` )
-		            ON DELETE RESTRICT
 		            ON UPDATE CASCADE
 		        ) ENGINE = InnoDB
 		        DEFAULT CHARACTER SET = utf8')

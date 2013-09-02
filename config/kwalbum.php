@@ -22,13 +22,6 @@ return array
 	'items_per_page' => 20,
 
 	/**
-	 * Secret key for remote sites to get data about your items
-	 * Random characters are best
-	 * No more than 45 characters
-	 */
-	'key' => 'change me',
-
-	/**
 	 * Png image in the item directory to use as a watermark if you want user
 	 * levels other than contributer to see one.
 	 */

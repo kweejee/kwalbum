@@ -204,7 +204,6 @@ class UnitTest_Kwalbum_Model extends UnitTest_Case
 		$this->assert_similar($item->latitude, 0);
 		$this->assert_similar($item->longitude, 0);
 		$this->assert_false($item->has_comments);
-		$this->assert_false($item->is_external);
 		$this->assert_equal($item->hide_level, 0);
 
 		sleep(1); // make sure create_date and update_date can be different
@@ -469,46 +468,6 @@ class UnitTest_Kwalbum_Model extends UnitTest_Case
 		$this->assert_equal($item->hide_level, 100);
 	}
 
-	public function test_external_site()
-	{
-		$site = Model::factory('kwalbum_site');
-		$site->url = 'http://example.com';
-		$site->key = 'k3y';
-		$site->save();
-		$id = $site->id;
-		$site->clear();
-
-		$site = Model::factory('kwalbum_site')->load($id);
-		$this->assert_equal($site->key, 'k3y');
-	}
-
-	public function test_external_item()
-	{
-		$site = Model::factory('kwalbum_site');
-		$site->url = 'http://example.com';
-		$site->key = 'k3y';
-		$site->save();
-		$item = Model::factory('kwalbum_item');
-		$item->user_id = 1;
-		$item->location_id = 1;
-		$item->save();
-		$this->assert_false($item->is_external);
-
-		$item->external_site = $site;
-		$item->external_id = 100;
-		$item->save();
-
-		$item->reload();
-		$this->assert_true($item->is_external);
-		$this->assert_equal($item->external_id, 100);
-		$this->assert_equal($item->external_site->url, $site->url);
-	}
-
-	/* Not testing because an external site should never
-	 * be deleted if items from it exist.
-	 */
-	//public function test_external_item_site_delete()
-
 	public function test_add_and_delete_comment_test()
 	{
 		$item = Model::factory('kwalbum_item');
@@ -567,13 +526,9 @@ class UnitTest_Kwalbum_Model extends UnitTest_Case
 		$db->query(Database::DELETE, $sql);
 		$sql = 'DELETE FROM `kwalbum_items_persons`';
 		$db->query(Database::DELETE, $sql);
-		$sql = 'DELETE FROM `kwalbum_items_sites`';
-		$db->query(Database::DELETE, $sql);
 		$sql = 'DELETE FROM `kwalbum_tags`';
 		$db->query(Database::DELETE, $sql);
 		$sql = 'DELETE FROM `kwalbum_persons`';
-		$db->query(Database::DELETE, $sql);
-		$sql = 'DELETE FROM `kwalbum_sites`';
 		$db->query(Database::DELETE, $sql);
 		$sql = 'DELETE FROM `kwalbum_items`';
 		$db->query(Database::DELETE, $sql);
