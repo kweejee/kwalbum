@@ -535,210 +535,181 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 		$session->set('viewed_item_ids', $viewed_ids);
 	}
 
-	public function __get($id)
-	{
-		switch ($id)
-		{
-			case 'tags':
-				if ($this->_tags === null)
-				{
-					$this->_tags = array();
-					$result = DB::query(Database::SELECT,
-						"SELECT name
-						FROM kwalbum_items_tags
-							LEFT JOIN kwalbum_tags ON tag_id = id
-						WHERE item_id = :id
-						ORDER BY name")
-						->param(':id', $this->id)
-						->execute();
-					foreach($result as $row)
-					{
-						$this->_tags[] = $row['name'];
-					}
-				}
+    public function __get($id)
+    {
+        switch ($id) {
+            case 'tags':
+                if ($this->_tags === null) {
+                    $this->_tags = array();
+                    $result = DB::query(Database::SELECT,
+                        "SELECT name
+                        FROM kwalbum_items_tags
+                            LEFT JOIN kwalbum_tags ON tag_id = id
+                        WHERE item_id = :id
+                        ORDER BY name")
+                        ->param(':id', $this->id)
+                        ->execute();
+                    foreach ($result as $row) {
+                        $this->_tags[] = $row['name'];
+                    }
+                }
+                return $this->_tags;
+            case 'persons':
+                if ($this->_persons === null) {
+                    $this->_persons = array();
+                    $result = DB::query(Database::SELECT,
+                        "SELECT name
+                        FROM kwalbum_items_persons
+                            LEFT JOIN kwalbum_persons ON person_id = id
+                        WHERE item_id = :id
+                        ORDER BY name")
+                        ->param(':id', $this->id)
+                        ->execute();
+                    foreach ($result as $row) {
+                        $this->_persons[] = $row['name'];
+                    }
+                }
+                return $this->_persons;
+            case 'comments':
+                if ($this->_comments === null) {
+                    $this->_comments = $this->_load_comments();
+                }
+                return $this->_comments;
+            case 'pretty_date':
+                $datetime = explode(' ', $this->visible_date);
 
-				return $this->_tags;
-			case 'persons':
-				if ($this->_persons === null)
-				{
-					$this->_persons = array();
-					$result = DB::query(Database::SELECT,
-						"SELECT name
-						FROM kwalbum_items_persons
-							LEFT JOIN kwalbum_persons ON person_id = id
-						WHERE item_id = :id
-						ORDER BY name")
-						->param(':id', $this->id)
-						->execute();
-					foreach($result as $row)
-					{
-						$this->_persons[] = $row['name'];
-					}
-				}
+                if (count($datetime) > 1) {
+                    $time = explode(trim(self::get_config('location_separator_1')), $datetime[1]);
+                    $hour = $time[0];
+                    $minute = $time[1];
+                } else {
+                    $hour = '';
+                    $minute = '';
+                }
+                $date = explode('-', $date[0]);
+                $year = $date[0];
+                $month = $date[1];
 
-				return $this->_persons;
-			case 'comments':
-				if ($this->_comments === null)
-				{
-					$this->_comments = $this->_load_comments();
-				}
-				return $this->_comments;
-			case 'pretty_date':
-				$date = explode(' ', $this->visible_date);
+                if (0 == $month) {
+                    // year only if no month
+                    if ((int)$year) {
+                        $pretty_date = $year;
+                    } else {
+                        $pretty_date = '';
+                    }
+                } else if (empty($date[2])) {
+                    // month & year only if no day
+                    $pretty_date = date('F Y', strtotime("$year-$month-1"));
+                } else {
+                    $pretty_date = date('F j, Y', strtotime($this->visible_date));
+                }
+                if ($hour != '00' or $minute != '00') {
+                    $pretty_date .= " $hour:$minute";
+                }
+                return $pretty_date;
+            case 'date':
+                $date = explode(' ', $this->visible_date);
+                return $date[0];
+            case 'time':
+                $date = explode(' ', $this->visible_date);
+                return $date[1];
+            case 'user_name':
+                if ($this->_user_name === null) {
+                    $result = DB::query(Database::SELECT,
+                        "SELECT name
+                        FROM kwalbum_users
+                        WHERE id = :id
+                        LIMIT 1")
+                        ->param(':id', $this->user_id)
+                        ->execute();
+                    $this->_user_name = $result[0]['name'];
+                }
+                return $this->_user_name;
+            case 'comment_count':
+                if ($this->_comment_count) {
+                    return $this->_comment_count;
+                }
+                if (!$this->has_comments) {
+                    return 0;
+                }
 
-				if (count($date) > 1) {
-					$time = explode(trim(self::get_config('location_separator_1')), $date[1]);
-					$hour = $time[0];
-					$minute = $time[1];
-				} else {
-					$hour = '';
-					$minute = '';
-				}
-				$date = explode('-', $date[0]);
-				$year = $date[0];
-				$month = $date[1];
-					$day = $date[2];
+                $query = "SELECT count(*)
+                    FROM kwalbum_comments
+                    WHERE item_id = :id";
+                $result = DB::query(Database::SELECT, $query)
+                    ->param(':id', $this->id)
+                    ->execute();
+                $this->_comment_count = (int)$result[0]['count(*)'];
+                return $this->_comment_count;
+        }
+    }
 
-				if (0 == $month)
-				{
-					if ((int)$year)
-						$pretty_date = $year;
-					else
-						$pretty_date = '';
-				}
-				else if (0 == $day)
-				{
-					$pretty_date = date('F Y', strtotime("$year-$month-1"));
-				}
-				else
-				{
-					$pretty_date = date('F j, Y', strtotime($this->visible_date));
-				}
+    public function __set($key, $value)
+    {
+        if ($key === 'tags') {
+            // Overwrite tags if an array is given or add to the existing array
+            if (is_array($value)) {
+                $this->_tags = $value;
+            } else {
+                if ($this->_tags === null) {
+                    $this->_tags = $this->tags;
+                }
+                $this->_tags[] = (string)$value;
+            }
+        } else if ($key == 'persons') {
+            // Overwrite persons if an array is given or add to the existing array
+            if (is_array($value)) {
+                $this->_persons = $value;
+            } else {
+                if ($this->_persons === null) {
+                    $this->_persons = $this->persons;
+                }
+                $this->_persons[] = (string)$value;
+            }
+        } else if ($key == 'comments') {
+            // Overwrite comments if an array is given or add to the existing array
+            if (is_array($value)) {
+                $this->_comments = $value;
+            } elseif ($this->_comments === null) {
+                $this->_comments = $this->comments;
+            } elseif ($value instanceof Model_Kwalbum_Comment) {
+                $this->_comments[] = $value;
+            }
+        }
+    }
 
-				if ($hour != '00' or $minute != '00')
-				{
-					$pretty_date .= " $hour:$minute";
-				}
+    public function clear()
+    {
+        $this->id = $this->user_id = $this->location_id = $this->latitude
+            = $this->longitude = $this->hide_level = $this->count = 0;
+        $this->description = $this->visible_date = $this->sort_date = $this->update_date
+            = $this->create_date = $this->path = $this->filename = '';
+        $this->_tags = $this->_persons = $this->_comments
+            = $this->_location = $this->_user_name
+            = $this->_original_location = $this->_original_user_id;
+        $this->type = Model_Kwalbum_Item::$types[0];
+        $this->has_comments = $this->loaded = false;
+    }
 
-				return $pretty_date;
-			case 'date':
-				$date = explode(' ', $this->visible_date);
-				return $date[0];
-			case 'time':
-				$date = explode(' ', $this->visible_date);
-				return $date[1];
-			case 'user_name':
-				if ($this->_user_name === null)
-				{
-					$result = DB::query(Database::SELECT,
-						"SELECT name
-						FROM kwalbum_users
-						WHERE id = :id
-						LIMIT 1")
-						->param(':id', $this->user_id)
-						->execute();
-					$this->_user_name = $result[0]['name'];
-				}
-				return $this->_user_name;
-			case 'comment_count':
-				if ($this->_comment_count)
-					return $this->_comment_count;
-				if ( ! $this->has_comments)
-					return 0;
-
-				$query = "SELECT count(*)
-					FROM kwalbum_comments
-					WHERE item_id = :id";
-				$result = DB::query(Database::SELECT, $query)
-					->param(':id', $this->id)
-					->execute();
-				$this->_comment_count = (int)$result[0]['count(*)'];
-				return $this->_comment_count;
-		}
-	}
-
-	public function __set($key, $value)
-	{
-		// Overwrite tags if an array is given or add to the existing array
-		if ($key == 'tags')
-		{
-			if (is_array($value))
-				$this->_tags = $value;
-			else
-			{
-				if ($this->_tags === null)
-				{
-					$this->_tags = $this->tags;
-				}
-				$this->_tags[] = (string)$value;
-			}
-		}
-
-		// Overwrite persons if an array is given or add to the existing array
-		else if ($key == 'persons')
-		{
-			if (is_array($value))
-				$this->_persons = $value;
-			else
-			{
-				if ($this->_persons === null)
-				{
-					$this->_persons = $this->persons;
-				}
-				$this->_persons[] = (string)$value;
-			}
-		}
-
-		// Overwrite comments if an array is given or add to the existing array
-		else if ($key == 'comments')
-		{
-			if (is_array($value))
-				$this->_comments = $value;
-			else
-			{
-				if ($this->_comments === null)
-				{
-					$this->_comments = $this->comments;
-				}
-				if ($value instanceof Model_Kwalbum_Comment)
-					$this->_comments[] = $value;
-			}
-		}
-	}
-
-	public function clear()
-	{
-		$this->id = $this->user_id = $this->location_id = $this->latitude
-			= $this->longitude = $this->hide_level = $this->count = 0;
-		$this->description = $this->visible_date = $this->sort_date = $this->update_date
-			= $this->create_date = $this->path = $this->filename = '';
-		$this->_tags = $this->_persons = $this->_comments
-			= $this->_location = $this->_user_name
-			= $this->_original_location = $this->_original_user_id;
-		$this->type = Model_Kwalbum_Item::$types[0];
-		$this->has_comments = $this->loaded = false;
-	}
-
-	function hide_if_needed($user)
-	{
-		if ( ! $user->can_view_item($this))
-		{
-			$id = $this->id;
-			$sort_date = $this->sort_date;
-			$this->clear();
-			$this->id = $id;
-			$this->sort_date = $sort_date;
-			$this->type = Model_Kwalbum_Item :: $types[3];
-			$this->path = MODPATH.'kwalbum/media/';
-			$this->filename = 'no.png';
-			$this->hide_level = 100;
-			$this->location = 'hidden';
-			$this->visible_date = '0000-00-00 00:00:00';
-			// Setting tags and persons to empty arrays will cause them to never be loaded
-			$this->tags = array();
-			$this->persons = array();
-		}
-	}
+    function hide_if_needed($user)
+    {
+        if (!$user->can_view_item($this)) {
+            $id = $this->id;
+            $sort_date = $this->sort_date;
+            $this->clear();
+            $this->id = $id;
+            $this->sort_date = $sort_date;
+            $this->type = Model_Kwalbum_Item :: $types[3];
+            $this->path = MODPATH.'kwalbum/media/';
+            $this->filename = 'no.png';
+            $this->hide_level = 100;
+            $this->location = 'hidden';
+            $this->visible_date = '0000-00-00 00:00:00';
+            // Setting tags and persons to empty arrays will cause them to never be loaded
+            $this->tags = array();
+            $this->persons = array();
+        }
+    }
 
 	private function _delete_person_relations()
 	{
