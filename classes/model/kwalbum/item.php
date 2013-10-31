@@ -392,13 +392,13 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 		return $this;
 	}
 
-	/**
-	 * Delete an item from the database along with any relationships to other
-	 * tables in the database. Move the original file to a trash directory
-	 * and remove the thumbnail and resized images if they exist.
-	 */
-	public function delete()
-	{
+    /**
+     * Delete an item from the database along with any relationships to other
+     * tables in the database. Move the original file to a trash directory
+     * and remove the thumbnail and resized images if they exist.
+     */
+    public function delete()
+    {
         // make sure trash directory is writable
         $delete_path = Kwalbum_Model::get_config('item_path');
         $delete_path .= 'deleted';
@@ -415,30 +415,30 @@ class Model_Kwalbum_Item extends Kwalbum_Model
             );
         }
 
-		// Remove item from location count
-		DB::query(Database::UPDATE, 'UPDATE kwalbum_locations
-			SET count = count-1
-			WHERE id = :location_id AND count > 0')
-			->param(':location_id', $this->_location_id)
-			->execute();
+        // Remove item from location count
+        DB::query(Database::UPDATE, 'UPDATE kwalbum_locations
+            SET count = count-1
+            WHERE id = :location_id AND count > 0')
+            ->param(':location_id', $this->_location_id)
+            ->execute();
 
-		// Remove item-person relations and reduce persons' item counts
-		$this->_delete_person_relations();
+        // Remove item-person relations and reduce persons' item counts
+        $this->_delete_person_relations();
 
-		// Remove item-tag relations and reduce tags' item counts
-		$this->_delete_tag_relations();
+        // Remove item-tag relations and reduce tags' item counts
+        $this->_delete_tag_relations();
 
-		// Delete comments
-		$comments = $this->_load_comments();
-		foreach ($comments as $comment) {
-			$comment->delete();
-		}
+        // Delete comments
+        $comments = $this->_load_comments();
+        foreach ($comments as $comment) {
+            $comment->delete();
+        }
 
-		// Delete the item
-		DB::query(Database::DELETE, "DELETE FROM kwalbum_items
-			WHERE id = :id")
-			->param(':id', $this->id)
-			->execute();
+        // Delete the item
+        DB::query(Database::DELETE, "DELETE FROM kwalbum_items
+            WHERE id = :id")
+            ->param(':id', $this->id)
+            ->execute();
 
         // Delete the thumbnail and resized if they exist
         if (file_exists($this->path.'r/'.$this->filename)) {
@@ -459,8 +459,8 @@ class Model_Kwalbum_Item extends Kwalbum_Model
             );
         }
 
-		$this->clear();
-	}
+        $this->clear();
+    }
 
 	/**
 	 * This function is mostly copied from a comment in the php.net documentation
