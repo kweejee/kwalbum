@@ -586,7 +586,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
                     $hour = '';
                     $minute = '';
                 }
-                $date = explode('-', $date[0]);
+                $date = explode('-', $datetime[0]);
                 $year = $date[0];
                 $month = $date[1];
 

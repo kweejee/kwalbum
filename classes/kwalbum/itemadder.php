@@ -318,14 +318,14 @@ class Kwalbum_ItemAdder
         if (!file_exists($path) and !mkdir($path)) {
             throw new Kohana_Exception(
                 'Directory :dir could not be created',
-                array(':dir' => Kohana :: debug_path($path))
+                array(':dir' => Debug::path($path))
             );
         }
         $path .= '/'.$dirs[1];
         if (!file_exists($path) and !mkdir($path)) {
             throw new Kohana_Exception(
                 'Directory :dir could not be created',
-                array(':dir' => Kohana :: debug_path($path))
+                array(':dir' => Debug::path($path))
             );
         }
         $path .= '/';
@@ -333,13 +333,13 @@ class Kwalbum_ItemAdder
         if (!file_exists($path.'t') and !@ mkdir($path.'t')) {
             throw new Kohana_Exception(
                 'Directory :dir could not be created',
-                array(':dir' => Kohana :: debug_path($path.'t'))
+                array(':dir' => Debug::path($path.'t'))
             );
         }
         if (!file_exists($path.'r') and !@ mkdir($path.'r')) {
             throw new Kohana_Exception(
                 'Directory :dir could not be created',
-                array(':dir' => Kohana :: debug_path($path.'r'))
+                array(':dir' => Debug::path($path.'r'))
             );
         }
 
