@@ -399,6 +399,22 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 	 */
 	public function delete()
 	{
+        // make sure trash directory is writable
+        $delete_path = Kwalbum_Model::get_config('item_path');
+        $delete_path .= 'deleted';
+        if (!file_exists($delete_path) and !mkdir($delete_path)) {
+            throw new Kohana_Exception(
+                'Directory :dir could not be created',
+                array(':dir' => Debug::path($delete_path))
+            );
+        }
+        if (!is_dir($delete_path) or !is_writable(realpath($delete_path))) {
+            throw new Kohana_Exception(
+                'Directory :dir must be writable',
+                array(':dir' => Debug::path($delete_path))
+            );
+        }
+
 		// Remove item from location count
 		DB::query(Database::UPDATE, 'UPDATE kwalbum_locations
 			SET count = count-1
@@ -423,6 +439,25 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 			WHERE id = :id")
 			->param(':id', $this->id)
 			->execute();
+
+        // Delete the thumbnail and resized if they exist
+        if (file_exists($this->path.'r/'.$this->filename)) {
+            unlink($this->path.'r/'.$this->filename);
+        }
+        if (file_exists($this->path.'t/'.$this->filename)) {
+            unlink($this->path.'t/'.$this->filename);
+        }
+
+        // Move the main file to the trash directory and possibly overwrite
+        // an existing "deleted" file of the same name
+        $old_name = $this->path.$this->filename;
+        $new_name = $delete_path.'/'.date('YmdHis').'_'.$this->filename;
+        if (!rename($old_name, $new_name)) {
+            throw new Kohana_Exception(
+                'Could not move :old to :new',
+                array(':old' => Debug::path($old_name), ':new' => Debug::path($new_name))
+            );
+        }
 
 		$this->clear();
 	}
