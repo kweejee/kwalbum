@@ -82,7 +82,7 @@ class Kwalbum_ItemAdder
 							if (!is_array($data))
 								$data = array($data);
 							foreach ($data as $keyword) {
-								$item->tags = htmlspecialchars(trim($keyword));
+								$item->addTag(htmlspecialchars($keyword));
 							}
 						}
 					}
@@ -97,7 +97,7 @@ class Kwalbum_ItemAdder
 				    $xmp = Read_XMP_array_from_text(get_XMP_text($jpeg_header_data));
 				    $pinfo = get_photoshop_file_info($exif, $xmp, $irb);
 				    foreach ($pinfo['keywords'] as $keyword) {
-						$item->tags = trim($keyword);
+						$item->addTag(trim($keyword));
 				    }
 				    //echo '<pre>'.Kohana::debug( $pinfo );exit;
 				}*/

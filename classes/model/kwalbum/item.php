@@ -42,6 +42,15 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 	static private $_sort_direction = 'ASC';
 	static private $_gtlt = '<';
 
+    /**
+     * @param int $id
+     */
+    public function __construct($id = null)
+    {
+        if ($id) {
+            $this->load((int)$id);
+        }
+    }
 	/**
 	 * Load an item based on $field matching $id
 	 *
@@ -116,11 +125,9 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 		// Set location
 
 		// Item has an original location so check for name changes
-		if ($this->_location_id)
-		{
-			// Update original location's item count if the name is different
-			if (trim($this->location) != $this->_original_location)
-			{
+		if ($this->_location_id) {
+			if (trim($this->location) != $this->_original_location) {
+                // Update original location's item count if the name is different
 				DB::query(Database::UPDATE, "
 					UPDATE kwalbum_locations loc
 					LEFT JOIN kwalbum_locations p ON (p.id = loc.parent_location_id)
@@ -128,30 +135,25 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 					WHERE loc.id = :id")
 					->param(':id', $this->_location_id)
 					->execute();
-			}
-
-			// Use the original id if there are no changes
-			else
-			{
+			} else {
+                // Use the original id if there are no changes
 				$location_id = $this->_location_id;
 			}
 		}
 
 		// If there is no location id set then there is a change so get id for new location name
-		if ( ! isset($location_id))
-		{
+		if (!isset($location_id)) {
 			$names = explode(trim(self::get_config('location_separator_1')), $this->location);
-			foreach ($names as $i => $name)
-			{
+			foreach ($names as $i => $name) {
 				$name = trim($name);
-				if (!$name)
+				if (!$name) {
 					unset($names[$i]);
+                }
 			}
 			$this->location = implode(trim(self::get_config('location_separator_1')), $names);
 
-			// The location name is unknown so use default unknown id and name
-			if (empty($this->location))
-			{
+			if (empty($this->location)) {
+                // The location name is unknown so use default unknown id and name
 				$location_id = $this->_location_id = 1;
 				$result = DB::query(Database::SELECT, "
 					SELECT name
@@ -160,33 +162,27 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 					LIMIT 1")
 					->execute();
 				$this->location = $this->_original_location = $result[0]['name'];
-			}
-
-			// Get new location id for known name
-			else
-			{
+			} else {
+                // Get new location id for known name
 				$loc_name = $this->location;
 				$names = explode(trim(self::get_config('location_separator_1')), $loc_name);
-				if (count($names) > 1)
-				{
+				if (count($names) > 1) {
 					$parent_loc_name = trim($names[0]);
 					array_shift($names);
-					foreach ($names as $i => $name)
-					{
+					foreach ($names as $i => $name) {
 						$names[$i] = trim($name);
-						if (!$name)
+						if (!$name) {
 							unset($names[$i]);
+                        }
 					}
 					$loc_name = implode(self::get_config('location_separator_2'), $names);
-					if (!$loc_name)
-					{
+					if (!$loc_name) {
 						$loc_name = $parent_loc_name;
 						unset($parent_loc_name);
 					}
 				}
 				// Get id if new location already exists
-				if (isset($parent_loc_name))
-				{
+				if (isset($parent_loc_name)) {
 					$result = DB::query(Database::SELECT, "
 						SELECT loc.id
 						FROM kwalbum_locations loc
@@ -196,9 +192,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 						->param(':name', $loc_name)
 						->param(':parent_name', $parent_loc_name)
 						->execute();
-				}
-				else
-				{
+				} else {
 					$result = DB::query(Database::SELECT, "
 						SELECT id
 						FROM kwalbum_locations
@@ -209,10 +203,8 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 				}
 
 				// If new location does not exist then create it
-				if ($result->count() == 0)
-				{
-					if (isset($parent_loc_name))
-					{
+				if ($result->count() == 0) {
+					if (isset($parent_loc_name)) {
 						// Get parent location id
 						$result = DB::query(Database::SELECT, "
 							SELECT id
@@ -242,9 +234,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 							->param(':name', $loc_name)
 							->param(':parent_id', $parent_loc_id)
 							->execute();
-					}
-					else
-					{
+					} else {
 						// Create new location without parent
 						$result = DB::query(Database::INSERT, "
 							INSERT INTO kwalbum_locations
@@ -255,9 +245,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 					}
 
 					$location_id = $result[0];
-				}
-				else
-				{
+				} else {
 					$location_id = $result[0]['id'];
 				}
 			}
@@ -330,30 +318,27 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 
 		$result = $query->execute();
 
-		if ($this->loaded == false)
-		{
+		if (!$this->loaded) {
 			$this->id = $result[0];
 			$this->loaded = true;
 		}
 
 		// Set tags and persons once we know we have an item_id for the relationship.
 
-		// Remove duplicates of new person and tags
-		// Use __get to make sure the array exists
-		$this->_persons = array_filter(array_unique($this->persons));
-		$this->_tags = array_filter(array_unique($this->tags));
+		// Remove duplicates of new persons and tags while making sure
+		// the arrays exist before recreating the relationhips
+		$this->_persons = array_unique($this->getPersons());
+		$this->_tags = array_unique($this->getTags());
 
 		// Remove old item-person and item-tag relations
 		$this->_delete_person_relations();
 		$this->_delete_tag_relations();
 
 		// Create new item-person and item-tag relations
-		$person = Model::factory('kwalbum_person');
-		foreach($this->_persons as $name)
-		{
+		$person = new Model_Kwalbum_Person;
+		foreach ($this->_persons as $name) {
 			$name = trim($name);
-			if ($name != '')
-			{
+			if ($name != '') {
 				$person->clear();
 				$person->name = $name;
 				$person->save();
@@ -368,12 +353,10 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 				$person->save();
 			}
 		}
-		$tag = Model::factory('kwalbum_tag');
-		foreach($this->_tags as $name)
-		{
+		$tag = new Model_Kwalbum_Tag;
+		foreach ($this->_tags as $name) {
 			$name = trim($name);
-			if ($name != '')
-			{
+			if ($name != '') {
 				$tag->clear();
 				$tag->name = $name;
 				$tag->save();
@@ -570,46 +553,73 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 		$session->set('viewed_item_ids', $viewed_ids);
 	}
 
+    /**
+     *
+     * @return array
+     */
+    public function getTags()
+    {
+        if ($this->_tags === null) {
+            $this->_tags = array();
+            $result = DB::query(Database::SELECT,
+                "SELECT name
+                FROM kwalbum_items_tags
+                    LEFT JOIN kwalbum_tags ON tag_id = id
+                WHERE item_id = :id
+                ORDER BY name")
+                ->param(':id', $this->id)
+                ->execute();
+            foreach ($result as $row) {
+                $this->_tags[] = $row['name'];
+            }
+        }
+        return $this->_tags;
+    }
+
+    /**
+     *
+     * @return array
+     */
+    public function getPersons()
+    {
+        if ($this->_persons === null) {
+            $this->_persons = array();
+            $result = DB::query(Database::SELECT,
+                "SELECT name
+                FROM kwalbum_items_persons
+                    LEFT JOIN kwalbum_persons ON person_id = id
+                WHERE item_id = :id
+                ORDER BY name")
+                ->param(':id', $this->id)
+                ->execute();
+            foreach ($result as $row) {
+                $this->_persons[] = $row['name'];
+            }
+        }
+        return $this->_persons;
+    }
+
+    /**
+     *
+     * @return array
+     */
+    public function getComments()
+    {
+        if ($this->_comments === null) {
+            $this->_comments = $this->_load_comments();
+        }
+        return $this->_comments;
+    }
+
     public function __get($id)
     {
         switch ($id) {
             case 'tags':
-                if ($this->_tags === null) {
-                    $this->_tags = array();
-                    $result = DB::query(Database::SELECT,
-                        "SELECT name
-                        FROM kwalbum_items_tags
-                            LEFT JOIN kwalbum_tags ON tag_id = id
-                        WHERE item_id = :id
-                        ORDER BY name")
-                        ->param(':id', $this->id)
-                        ->execute();
-                    foreach ($result as $row) {
-                        $this->_tags[] = $row['name'];
-                    }
-                }
-                return $this->_tags;
+                return $this->getTags();
             case 'persons':
-                if ($this->_persons === null) {
-                    $this->_persons = array();
-                    $result = DB::query(Database::SELECT,
-                        "SELECT name
-                        FROM kwalbum_items_persons
-                            LEFT JOIN kwalbum_persons ON person_id = id
-                        WHERE item_id = :id
-                        ORDER BY name")
-                        ->param(':id', $this->id)
-                        ->execute();
-                    foreach ($result as $row) {
-                        $this->_persons[] = $row['name'];
-                    }
-                }
-                return $this->_persons;
+                return $this->getPersons();
             case 'comments':
-                if ($this->_comments === null) {
-                    $this->_comments = $this->_load_comments();
-                }
-                return $this->_comments;
+                return $this->getComments();
             case 'pretty_date':
                 $datetime = explode(' ', $this->visible_date);
 
@@ -679,37 +689,54 @@ class Model_Kwalbum_Item extends Kwalbum_Model
         }
     }
 
+    /**
+     * @param string $value
+     */
+    public function addTag($value)
+    {
+        $this->getTags();
+        $this->_tags[] = trim($value);
+    }
+
+    /**
+     * @param string $value
+     */
+    public function addPerson($value)
+    {
+        $this->getPersons();
+        $this->_persons[] = trim($value);
+    }
+
+    /**
+     * @param Model_Kwalbum_Comment $value
+     */
+    public function addComment($value)
+    {
+        $this->getComments();
+        if (!($value instanceof Model_Kwalbum_Comment)) {
+            throw new Exeption('New comment for kwalbum item is not instanceof Model_Kwalbum_Comment');
+        }
+        $this->_comments[] = $value;
+    }
+
     public function __set($key, $value)
     {
-        if ($key === 'tags') {
-            // Overwrite tags if an array is given or add to the existing array
-            if (is_array($value)) {
-                $this->_tags = $value;
-            } else {
-                if ($this->_tags === null) {
-                    $this->_tags = $this->tags;
+        switch ($key) {
+            case 'tags':
+                if (is_array($value)) {
+                    $this->_tags = $value;
                 }
-                $this->_tags[] = (string)$value;
-            }
-        } else if ($key == 'persons') {
-            // Overwrite persons if an array is given or add to the existing array
-            if (is_array($value)) {
-                $this->_persons = $value;
-            } else {
-                if ($this->_persons === null) {
-                    $this->_persons = $this->persons;
+                break;
+            case 'persons':
+                if (is_array($value)) {
+                    $this->_persons = $value;
                 }
-                $this->_persons[] = (string)$value;
-            }
-        } else if ($key == 'comments') {
-            // Overwrite comments if an array is given or add to the existing array
-            if (is_array($value)) {
-                $this->_comments = $value;
-            } elseif ($this->_comments === null) {
-                $this->_comments = $this->comments;
-            } elseif ($value instanceof Model_Kwalbum_Comment) {
-                $this->_comments[] = $value;
-            }
+                break;
+            case 'comments':
+                if (is_array($value)) {
+                    $this->_comments = $value;
+                }
+                break;
         }
     }
 
@@ -719,9 +746,9 @@ class Model_Kwalbum_Item extends Kwalbum_Model
             = $this->longitude = $this->hide_level = $this->count = 0;
         $this->description = $this->visible_date = $this->sort_date = $this->update_date
             = $this->create_date = $this->path = $this->filename = '';
-        $this->_tags = $this->_persons = $this->_comments
-            = $this->_location = $this->_user_name
-            = $this->_original_location = $this->_original_user_id;
+        $this->_tags = $this->_persons = $this->_comments = null;
+        $this->_location = $this->_user_name = '';
+        $this->_original_location = $this->_original_user_id = 0;
         $this->type = Model_Kwalbum_Item::$types[0];
         $this->has_comments = $this->loaded = false;
     }
@@ -741,8 +768,8 @@ class Model_Kwalbum_Item extends Kwalbum_Model
             $this->location = 'hidden';
             $this->visible_date = '0000-00-00 00:00:00';
             // Setting tags and persons to empty arrays will cause them to never be loaded
-            $this->tags = array();
-            $this->persons = array();
+            $this->_tags = array();
+            $this->_persons = array();
         }
     }
 
