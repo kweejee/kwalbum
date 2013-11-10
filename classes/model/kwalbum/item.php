@@ -958,9 +958,10 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 	/**
 	 * get a collection of thumbnails based on the query
 	 * @param int $page_number
+     * @param boolean $in_edit_mode
 	 * @return ArrayOfItem
 	 */
-	static public function get_thumbnails($page_number = 1)
+	static public function get_thumbnails($page_number = 1, $in_edit_mode = false)
 	{
 		$sort_field = Model_Kwalbum_Item::$_sort_field;
 		$sort_direction = Model_Kwalbum_Item::$_sort_direction;
@@ -970,6 +971,9 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 			LIMIT :offset,:limit";
 
 		$limit = self::get_config('items_per_page');
+        if ($in_edit_mode) {
+            $limit *= 4; // TODO: replace $limit with a user defined value from the browser
+        }
 		$offset = ($page_number-1)*$limit;
 		$result = DB::query(Database::SELECT, $query)
 			->param(':offset', $offset)

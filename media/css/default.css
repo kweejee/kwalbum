@@ -19,13 +19,15 @@ img{border-style:hidden;}
 .hidden{display:none;}
 
 .kwalbumBox{
-	height:192px;
-	text-align:center;
 	border-width:1px;
 	border-style:solid;
 	float:left;
 	margin:5px;
 	padding:5px;
+}
+.kwalbumThumbnailBox{
+	height:192px;
+	text-align:center;
 }
 .kwalbumCurrentIndex{font-size:1.4em;font-weight:bold;}
 .kwalbumPageNumbers{clear:both;text-align: left;}
@@ -37,3 +39,12 @@ img{border-style:hidden;}
 .kwalbumItemMapCanvas{width:300px;height:300px;border:1px solid black;}
 .kwalbumPopupTitle{text-align:center;font-size:1.4em;font-weight:bold;}
 .kwalbumPopupDescription{text-align:left;}
+
+#kwalbumMassEditFields .kwalbumMassEditField {float: left;}
+#kwalbumMassEditFields .kwalbumMassEditField:nth-child(3n+1) {clear: left;}
+.kwalbumMassEditInputs {clear: left;}
+
+.kwalbumMassEditField:nth-child(3n+1) {width: 305px;}
+.kwalbumMassEditField:nth-child(3n+2) {width: 320px;}
+.kwalbumMassEditField:nth-child(3n+3) {width: 303px;}
+.kwalbumMassEditField input {width: 190px;float:right;margin-right:3px;}

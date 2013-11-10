@@ -85,12 +85,13 @@ class Kwalbum_Helper
 	}
 
 	/**
-	* get "thumbnail" image/text link to item page
-	* @param Model_Kwalbum_Item item to get information from
-	* @param string root URL of kwalbum
-	* @return string html
-	* @since 3.0
-	*/
+     * get "thumbnail" image/text link to item page
+	 * @param Model_Kwalbum_Item $item to get information from
+	 * @param string $kwalbum_url root URL of kwalbum
+     * @param string $kwalbum_url_params
+	 * @return string html
+	 * @since 3.0
+	 */
 	public static function getThumbnailLink($item, $kwalbum_url, $kwalbum_url_params = '')
 	{
 		$cleaned_description = strip_tags($item->description,'<br><br/>');

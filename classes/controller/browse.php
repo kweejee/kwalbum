@@ -25,7 +25,7 @@ class Controller_Browse extends Controller_Kwalbum
 
         //echo $this->request->route->uri(array('tags' => 'a,b', 'location' => 'd'));
         $view = new View('kwalbum/browse/index');
-        $view->items = Model_Kwalbum_Item::get_thumbnails($this->page_number);
+        $view->items = Model_Kwalbum_Item::get_thumbnails($this->page_number, $this->in_edit_mode);
         $this->template->content = $view;
         $this->template->title = 'browsing';
 
