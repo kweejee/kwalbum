@@ -162,44 +162,45 @@ class Kwalbum_ItemAdder
 		return $item->id;
 	}
 
-	/**
-	 * Clean filename, check/set filetype, create path, move uploaded file, save
-	 * @param array $file a single file from $_FILES
-	 * @return mixed error string or id of new item
-	 * @since 3.0
-	 */
-	public function save_upload($file)
-	{
-		if (empty($file))
-			return 'Missing file';
-		if ($file['error'] == 1)
-			return 'File not uploaded.  Is the file too large?';
+    /**
+     * Clean filename, check/set filetype, create path, move uploaded file, save
+     * @param array $file a single file from $_FILES
+     * @return mixed error string or id of new item
+     * @since 3.0
+     */
+    public function save_upload($file)
+    {
+        if (empty($file)) {
+            return 'Missing file';
+        }
+        if ($file['error'] == 1) {
+            return 'File not uploaded.  Is the file too large?';
+        }
 
-		$item = $this->_item;
+        $item = $this->_item;
 
-		$targetFile = trim($file['name']);
-		$item->path = $this->makePath();
+        $targetFile = trim($file['name']);
+        $item->path = $this->makePath();
 
-		$item->filename = $this->replaceAnnoyingFilenameCharacters($targetFile);
+        $item->filename = $this->replaceAnnoyingFilenameCharacters($targetFile);
 
-		while ( ! Model_Kwalbum_Item::check_unique_filename($item->path, $item->filename))
-		{
-			if ( ! isset($name))
-			{
-				$i = 0;
-				$name = pathinfo($item->filename, PATHINFO_FILENAME);
-				$extension = pathinfo($item->filename, PATHINFO_EXTENSION);
-			}
-			$i++;
-			$item->filename = "{$name}_{$i}.{$extension}";
-		}
-		$item->type = $this->get_filetype($item->filename);
+        while (!Model_Kwalbum_Item::check_unique_filename($item->path, $item->filename)) {
+            if (!isset($name)) {
+                $i = 0;
+                $name = pathinfo($item->filename, PATHINFO_FILENAME);
+                $extension = pathinfo($item->filename, PATHINFO_EXTENSION);
+            }
+            $i++;
+            $item->filename = "{$name}_{$i}.{$extension}";
+        }
+        $item->type = $this->get_filetype($item->filename);
 
-		if ( ! Upload :: save($file, $item->filename, $item->path))
-			return 'Upload could not be saved';
+        if (!Upload :: save($file, $item->filename, $item->path)) {
+            return 'Upload could not be saved';
+        }
 
-		return $this->save();
-	}
+        return $this->save();
+    }
 
 	/**
 	 * Create description and save
