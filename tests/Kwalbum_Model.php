@@ -345,13 +345,12 @@ class UnitTest_Kwalbum_Model extends UnitTest_Case
 		$person1->name = 'person 1';
 		$person1->save();
 		$this->assert_equal($person1->count, 0);
-		$item->persons = $person1;
+		$item->persons = array($person1);
+		$item->save();
 
 		$person2 = Model::factory('kwalbum_person');
 		$person2->name = 'second person';
 		$person2->save();
-		$item->persons = $person2;
-		$item->save();
 
 		$this->assert_equal($item->persons[0], $person1->name);
 		$this->assert_equal(sizeof($item->persons), 2);
@@ -384,11 +383,10 @@ class UnitTest_Kwalbum_Model extends UnitTest_Case
 		$person1 = Model::factory('kwalbum_person');
 		$person1->name = 'person 1';
 		$person1->save();
-		$item->persons = $person1;
 		$person2 = Model::factory('kwalbum_person');
 		$person2->name = 'second person';
 		$person2->save();
-		$item->persons = $person2;
+		$item->persons = array($person1, $person2);
 		$item->save();
 		$this->assert_equal(sizeof($item->persons), 2);
 

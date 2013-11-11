@@ -327,8 +327,8 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 
 		// Remove duplicates of new persons and tags while making sure
 		// the arrays exist before recreating the relationhips
-		$this->_persons = array_unique($this->getPersons());
-		$this->_tags = array_unique($this->getTags());
+		$this->_persons = $this->getPersons();
+		$this->_tags = $this->getTags();
 
 		// Remove old item-person and item-tag relations
 		$this->_delete_person_relations();
@@ -724,12 +724,12 @@ class Model_Kwalbum_Item extends Kwalbum_Model
         switch ($key) {
             case 'tags':
                 if (is_array($value)) {
-                    $this->_tags = $value;
+                    $this->_tags = array_unique($value);
                 }
                 break;
             case 'persons':
                 if (is_array($value)) {
-                    $this->_persons = $value;
+                    $this->_persons = array_unique($value);
                 }
                 break;
             case 'comments':

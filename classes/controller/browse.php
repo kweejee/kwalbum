@@ -12,6 +12,87 @@
 
 class Controller_Browse extends Controller_Kwalbum
 {
+    public function before()
+    {
+        parent::before();
+
+        if (!empty($_POST['kwalbum_mass_check'])) {
+            $location = trim(htmlspecialchars(@$_POST['loc']));
+            $visibility = Kwalbum_ItemAdder::get_visibility($this->user);
+            $tags_to_add = array();
+            $tags_to_remove = array();
+            $persons_to_add = array();
+            $persons_to_remove = array();
+            if (!empty($_POST['tags_add'])) {
+                $tags_to_add = explode(',', $_POST['tags_add']);
+                foreach ($tags_to_add as $i => $tag) {
+                    $tags_to_add[$i] = trim(htmlspecialchars($tag));
+                }
+            }
+            if (!empty($_POST['tags_rem'])) {
+                $tags_to_remove = explode(',', $_POST['tags_rem']);
+                foreach ($tags_to_remove as $i => $tag) {
+                    $tags_to_remove[$i] = trim(htmlspecialchars($tag));
+                }
+            }
+            if (!empty($_POST['persons_add'])) {
+                $persons_to_add = explode(',', $_POST['persons_add']);
+                foreach ($persons_to_add as $i => $name) {
+                    $persons_to_add[$i] = trim(htmlspecialchars($name));
+                }
+            }
+            if (!empty($_POST['persons_rem'])) {
+                $persons_to_remove = explode(',', $_POST['persons_rem']);
+                foreach ($persons_to_remove as $i => $name) {
+                    $persons_to_remove[$i] = trim(htmlspecialchars($name));
+                }
+            }
+            foreach ($_POST['kwalbum_mass_check'] as $item_id) {
+                $item = new Model_Kwalbum_Item($item_id);
+                if ($location) {
+                    $item->location = $location;
+                }
+                if ($visibility) {
+                    $item->hide_level = $visibility;
+                }
+                if ($tags_to_add) {
+                    $item->tags = array_merge($item->tags, $tags_to_add);
+                }
+                if ($tags_to_add) {
+                    $tags = $item->tags;
+                    foreach ($tags_to_remove as $tag) {
+                        $key = array_search($tag, $tags);
+                        if ($key !== false) {
+                            unset($tags[$key]);
+                        }
+                    }
+                    $item->tags = $tags;
+                }
+                if ($persons_to_add) {
+                    $item->persons = array_merge($item->persons, $persons_to_add);
+                }
+                if ($persons_to_remove) {
+                    $persons = $item->persons;
+                    foreach ($persons_to_remove as $name) {
+                        $key = array_search($name, $persons);
+                        if ($key !== false) {
+                            unset($persons[$key]);
+                        }
+                    }
+                    $item->persons = $persons;
+                }
+                $item->save();
+
+            }
+
+		$tags = explode(',', htmlspecialchars(@ $_POST['tags']));
+		for ($i = 0; $i < count($tags); $i++) {
+			$tags[$i] = trim($tags[$i]);
+		}
+		$item->tags = $tags;
+        }
+    }
+
     public function action_index()
     {
 

@@ -94,7 +94,7 @@ class Kwalbum_Helper
 	 */
 	public static function getThumbnailLink($item, $kwalbum_url, $kwalbum_url_params = '')
 	{
-		$cleaned_description = strip_tags($item->description,'<br><br/>');
+		$cleaned_description = strip_tags(str_replace(array('<br>','<br/>'), ' ', $item->description));
 		$description = '';
 
 		if ($item->type == 'jpeg' or

@@ -29,6 +29,10 @@ img{border-style:hidden;}
 	height:192px;
 	text-align:center;
 }
+.kwalbumThumbnailBox.kwalbumEditMode{
+    height:auto;
+    min-height:250px;
+}
 .kwalbumCurrentIndex{font-size:1.4em;font-weight:bold;}
 .kwalbumPageNumbers{clear:both;text-align: left;}
 .kwalbumShareIcons{
@@ -44,7 +48,10 @@ img{border-style:hidden;}
 #kwalbumMassEditFields .kwalbumMassEditField:nth-child(3n+1) {clear: left;}
 .kwalbumMassEditInputs {clear: left;}
 
-.kwalbumMassEditField:nth-child(3n+1) {width: 305px;}
-.kwalbumMassEditField:nth-child(3n+2) {width: 320px;}
-.kwalbumMassEditField:nth-child(3n+3) {width: 303px;}
-.kwalbumMassEditField input {width: 190px;float:right;margin-right:3px;}
+.kwalbumMassEditField:nth-child(3n+1) {width: 279px;}
+.kwalbumMassEditField:nth-child(3n+2) {width: 287px;}
+.kwalbumMassEditField:nth-child(3n+3) {width: 276px;}
+.kwalbumMassEditField input {width: 190px;float:right;margin-right:10px;}
+.kwalbumMassEditField select {width: 192px;float:right;margin-right:10px;}
+#kwalbum_me_add_tags, #kwalbum_me_add_people {color:green;}
+#kwalbum_me_rem_tags, #kwalbum_me_rem_people {color:red;}

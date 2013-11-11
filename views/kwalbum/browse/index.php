@@ -32,27 +32,27 @@ if ($in_edit_mode) {
     <div id="kwalbumMassEditFields" class="kwalbumMassEditInputs kwalbumBox">
         <div class="kwalbumMassEditField">
             <label for="kwalbum_me_add_tags">Add Tags:</label>
-            <input type="text" id="kwalbum_me_add_tags" />
+            <input type="text" id="kwalbum_me_add_tags" name="tags_add" />
         </div>
         <div class="kwalbumMassEditField">
             <label for="kwalbum_me_add_people">Add People:</label>
-            <input type="text" id="kwalbum_me_add_people" />
+            <input type="text" id="kwalbum_me_add_people" name="persons_add" />
         </div>
         <div class="kwalbumMassEditField">
             <label for="kwalbum_me_location">New Location:</label>
-            <input type="text" id="kwalbum_me_location" />
+            <input type="text" id="kwalbum_me_location" name="loc" />
         </div>
         <div class="kwalbumMassEditField">
             <label for="kwalbum_me_rem_tags">Remove Tags:</label>
-            <input type="text" id="kwalbum_me_rem_tags" />
+            <input type="text" id="kwalbum_me_rem_tags" name="tags_rem" />
         </div>
         <div class="kwalbumMassEditField">
             <label for="kwalbum_me_rem_people">Remove People:</label>
-            <input type="text" id="kwalbum_me_rem_people" />
+            <input type="text" id="kwalbum_me_rem_people" name="persons_rem" />
         </div>
         <div class="kwalbumMassEditField">
             <label for="kwalbum_me_rem_people">New Visibility:</label>
-            <select name="visibility" id="kwalbum_me_visibility">
+            <select name="vis" id="kwalbum_me_visibility">
                 <option value='0'>Public</option>
                 <option value='1'>Members Only</option>
                 <option value='2'>Privileged Only</option>

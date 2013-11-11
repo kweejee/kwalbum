@@ -8,15 +8,23 @@
  * @package kwalbum
  * @since Sep 1, 2009
  */
+$classes = 'kwalbumBox kwalbumThumbnailBox';
+if ($in_edit_mode) {
+    $classes .= ' kwalbumEditMode';
+}
 ?>
-<div class='kwalbumBox kwalbumThumbnailBox' id="kwalbum_thumbnail_box_<?=$item->id ?>">
+<div class="<?=$classes?>" id="kwalbum_thumbnail_box_<?=$item->id ?>">
 
 <?php
 if ($in_edit_mode) {
-    echo "<label class='kwalbuMassInclude'>
-        <input type='checkbox' name='kwalbum_mass_check[]' value='{$item->id}'/>
+    echo "<label class='kwalbumMassInclude'>
+        <input type='checkbox' name='kwalbum_mass_check[]' value='{$item->id}' "
+        .($user->can_edit_item($item) ? '' : 'disabled ')." />
         Include In Update
-    </label><br/>";
+    </label>
+    <br/>Location: {$item->location}"
+    .'<br/>Tags: '.implode(', ', $item->tags)
+    .'<br/>People: '.implode(', ', $item->persons).'<br/>';
 }
 echo $item->pretty_date.'<br/>';
 // show thumbnail based on file type
