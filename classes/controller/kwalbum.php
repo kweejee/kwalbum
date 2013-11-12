@@ -137,8 +137,9 @@ class Controller_Kwalbum extends Controller_Template
 		if ($this->request->action() != 'media' and
 		    $this->request->controller() != 'install')
 		{
+			$this->in_edit_mode = ! empty($_SESSION['kwalbum_edit']);
 			$this->total_items = Model_Kwalbum_Item::get_total_items();
-			$this->total_pages = Model_Kwalbum_Item::get_page_number($this->total_items);
+			$this->total_pages = Model_Kwalbum_Item::get_page_number($this->total_items, $this->in_edit_mode);
 			$this->item_index = 0;
 			$page_number = (int) $this->request->param('page');
 
@@ -176,7 +177,6 @@ class Controller_Kwalbum extends Controller_Template
 			$this->template->set_global('item_index', $this->item_index);
 			$this->template->set_global('page_number', $this->page_number);
 
-			$this->in_edit_mode = ! empty($_SESSION['kwalbum_edit']);
 			$this->template->set_global('in_edit_mode', $this->in_edit_mode);
 			$this->template->set_global('head', html::script($this->url.'/media/ajax/toggle.edit.js'));
 		}

@@ -17,6 +17,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 		$has_comments, $hide_level, $count, $loaded;
 	private $_user_name, $_original_location, $_original_user_id,
 		 $_location_id, $_tags, $_persons, $_comments, $_comment_count;
+    const EDIT_THUMB_MULTIPLIER = 4; // TODO: replace generated $limit with a user defined value from the browser
 
 	static public $types = array(
 			0 => 'unknown',
@@ -999,7 +1000,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 
 		$limit = self::get_config('items_per_page');
         if ($in_edit_mode) {
-            $limit *= 4; // TODO: replace $limit with a user defined value from the browser
+            $limit *= Model_Kwalbum_Item::EDIT_THUMB_MULTIPLIER;
         }
 		$offset = ($page_number-1)*$limit;
 		$result = DB::query(Database::SELECT, $query)
@@ -1130,9 +1131,10 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 		return Model::factory('kwalbum_item')->load((int)$result[0]['id']);
 	}
 
-	static public function get_page_number($index)
+	static public function get_page_number($index, $in_edit_mode)
 	{
-		return ceil($index/self::get_config('items_per_page'));
+        $multiplier = $in_edit_mode ? Model_Kwalbum_Item::EDIT_THUMB_MULTIPLIER : 1;
+        return ceil($index/(self::get_config('items_per_page')*$multiplier));
 	}
 
 	/**
