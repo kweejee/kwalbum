@@ -1131,7 +1131,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 		return Model::factory('kwalbum_item')->load((int)$result[0]['id']);
 	}
 
-	static public function get_page_number($index, $in_edit_mode)
+	static public function get_page_number($index, $in_edit_mode = false)
 	{
         $multiplier = $in_edit_mode ? Model_Kwalbum_Item::EDIT_THUMB_MULTIPLIER : 1;
         return ceil($index/(self::get_config('items_per_page')*$multiplier));

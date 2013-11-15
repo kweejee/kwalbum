@@ -5,7 +5,7 @@ $(document).ready(function(){
     kwalbumSetAutocomplete("#kwalbum_me_rem_tags", "GetInputTags");
     kwalbumSetAutocomplete("#kwalbum_me_add_people", "GetInputPersons");
     kwalbumSetAutocomplete("#kwalbum_me_rem_people", "GetInputPersons");
-    $(".kwalbuMassInclude input").on("change", function(){
+    $(".kwalbumMassInclude input").on("change", function(){
         $(".kwalbumMassEditSave").attr("disabled", false);
     });
 });
@@ -30,7 +30,6 @@ var kwalbumSetAutocomplete = function (input_selector, autocomplete_action) {
                 request,
                 function(returned_data, status, xhr) {
                     cache[term] = returned_data;
-                    console.log(cache);
                     if (xhr === $input.data("kwalbum_last_xhr")) {
                         response(returned_data);
                     }

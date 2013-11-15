@@ -53,7 +53,8 @@ if ($in_edit_mode) {
         <div class="kwalbumMassEditField">
             <label for="kwalbum_me_rem_people">New Visibility:</label>
             <select name="vis" id="kwalbum_me_visibility">
-                <option value='0'>Public</option>
+                <option value=''>Unchanged</option>
+                <option value='-1'>Public</option>
                 <option value='1'>Members Only</option>
                 <option value='2'>Privileged Only</option>
                 <option value='3'>Contributors Only</option>

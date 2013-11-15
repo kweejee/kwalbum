@@ -18,7 +18,10 @@ class Controller_Browse extends Controller_Kwalbum
 
         if (!empty($_POST['kwalbum_mass_check'])) {
             $location = trim(htmlspecialchars(@$_POST['loc']));
-            $visibility = Kwalbum_ItemAdder::get_visibility($this->user);
+            $visibility = null;
+            if (!empty($_POST['vis'])) {
+                $visibility = Kwalbum_ItemAdder::get_visibility($this->user);
+            }
             $tags_to_add = array();
             $tags_to_remove = array();
             $persons_to_add = array();
@@ -52,7 +55,7 @@ class Controller_Browse extends Controller_Kwalbum
                 if ($location) {
                     $item->location = $location;
                 }
-                if ($visibility) {
+                if ($visibility !== null) {
                     $item->hide_level = $visibility;
                 }
                 if ($tags_to_add) {
