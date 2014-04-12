@@ -64,6 +64,8 @@ if ($in_edit_mode) {
     </div>
     <div class="kwalbumMassEditInputs">
         <input type="submit" class="kwalbumMassEditSave" disabled="disabled" value="Save" />
+        <input type="button" id="kwalbumMassEditCheckAll" value="Include All Thumbnails" />
+        <input type="button" id="kwalbumMassEditUncheckAll" value="Un-Include All Thumbnails" />
     </div>
 <?php
 }

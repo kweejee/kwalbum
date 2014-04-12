@@ -8,6 +8,14 @@ $(document).ready(function(){
     $(".kwalbumMassInclude input").on("change", function(){
         $(".kwalbumMassEditSave").attr("disabled", false);
     });
+    $("#kwalbumMassEditCheckAll").on("click", function () {
+        $(".kwalbumMassInclude :checkbox").attr("checked", true);
+        $(".kwalbumMassEditSave").attr("disabled", false);
+    });
+    $("#kwalbumMassEditUncheckAll").on("click", function () {
+        $(".kwalbumMassInclude :checkbox").attr("checked", false);
+        $(".kwalbumMassEditSave").attr("disabled", true);
+    });
 });
 
 var kwalbumSetAutocomplete = function (input_selector, autocomplete_action) {
