@@ -47,6 +47,7 @@ img{border-style:hidden;}
 #kwalbumMassEditFields .kwalbumMassEditField {float: left;}
 #kwalbumMassEditFields .kwalbumMassEditField:nth-child(3n+1) {clear: left;}
 .kwalbumMassEditInputs {clear: left;}
+.kwalbumMassEditCheckAlls {float: right;}
 
 .kwalbumMassEditField:nth-child(3n+1) {width: 279px;}
 .kwalbumMassEditField:nth-child(3n+2) {width: 287px;}
