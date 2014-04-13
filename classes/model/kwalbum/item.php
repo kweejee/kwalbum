@@ -19,6 +19,8 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 		 $_location_id, $_tags, $_persons, $_comments, $_comment_count;
     const EDIT_THUMB_MULTIPLIER = 4; // TODO: replace generated $limit with a user defined value from the browser
 
+    static public $permission_names = array('Public', 'Members Only', 'Privileged Only', 'Contributors Only', '', 'Admin Only');
+
 	static public $types = array(
 			0 => 'unknown',
 			1 => 'gif', 2 => 'jpeg', 3 => 'png',
@@ -687,6 +689,8 @@ class Model_Kwalbum_Item extends Kwalbum_Model
                     ->execute();
                 $this->_comment_count = (int)$result[0]['count(*)'];
                 return $this->_comment_count;
+            case 'hide_level_name':
+                return isset(Model_Kwalbum_Item::$permission_names[$this->hide_level]) ? Model_Kwalbum_Item::$permission_names[$this->hide_level] : 'unknown';
         }
     }
 

@@ -48,6 +48,26 @@ img{border-style:hidden;}
 #kwalbumMassEditFields .kwalbumMassEditField:nth-child(3n+1) {clear: left;}
 .kwalbumMassEditInputs {clear: left;}
 .kwalbumMassEditCheckAlls {float: right;}
+.kwalbumItemInfo {
+    margin: 0;
+    max-width: 250px;
+    overflow: auto;
+}
+.kwalbumItemInfo dt {
+    clear: left;
+    float: left;
+}
+.kwalbumItemInfo dt:after {
+    content: ':';
+}
+.kwalbumItemInfo dd {
+    float: left;
+    margin-left: 5px;
+    text-align: left;
+}
+.kwalbumItemLocation {
+    max-width: 200px;
+}
 
 .kwalbumMassEditField:nth-child(3n+1) {width: 279px;}
 .kwalbumMassEditField:nth-child(3n+2) {width: 287px;}

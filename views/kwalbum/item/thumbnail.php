@@ -17,14 +17,25 @@ if ($in_edit_mode) {
 
 <?php
 if ($in_edit_mode) {
+    $tags = implode(', ', $item->tags);
+    $persons = implode(', ', $item->persons);
     echo "<label class='kwalbumMassInclude'>
         <input type='checkbox' name='kwalbum_mass_check[]' value='{$item->id}' "
         .($user->can_edit_item($item) ? '' : 'disabled ')." />
         Include In Update
-    </label>
-    <br/>Location: {$item->location}"
-    .'<br/>Tags: '.implode(', ', $item->tags)
-    .'<br/>People: '.implode(', ', $item->persons).'<br/>';
+    </label>"
+    .<<<INFO
+    <dl class='kwalbumItemInfo'>
+        <dt class='kwalbumItemLocationLabel'>Location</dt>
+            <dd class='kwalbumItemLocation' title='{$item->location}'>{$item->location}</dd>
+        <dt class='kwalbumItemTagsLabel'>Tags</dt>
+            <dd class='kwalbumItemTags'>{$tags}</dd>
+        <dt class='kwalbumItemPeopleLabel'>People</dt>
+            <dd class='kwalbumItemPeople'>{$persons}</dd>
+        <dt class='kwalbumItemVisibilityLabel'>Visibility</dt>
+            <dd class='kwalbumItemVisibility_{$item->hide_level}'>{$item->hide_level_name}</dd>
+    </dl>
+INFO;
 }
 echo $item->pretty_date.'<br/>';
 // show thumbnail based on file type
