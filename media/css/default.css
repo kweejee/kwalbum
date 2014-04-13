@@ -33,8 +33,26 @@ img{border-style:hidden;}
     height:auto;
     min-height:250px;
 }
-.kwalbumCurrentIndex{font-size:1.4em;font-weight:bold;}
-.kwalbumPageNumbers{clear:both;text-align: left;}
+
+.kwalbumPageNumbers {
+    clear:both;
+    text-align: left;
+}
+.kwalbumPageLabel {
+    font-size: 0.7em;
+    padding-right: 5px;
+}
+.kwalbumPageLabel:after {
+    content: ':';
+}
+.kwalbumPageCurrent {
+    font-size: 1.4em;
+    font-weight: bold;
+}
+.kwalbumPageBetween{
+    font-size:0.7em;
+}
+
 .kwalbumShareIcons{
 	float:right;
 }

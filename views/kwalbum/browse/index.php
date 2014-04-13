@@ -10,17 +10,29 @@
 
 // create page links
 $page_links = '';
+$interval = ceil($total_pages / 20);
 for ($i = 1; $i <= $total_pages; $i++) {
     if ($i == $page_number) {
-        $page_links .= "<span class='kwalbumCurrentIndex'>{$i}</span> ";
+        $page_links .= "<span class='kwalbumPageCurrent'>{$i}</span> ";
     } else {
-        $page_links .= html::anchor(
-            "{$kwalbum_url}/{$kwalbum_url_params}page/{$i}",
-            $i
-        ).' ';
+        $class = '';
+        if ($i == 1 or $i == $total_pages) {
+            $class = 'kwalbumPageEnds';
+        } elseif (abs($i - $page_number) <=5 ) {
+            $class = 'kwalbumPageNear';
+        } elseif (!($i % $interval)) {
+            $class = 'kwalbumPageBetween';
+        }
+        if ($class) {
+            $page_links .= html::anchor(
+                "{$kwalbum_url}/{$kwalbum_url_params}page/{$i}",
+                $i,
+                array('class' => $class)
+            ).' ';
+        }
     }
 }
-$page_links_div = "<div class='kwalbumPageNumbers'>pages: {$page_links}</div>";
+$page_links_div = "<div class='kwalbumPageNumbers'><span class='kwalbumPageLabel'>pages</span>{$page_links}</div>";
 
 
 // show page
