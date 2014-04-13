@@ -54,7 +54,7 @@ class Controller_AjaxAdmin extends Controller_Kwalbum
 			->delete();
 		exit;
 	}
-	
+
 	function action_EditTagName()
 	{
 		$this->_testPermission();
@@ -79,9 +79,16 @@ class Controller_AjaxAdmin extends Controller_Kwalbum
 
 	function action_GetUserPermission()
 	{
+        if (!empty($_GET['id'])) {
+            $id = explode('_', $_GET['id']);
+        }
+        if (empty($id[1])) {
+            echo 'Invalid id';
+            exit;
+        }
 		$this->_testPermission();
 		$perms = Model_Kwalbum_User::$permission_names;
-		$user = Model :: factory('kwalbum_user')->load((int)$_GET['userid']);
+		$user = Model :: factory('kwalbum_user')->load((int)$id[1]);
 		$perms['selected'] = $user->permission_level;
 		echo json_encode($perms);
 		exit;
@@ -90,18 +97,23 @@ class Controller_AjaxAdmin extends Controller_Kwalbum
 
 	function action_EditUserPermission()
 	{
-		$this->_testPermission();
-		$user = Model :: factory('kwalbum_user')->load((int)$_POST['userid']);
-		if ( ! empty($_POST['value']))
-		{
-			if ($user->id > 1 and $user->id != $this->user->id)
-			{
-				$user->permission_level = (int)$_POST['value'];
-				$user->save();
-			}
-		}
-		echo $user->permission_description;
-		exit;
+        $this->_testPermission();
+        if (!empty($_POST['id'])) {
+            $id = explode('_', $_POST['id']);
+        }
+        if (empty($id[1])) {
+            echo 'Invalid id';
+            exit;
+        }
+        $user = Model::factory('kwalbum_user')->load((int)$id[1]);
+        if (isset($_POST['value'])) {
+            if ($user->id > 2 and $user->id != $this->user->id) {
+                $user->permission_level = (int)$_POST['value'];
+                $user->save();
+            }
+        }
+        echo $user->permission_description;
+        exit;
 	}
 
 	function action_DeleteUser()

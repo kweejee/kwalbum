@@ -72,9 +72,8 @@ echo ' <span class="kwalbumPageNumbers">(item '.$item_index.' of '.$total_items.
 		echo implode(',', $persons);
 		echo '</span>';
 
-		$vis = array('Public', 'Members Only', 'Privileged Only', 'Contributors Only', '', 'Admin Only');
 		echo '<br/><strong id="visibility_label">Visibility:</strong> ';
-		echo '<span id="visibility">'.$vis[$item->hide_level].'</span>';
+		echo '<span id="visibility">'.Model_Kwalbum_Item::$hide_level_names[$item->hide_level].'</span>';
 
 		echo '<br/><strong id="sortdate_label">Sorting Datetime:</strong> ';
 		echo '<span id="sortdate">'.$item->sort_date.'</span>';

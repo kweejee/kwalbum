@@ -94,9 +94,12 @@ class Controller_Ajax extends Controller_Kwalbum
 	{
 		$item = Model :: factory('kwalbum_item')->load((int)$_GET['item']);
 		$this->_testPermission($item);
-		$vis = array('Public', 'Members Only', 'Privileged Only', 'Contributors Only');
-		if ($this->user->is_admin)
-			$vis[5] = 'Admin Only';
+		$vis = array();
+        foreach (Model_Kwalbum_Item::$hide_level_names as $level => $name) {
+            if ($this->user->permission_level >= $level) {
+                $vis[] = $name;
+            }
+        }
 		$vis['selected'] = $item->hide_level;
 		echo json_encode($vis);
 	}
@@ -119,8 +122,7 @@ class Controller_Ajax extends Controller_Kwalbum
             }
         $item->hide_level = $visibility;
 		$item->save();
-		$vis = array('Public', 'Members Only', 'Privileged Only', 'Contributors Only', '', 'Admin Only');
-		echo $vis[$item->hide_level];
+		echo $item->hide_level_name;
 	}
 
 	public function action_GetInputTags()

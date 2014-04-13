@@ -27,6 +27,17 @@ $page_links_div = "<div class='kwalbumPageNumbers'>pages: {$page_links}</div>";
 
 if ($in_edit_mode) {
     echo html::script($kwalbum_url.'/media/ajax/mass_edit.js');
+
+    $hide_level_options = '<option value="">Unchanged</option>'
+        .'<option value="-1">Public</option>';
+    foreach (Model_Kwalbum_Item::$hide_level_names as $level => $name) {
+        if (!$level) {
+            continue; // public was already added above
+        }
+        if ($user->permission_level >= $level) {
+            $hide_level_options .= "<option value='{$level}'>{$name}</option>";
+        }
+    }
 ?>
 <form method="post">
     <div id="kwalbumMassEditFields" class="kwalbumMassEditInputs kwalbumBox">
@@ -53,12 +64,7 @@ if ($in_edit_mode) {
         <div class="kwalbumMassEditField">
             <label for="kwalbum_me_rem_people">New Visibility:</label>
             <select name="vis" id="kwalbum_me_visibility">
-                <option value=''>Unchanged</option>
-                <option value='-1'>Public</option>
-                <option value='1'>Members Only</option>
-                <option value='2'>Privileged Only</option>
-                <option value='3'>Contributors Only</option>
-                <?php echo ($user->is_admin ? "<option value='5'>Admin Only</option>" : null) ?>
+                <?=$hide_level_options?>
             </select>
         </div>
     </div>

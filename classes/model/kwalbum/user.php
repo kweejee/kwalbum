@@ -15,11 +15,11 @@ class Model_Kwalbum_User extends Kwalbum_Model
     public $id, $name, $login_name, $email, $token, $visit_date, $permission_level, $reset_code;
     private $_password;
     static $permissions = array('see public items',
-        ', see member only items, comment on items',
+        ', see items requiring being logged in, comment on items',
         ', see private items, see full people names',
-        ', add items, edit items they add, delete items they add',
-        ', edit all items, delete all items',
-        ', change user permissions, delete users');
+        ', add items, edit and delete items they add, see contributor only items',
+        ', edit and delete all items, see editor only items',
+        ', see admin only items, access all admin pages');
     static $permission_names = array('', 'Member', 'Privileged', 'Contributor', 'Editor', 'Admin');
 
     public function load($id = null, $field = 'id')

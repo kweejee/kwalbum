@@ -1,13 +1,17 @@
 <?php
 /**
- *
- *
  * @author Tim Redmond <kweejee@tummycaching.com>
- * @copyright Copyright 2009-2012 Tim Redmond
+ * @copyright Copyright 2009-2014 Tim Redmond
  * @license GNU General Public License version 3 <http://www.gnu.org/licenses/>
  * @package kwalbum
  * @since Sep 28, 2009
  */
+    $hide_level_options = '';
+    foreach (Model_Kwalbum_Item::$hide_level_names as $level => $name) {
+        if ($user->permission_level >= $level) {
+            $hide_level_options .= "<option value='{$level}'>{$name}</option>";
+        }
+    }
 ?>
 <div class="box">
 <?php
@@ -22,11 +26,7 @@ echo $kwalbum_url_params;
 				<b>What are we writing about today?</b>
 			</td>
 			<td>Visibility: <select name='vis' id='vis'>
-				<option value='0'>Public</option>
-				<option value='1'>Members Only</option>
-				<option value='2'>Privileged Only</option>
-				<option value='3'>Contributors Only</option>
-				<?php echo ($user->is_admin ? "<option value='5'>Admin Only</option>" : null) ?></select>
+                <?=$hide_level_options?>
 			</td>
 		</tr>
 		<tr>
