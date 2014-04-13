@@ -68,6 +68,8 @@ From here you can <?php echo html::anchor($kwalbum_url.'/~browse', '<b>browse al
 		</select>
 	</td>
 	</tr></table>
+    Start Date: <input type="date" name="date" />
+    End Date: <input type="date" name="date2" />
 	<br/>
 	<input type='submit' value='Search'/>
 </form>

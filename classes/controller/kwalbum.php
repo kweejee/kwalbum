@@ -14,7 +14,7 @@ class Controller_Kwalbum extends Controller_Template
 	// allow to run in production
 	const ALLOW_PRODUCTION = true;
 
-	public $location, $date, $tags, $people, $create_dt, $params;
+	public $location, $date, $date2, $tags, $people, $create_dt, $params;
 	public $user, $item, $previous_item, $next_item;
 	public $total_items, $total_pages, $item_index, $page_number;
 	public $in_edit_mode;
@@ -36,21 +36,39 @@ class Controller_Kwalbum extends Controller_Template
 			Model_Kwalbum_Item::append_where('location', $this->location);
 		}
 
-		// date
-		$year = (int)$this->request->param('year');
-		$month = (int)$this->request->param('month');
-		$day = (int)$this->request->param('day');
-		if ($year or $month or $day)
-		{
-			$this->date = ($year ? abs($year) : '0000').'-'.($month ? abs($month) : '00').'-'.($day ? abs($day) : '00');
-			Model_Kwalbum_Item::append_where('date', $this->date);
-		}
-		elseif ( ! empty($_GET['date']))
-		{
-			$date = explode('-', $_GET['date']);
-			$this->date = ((int)@$date[0] ? abs($date[0]) : '0000').'-'.((int)@$date[1] ? abs($date[1]) : '00').'-'.((int)@$date[2] ? abs($date[2]) : '00');
-			Model_Kwalbum_Item::append_where('date', $this->date);
-		}
+        // date
+        if (!empty($_GET['date'])) {
+            $date = explode('-', $_GET['date']);
+            $year = (int)@$date[0];
+            $month = (int)@$date[1];
+            $day = (int)@$date[2];
+            if (!empty($_GET['date2'])) {
+                $date2 = explode('-', $_GET['date2']);
+                $year2 = (int)@$date2[0];
+                $month2 = (int)@$date2[1];
+                $day2 = (int)@$date2[2];
+            } else {
+                $year2 = 0;
+                $month2 = 0;
+                $day2 = 0;
+            }
+        } else {
+            $year = (int)$this->request->param('year');
+            $month = (int)$this->request->param('month');
+            $day = (int)$this->request->param('day');
+            $year2 = (int)$this->request->param('year2');
+            $month2 = (int)$this->request->param('month2');
+            $day2 = (int)$this->request->param('day2');
+        }
+        if ($year) {
+            $this->date = $year.'-'.($month ?: '00').'-'.($day ?: '00');
+            if ($year2) {
+                $this->date2 = $year2.'-'.($month2 ?: '00').'-'.($day2 ?: '00');
+                Model_Kwalbum_Item::append_where('date', array($this->date, $this->date2));
+            } else {
+                Model_Kwalbum_Item::append_where('date', $this->date);
+            }
+        }
 
 		// tags
 		$this->tags = explode(',', urldecode($this->request->param('tags')));
@@ -128,8 +146,14 @@ class Controller_Kwalbum extends Controller_Template
 		$this->params =
 			($year ? $year.'/' : null)
 			.($month ? $month.'/' : null)
-			.($day ? $day.'/' : null)
-			.($this->location ? $this->location.'/' : null)
+			.($day ? $day.'/' : null);
+        if ($year2) {
+            $this->params .= 'to/'.$year2.'/'
+			.($month2 ? $month2.'/' : null)
+			.($day2 ? $day2.'/' : null);
+        }
+        $this->params .=
+			($this->location ? $this->location.'/' : null)
 			.($this->tags ? 'tags/'.implode(',', $this->tags).'/' : null)
 			.($this->people ? 'people/'.implode(',', $this->people).'/' : null)
 			.($this->create_dt ? 'created/'.implode('/', explode(' ', $this->create_dt)).'/' : null);

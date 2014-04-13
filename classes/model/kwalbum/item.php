@@ -908,32 +908,39 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 						->param(':location', $value);
 				}
 				break;
-			case 'date':
-				$newDate = explode('-', $value);
-				$year = (int) $newDate[0];
-				$month = (int) @$newDate[1];
-				$day = (int) @$newDate[2];
+            case 'date':
+                if (!is_array($value)) {
+                    $value = array($value, $value);
+                }
+				$split1 = explode('-', $value[0]);
+				$year1 = (int) abs($split1[0]);
+				$month1 = (int) abs($split1[1]);
+				$day1 = (int) abs($split1[2]);
+				$split2 = explode('-', $value[1]);
+				$year2 = (int) abs($split2[0]);
+				$month2 = (int) abs($split2[1]);
+				$day2 = (int) abs($split2[2]);
 
-				if (1800 <= $year and 12 >= $month and 32 >= $day)
-				{
-					if (0 == $month)
-					{
-						$date1 = "$value 00:00:00";
-						$date2 = "$year-12-31 23:59:59";
-					}
-					else if (0 == $day)
-					{
-						$date1 = "$value 00:00:00";
-						$date2 = "$year-$month-32 23:59:59";
-					} else
-					{
-						$date1 = "$value 00:00:00";
-						$date2 = "$value 23:59:59";
-					}
-					$query = (string) DB::query(null, 'sort_dt >= :date1 AND sort_dt <= :date2')
-						->param(':date1', $date1)
-						->param(':date2', $date2);
-				}
+                if ($year1 <= 1700 or $year2 <= 1700) {
+                    break;
+                }
+                $date1 = $year1.'-'
+                    .(($month1 && $month1 <= 12) ? $month1 : '01').'-'
+                    .(($day1 && $day1 <= 32) ? $day1 : '01').' 00:00:00';
+
+                $date2 = $year2.'-'
+                    .(($month2 && $month2 <= 12) ? $month2 : '12').'-';
+                if ($day2 && $day2 <= 32) {
+                    $date2 .= $day2;
+                } else {
+                    $date = new DateTime($date2.'1');
+                    $date2 = $date->format('Y-m-t');
+                }
+                $date2 .= ' 23:59:59';
+
+                $query = (string) DB::query(null, 'sort_dt >= :date1 AND sort_dt <= :date2')
+                    ->param(':date1', $date1)
+                    ->param(':date2', $date2);
 				break;
 			case 'tags':
 				foreach($value as $tag)
