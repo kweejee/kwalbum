@@ -60,14 +60,27 @@ class Controller_Kwalbum extends Controller_Template
             $month2 = (int)$this->request->param('month2');
             $day2 = (int)$this->request->param('day2');
         }
-        if ($year) {
-            $this->date = $year.'-'.($month ?: '00').'-'.($day ?: '00');
-            if ($year2) {
-                $this->date2 = $year2.'-'.($month2 ?: '00').'-'.($day2 ?: '00');
-                Model_Kwalbum_Item::append_where('date', array($this->date, $this->date2));
-            } else {
-                Model_Kwalbum_Item::append_where('date', $this->date);
+        if ($year) { // date filtering requires at least a start year
+            $end_year_is_set = $year2 > 1700;
+            $year = $year > 1700 ? $year : date('Y'); // validate year
+            $year2 = $end_year_is_set ? $year2 : $year; // default end year to start year
+            $month = ($month > 0 and $month < 13) ? $month : 0; // validate month
+            if ($month2 < 1 or $month2 > 12) {
+                // default end month to start month or last month
+                $month2 = (!$end_year_is_set and $month) ? $month : 12;
             }
+            $month = $month ?: 1; // default start month to first month
+            $last_day = date('t', strtotime("{$year}-{$month}-1"));
+            $last_day2 = date('t', strtotime("{$year2}-{$month2}-1"));
+            $day = ($day > 0 and $day < $last_day) ? $day : 0; // validate day
+            if ($day2 < 1 or $day2 > $last_day2) {
+                // default end day to start day or last day
+                $day2 = (!$end_year_is_set and $day) ? $day : $last_day2;
+            }
+            $day = $day ?: 1; // default start day to first day
+            $this->date = new DateTime("{$year}-{$month}-{$day}");
+            $this->date2 = new DateTime("{$year2}-{$month2}-{$day2}");
+            Model_Kwalbum_Item::append_where('date', array($this->date, $this->date2));
         }
 
 		// tags
@@ -191,6 +204,7 @@ class Controller_Kwalbum extends Controller_Template
 
 			$this->template->set_global('location', $this->location);
 			$this->template->set_global('date', $this->date);
+			$this->template->set_global('date2', $this->date2);
 			$this->template->set_global('tags', $this->tags);
 			$this->template->set_global('people', $this->people);
 			$this->template->set_global('create_dt', $this->create_dt);

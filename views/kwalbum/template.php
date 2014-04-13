@@ -15,9 +15,8 @@ $config = Kohana::$config->load('kwalbum');
 
 // create summary of location, tags, and people being searched for
 $summary = '';
-if ($date)
-{
-	$summary .= $date;
+if ($date) {
+    $summary .= $date->format('j M \'y').' to '.$date2->format('j M \'y');
 }
 if ($location)
 {

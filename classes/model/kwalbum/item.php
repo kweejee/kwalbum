@@ -909,38 +909,12 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 				}
 				break;
             case 'date':
-                if (!is_array($value)) {
-                    $value = array($value, $value);
+                if (!($value[0] instanceof DateTime and $value[1] instanceof DateTime)) {
+                    throw new Exception('Appending date to item\'s where must pass date as DateTime');
                 }
-				$split1 = explode('-', $value[0]);
-				$year1 = (int) abs($split1[0]);
-				$month1 = (int) abs($split1[1]);
-				$day1 = (int) abs($split1[2]);
-				$split2 = explode('-', $value[1]);
-				$year2 = (int) abs($split2[0]);
-				$month2 = (int) abs($split2[1]);
-				$day2 = (int) abs($split2[2]);
-
-                if ($year1 <= 1700 or $year2 <= 1700) {
-                    break;
-                }
-                $date1 = $year1.'-'
-                    .(($month1 && $month1 <= 12) ? $month1 : '01').'-'
-                    .(($day1 && $day1 <= 32) ? $day1 : '01').' 00:00:00';
-
-                $date2 = $year2.'-'
-                    .(($month2 && $month2 <= 12) ? $month2 : '12').'-';
-                if ($day2 && $day2 <= 32) {
-                    $date2 .= $day2;
-                } else {
-                    $date = new DateTime($date2.'1');
-                    $date2 = $date->format('Y-m-t');
-                }
-                $date2 .= ' 23:59:59';
-
                 $query = (string) DB::query(null, 'sort_dt >= :date1 AND sort_dt <= :date2')
-                    ->param(':date1', $date1)
-                    ->param(':date2', $date2);
+                    ->param(':date1', $value[0]->format('Y-m-d 00:00:00'))
+                    ->param(':date2', $value[1]->format('Y-m-d 23:59:59'));
 				break;
 			case 'tags':
 				foreach($value as $tag)
