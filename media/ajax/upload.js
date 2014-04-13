@@ -45,12 +45,16 @@ $(document).ready(function(){
 	$('#files').uploadify({
 		'uploader':'KWALBUM_URL/media/ajax/uploadify/uploadify.swf',
 		'onComplete':function(event, ID, fileObj, response, data){
-//			console.log(response);
-//			console.log(data);
+			if (console && console.log) {
+				console.log(response);
+				console.log(data);
+			}
 			kwablum_refresh_upload_data();
 		},
 		'onError':function(event,ID,fileObj,errorObj){
-//			console.log(errorObj);
+			if (console && console.log) {
+				console.log(errorObj);
+			}
 		},
 		'cancelImg':'KWALBUM_URL/media/ajax/uploadify/cancel.png',
 		'script':'KWALBUM_URL/~ajax/upload.php',
