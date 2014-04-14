@@ -14,9 +14,15 @@ class Controller_AjaxAdmin extends Controller_Kwalbum
 	function action_EditLocationName()
 	{
 		$this->_testPermission();
-		$loc = Model :: factory('kwalbum_location')->load((int)$_POST['id']);
-		if ( ! empty($_POST['value']))
-		{
+        if (!empty($_POST['id'])) {
+            $id = explode('_', $_POST['id']);
+        }
+        if (empty($id[1])) {
+            echo 'Invalid id';
+            exit;
+        }
+        $loc = Model::factory('kwalbum_location')->load((int)$id[1]);
+        if (!empty($_POST['value'])) {
 			$loc->display_name = htmlspecialchars($_POST['value']);
 			$loc->save();
 		}
@@ -93,7 +99,6 @@ class Controller_AjaxAdmin extends Controller_Kwalbum
 		echo json_encode($perms);
 		exit;
 	}
-
 
 	function action_EditUserPermission()
 	{
