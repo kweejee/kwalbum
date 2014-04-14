@@ -293,8 +293,12 @@ class Controller_User extends Controller_Kwalbum
 				}
 				$host = $_SERVER['SERVER_NAME'];
 				$emailMessage = "A password change has been requested for $login at $host.  To change it go to\n$this->url/~user/resetpassword/?h=$user->reset_code.$user->id\n\nAutomatic email from\nKwalbum \n\n";
-				if ( ! mail($email, 'Lost Password on '.$host, $emailMessage, 'From: "do_not_reply.'.$host.'" <kwalbum@'.$host.'>'))
-				{
+                if (!mail(
+                    $email,
+                    'Lost Password on '.$host,
+                    $emailMessage,
+                    'From: "do_not_reply.'.'" <kwalbum@'.$host.'>')
+                ) {
 					$this->template->content->message = '<span class="errors">Email with further instructions was not sent.  Please contact the website administrator.</span>';
 				}
 			}
