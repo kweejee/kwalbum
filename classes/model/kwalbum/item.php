@@ -17,6 +17,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 		$has_comments, $hide_level, $count, $loaded;
 	private $_user_name, $_original_location, $_original_user_id,
 		 $_location_id, $_tags, $_persons, $_comments, $_comment_count;
+    private $_location, $_location_name_hide_level, $_parent_location, $parent_location_name_hide_level;
     const EDIT_THUMB_MULTIPLIER = 4; // TODO: replace generated $limit with a user defined value from the browser
 
     public static $hide_level_names = array('Public', 'Login Required', 'Private', 'Contributors Only', 'Editors Only', 'Admin Only');
@@ -102,7 +103,10 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 		$this->count = (int)$row['count'];
 
 		$result = DB::query(Database::SELECT,
-			"SELECT loc.name AS name, p.id, p.name AS parent
+			"SELECT loc.name AS name,
+                p.name AS parent,
+                loc.name_hide_level AS hide_level,
+                p.name_hide_level AS parent_hide_level
 			FROM kwalbum_locations loc
 			LEFT JOIN kwalbum_locations p ON (p.id = loc.parent_location_id)
 			WHERE loc.id = :id
@@ -110,6 +114,10 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 			->param(':id', $this->_location_id)
 			->execute();
 		$this->location = $this->_original_location = ($result[0]['parent'] ? $result[0]['parent'].self::get_config('location_separator_1') : '').$result[0]['name'];
+        $this->_location = $result[0]['name'];
+        $this->_parent_location = $result[0]['parent'];
+        $this->_location_name_hide_level = $result[0]['hide_level'];
+        $this->_parent_location_name_hide_level = $result[0]['parent_hide_level'];
 		$this->loaded = true;
 		return $this;
 	}
@@ -770,11 +778,28 @@ class Model_Kwalbum_Item extends Kwalbum_Model
             $this->path = MODPATH.'kwalbum/media/';
             $this->filename = 'no.png';
             $this->hide_level = 100;
-            $this->location = 'hidden';
+            $this->location = '';
             $this->visible_date = '0000-00-00 00:00:00';
             // Setting tags and persons to empty arrays will cause them to never be loaded
             $this->_tags = array();
             $this->_persons = array();
+        } elseif ($this->_location_name_hide_level and $this->_location_name_hide_level > $user->permission_level or
+            $this->_parent_location_name_hide_level and $this->_parent_location_name_hide_level > $user->permission_level
+        ) {
+            if ($this->_location_name_hide_level <= $user->permission_level) {
+                $loc_name = $this->location;
+            }
+            if ($this->_parent_location and $this->_parent_location_name_hide_level <= $user->permission_level) {
+                if ($loc_name) {
+                    $loc_name = $this->_parent_location.self::get_config('location_separator_1').$loc_name;
+                } else {
+                    $loc_name = $this->_parent_location;
+                }
+            }
+            if (empty($loc_name)) {
+                $loc_name = '';
+            }
+            $this->location = $loc_name;
         }
     }
 
