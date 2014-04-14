@@ -235,15 +235,27 @@ class Model_Kwalbum_Location extends Kwalbum_Model
 		$this->loaded = false;
 	}
 
-	public function __toString()
-	{
-		return $this->_display_name;
-	}
+    public function __toString()
+    {
+        return $this->__get('display_name');
+    }
 
-	public function  __get($key) {
-		if ($key == 'display_name')
-			return $this->_display_name;
-	}
+    public function  __get($key)
+    {
+        switch ($key) {
+            case 'display_name':
+                return $this->name_hide_level;
+                if ($this->name_hide_level > $this->user->permission) {
+                    return '';
+                }
+                return $this->_display_name;
+            case 'name_hide_level_description':
+                return Model_Kwalbum_Item::$hide_level_names[$this->name_hide_level];
+            case 'coordinate_hide_level_description':
+                return Model_Kwalbum_Item::$hide_level_names[$this->coordinate_hide_level];
+        }
+    }
+
 	public function  __set($key, $value) {
 		if ($key == 'display_name')
 		{

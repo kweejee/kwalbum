@@ -30,6 +30,73 @@ class Controller_AjaxAdmin extends Controller_Kwalbum
 		exit;
 	}
 
+    protected function getHideLevelOptions($field)
+    {
+        if (!empty($_GET['id'])) {
+            $id = explode('_', $_GET['id']);
+        }
+        if (empty($id[1])) {
+            echo 'Invalid id';
+            exit;
+        }
+        $this->_testPermission();
+        $levels = array_slice(Model_Kwalbum_Item::$hide_level_names, 0, 3);
+        $loc = Model::factory('kwalbum_location')->load((int)$id[1]);
+        $levels['selected'] = $field == 'name' ? $loc->name_hide_level : $loc->coordinate_hide_level;
+        echo json_encode($levels);
+        exit;
+    }
+
+    /**
+     * @param string $field
+     * @return Model_Kwalbum_Location
+     */
+    protected function setLocationHideLevel($field)
+    {
+        $this->_testPermission();
+        if (!empty($_POST['id'])) {
+            $id = explode('_', $_POST['id']);
+        }
+        if (empty($id[1])) {
+            echo 'Invalid id';
+            exit;
+        }
+        $loc = Model::factory('kwalbum_location')->load((int)$id[1]);
+        if ($loc->id > 1 and isset($_POST['value']) and $_POST['value'] >= 0 and $_POST['value'] <= 2) {
+            if ($field == 'name') {
+                $loc->name_hide_level = (int)$_POST['value'];
+            } else {
+                $loc->coordinate_hide_level = (int)$_POST['value'];
+            }
+            $loc->save();
+        }
+        return $loc;
+    }
+
+    public function action_GetLocationNameHideLevel()
+    {
+        $this->getHidelevelOptions('name');
+    }
+
+    public function action_EditLocationNameHideLevel()
+    {
+        $loc = $this->setLocationHideLevel('name');
+        echo $loc->name_hide_level_description;
+        exit;
+    }
+
+    function action_GetLocationCoordinateHideLevel()
+    {
+        $this->getHidelevelOptions('coordinate');
+    }
+
+    public function action_EditLocationCoordinateHideLevel()
+    {
+        $loc = $this->setLocationHideLevel('coordinate');
+        echo $loc->coordinate_hide_level_description;
+        exit;
+    }
+
 	function action_DeleteLocation()
 	{
 		$this->_testPermission();

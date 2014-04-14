@@ -1,13 +1,31 @@
 // Kwalbum 3.0
 $(document).ready(function(){
-	$('.kwalbumLocationName').editable('KWALBUM_URL/~ajaxAdmin/EditLocationName',
-	{
-		type:"text",
-		tooltip:"Click to edit...",
-		indicator:"Saving...",
-		onblur:"submit",
+    $('.kwalbumLocationName').editable('KWALBUM_URL/~ajaxAdmin/EditLocationName',
+    {
+        type:"text",
+        tooltip:"Click to edit...",
+        indicator:"Saving...",
+        onblur:"submit",
         width:250
-	});
+    });
+    $('.kwalbumLocationNameHideLevel').editable('KWALBUM_URL/~ajaxAdmin/EditLocationNameHideLevel',
+    {
+        type:"select",
+        tooltip:"Click to edit...",
+        indicator:"Saving...",
+        onblur:"submit",
+        style:"inherit",
+        loadurl:'KWALBUM_URL/~ajaxAdmin/GetLocationNameHideLevel'
+    });
+    $('.kwalbumLocationCoordinateHideLevel').editable('KWALBUM_URL/~ajaxAdmin/EditLocationCoordinateHideLevel',
+    {
+        type:"select",
+        tooltip:"Click to edit...",
+        indicator:"Saving...",
+        onblur:"submit",
+        style:"inherit",
+        loadurl:'KWALBUM_URL/~ajaxAdmin/GetLocationCoordinateHideLevel'
+    });
 });
 var deleteLocation = function (id) {
     if (confirm('You are about to permanently delete "'+$('#loc'+id).text()+'".')) {
