@@ -786,6 +786,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
         } elseif ($this->_location_name_hide_level and $this->_location_name_hide_level > $user->permission_level or
             $this->_parent_location_name_hide_level and $this->_parent_location_name_hide_level > $user->permission_level
         ) {
+            $loc_name = '';
             if ($this->_location_name_hide_level <= $user->permission_level) {
                 $loc_name = $this->location;
             }
@@ -795,9 +796,6 @@ class Model_Kwalbum_Item extends Kwalbum_Model
                 } else {
                     $loc_name = $this->_parent_location;
                 }
-            }
-            if (empty($loc_name)) {
-                $loc_name = '';
             }
             $this->location = $loc_name;
         }
