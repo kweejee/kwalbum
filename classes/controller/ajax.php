@@ -347,7 +347,6 @@ class Controller_Ajax extends Controller_Kwalbum
             exit;
         }
 		$item = new Model_Kwalbum_Item($_GET['id']);
-		$this->_testPermission($item);
 
 		$resizedview = new View('kwalbum/item/resized');
 		$resizedview->item = $item;
