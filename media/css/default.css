@@ -33,7 +33,15 @@ img{border-style:hidden;}
     height:auto;
     min-height:250px;
 }
-
+#kwalbumResizePopup {
+    background-color: #FFFFFF;
+    border: 1px solid #999999;
+    display: none;
+    position: absolute;
+    padding: 5px;
+}
+.kwalbumResizeBox {
+}
 .kwalbumPageNumbers {
     clear:both;
     text-align: left;

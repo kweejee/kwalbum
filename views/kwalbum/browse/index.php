@@ -3,7 +3,7 @@
  *
  *
  * @author Tim Redmond <kweejee@gmail.com>
- * @copyright Copyright 2009-2013 Tim Redmond
+ * @copyright Copyright 2009-2014 Tim Redmond
  * @license GNU General Public License version 3 <http://www.gnu.org/licenses/>
  * @package kwalbum
  */
@@ -36,7 +36,14 @@ $page_links_div = "<div class='kwalbumPageNumbers'><span class='kwalbumPageLabel
 
 
 // show page
-
+?>
+<div id="kwalbumResizePopup">
+    Press Esc to close or use the arrow keys to move forward and back.
+    <div id="kwalbumResizeBox">
+        <div id="kwalbumResizeMessage">Loading...</div>
+    </div>
+</div>
+<?php
 if ($in_edit_mode) {
     echo html::script($kwalbum_url.'/media/ajax/mass_edit.js');
 
@@ -88,6 +95,9 @@ if ($in_edit_mode) {
         </div>
     </div>
 <?php
+} else { // in view mode
+    echo html::script($kwalbum_url.'/media/ajax/view.js');
+
 }
 
 echo $page_links_div;

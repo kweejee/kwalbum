@@ -189,10 +189,10 @@ class Controller_Kwalbum extends Controller_Template
 			{
 				$this->item_index = Model_Kwalbum_Item::get_index($this->item->id, $this->item->sort_date);
 				$page_number = Model_Kwalbum_Item::get_page_number($this->item_index);
-				$this->next_item = Model_Kwalbum_Item::get_next_item($this->item->id, $this->item->sort_date);
+				$this->next_item = $this->item->getNextItem();
 				if ($this->next_item->id)
 					$this->next_item->hide_if_needed($this->user);
-				$this->previous_item = Model_Kwalbum_Item::get_previous_item($this->item->id, $this->item->sort_date);
+				$this->previous_item = $this->item->getPreviousItem();
 				if ($this->previous_item->id)
 					$this->previous_item->hide_if_needed($this->user);
 

@@ -125,8 +125,11 @@ class Kwalbum_Helper
 			}
 		}
 
-
-		return html::anchor("{$kwalbum_url}/~{$item->id}/{$kwalbum_url_params}", $link_text)
+        return html::anchor(
+                "{$kwalbum_url}/~{$item->id}/{$kwalbum_url_params}",
+                $link_text,
+                array('class' => 'kwalbumThumbnailLink', 'id' => "kwalbumItem_{$item->id}")
+            )
 			."<br/>\n"
 			.($description ? '<div class="box-thumbnail-description">'.$description.'</div>' : '')
 			.($item->has_comments ? '<span class="kwalbumHasComments">*has comments</span>' : null);

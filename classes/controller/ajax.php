@@ -337,6 +337,31 @@ class Controller_Ajax extends Controller_Kwalbum
 		echo json_encode($output_tags);
 	}
 
+    /**
+     * @return string item data in json format
+     */
+    public function action_GetResizedImage()
+    {
+        if (empty($_GET['id'])) {
+            echo 'missing id';
+            exit;
+        }
+		$item = new Model_Kwalbum_Item($_GET['id']);
+		$this->_testPermission($item);
+
+		$resizedview = new View('kwalbum/item/resized');
+		$resizedview->item = $item;
+		$data = array(
+            'id' => $item->id,
+            'type' => $item->type,
+            'img_html' => $resizedview->render(),
+            'description' => $item->description,
+            'next_id' => $item->getNextItem()->id,
+            'prev_id' => $item->getPreviousItem()->id,
+        );
+        echo json_encode($data);
+    }
+
 	public function action_SetItemMapLocation()
 	{
 		$item = new Model_Kwalbum_Item;

@@ -1003,7 +1003,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 		$sort_direction = Model_Kwalbum_Item::$_sort_direction;
 		$query = 'SELECT kwalbum_items.id AS id
 			FROM kwalbum_items'.Model_Kwalbum_Item::get_where_query()
-			." ORDER BY $sort_field $sort_direction
+			." ORDER BY $sort_field $sort_direction, id $sort_direction
 			LIMIT :offset,:limit";
 
 		$limit = self::get_config('items_per_page');
@@ -1089,16 +1089,32 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 		return (int) $result[0]['count(*)']+1;
 	}
 
-	static public function get_previous_item($id, $sort_value)
-	{
+    /**
+     * @return string
+     */
+    protected function getSortValue()
+    {
+        switch ($this->_sort_field) {
+            case 'update_dt':
+                return $this->update_date;
+            case 'create_dt':
+                return $this->create_date;
+        }
+        return $this->sort_date;
+    }
+
+    /**
+     * @return Model_Kwalbum_Item
+     */
+    public function getPreviousItem()
+    {
 		$where_query = Model_Kwalbum_Item::get_where_query();
 		$where_query .= $where_query
 		             ? ' AND '
 		             : ' WHERE ';
 
 		$sort_field = Model_Kwalbum_Item::$_sort_field;
-		$sort_direction = Model_Kwalbum_Item::$_sort_direction;
-		$sort_direction = ($sort_direction == 'ASC' ? 'DESC' : 'ASC');
+        $sort_direction = (Model_Kwalbum_Item::$_sort_direction === 'ASC' ? 'DESC' : 'ASC');
 		$gtlt = Model_Kwalbum_Item::$_gtlt;
 
 		$query = "SELECT id
@@ -1108,13 +1124,16 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 			ORDER BY $sort_field $sort_direction, id $sort_direction
 			LIMIT 1";
 		$result = DB::query(Database::SELECT, $query)
-			->param(':sort_value', $sort_value)
-			->param(':id', $id)
+			->param(':sort_value', $this->getSortValue())
+			->param(':id', $this->id)
 			->execute();
 		return Model::factory('kwalbum_item')->load((int)$result[0]['id']);
 	}
 
-	static public function get_next_item($id, $sort_value)
+    /**
+     * @return Model_Kwalbum_Item
+     */
+    public function getNextItem()
 	{
 		$where_query = Model_Kwalbum_Item::get_where_query();
 		if ( ! $where_query)
@@ -1133,8 +1152,8 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 			ORDER BY $sort_field $sort_direction, id $sort_direction
 			LIMIT 1";
 		$result = DB::query(Database::SELECT, $query)
-			->param(':sort_value', $sort_value)
-			->param(':id', $id)
+			->param(':sort_value', $this->getSortValue())
+			->param(':id', $this->id)
 			->execute();
 		return Model::factory('kwalbum_item')->load((int)$result[0]['id']);
 	}
