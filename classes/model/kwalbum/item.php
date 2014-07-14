@@ -635,31 +635,33 @@ class Model_Kwalbum_Item extends Kwalbum_Model
                 $datetime = explode(' ', $this->visible_date);
 
                 if (count($datetime) > 1) {
-                    $time = explode(trim(self::get_config('location_separator_1')), $datetime[1]);
+                    $time = explode(':', $datetime[1]);
                     $hour = $time[0];
-                    $minute = $time[1];
+                    $minute = empty($time[1]) ? null : $time[1];
+                    $second = empty($time[2]) ? null : $time[2];
                 } else {
                     $hour = '';
                     $minute = '';
                 }
                 $date = explode('-', $datetime[0]);
-                $year = $date[0];
-                $month = $date[1];
+                $year = empty($date[0]) ? null : (int) $date[0];
+                $month = empty($date[1]) ? null : (int) $date[1];
+                $day = empty($date[2]) ? null : (int) $date[2];
 
-                if (0 == $month) {
+                if (!$month) {
                     // year only if no month
-                    if ((int)$year) {
+                    if ($year) {
                         $pretty_date = $year;
                     } else {
                         $pretty_date = '';
                     }
-                } else if (empty($date[2])) {
+                } else if (!$day) {
                     // month & year only if no day
                     $pretty_date = date('F Y', strtotime("$year-$month-1"));
                 } else {
                     $pretty_date = date('F j, Y', strtotime($this->visible_date));
                 }
-                if ($hour != '00' or $minute != '00') {
+                if ($hour !== '00' or $minute !== '00' or $second !== '00') {
                     $pretty_date .= " $hour:$minute";
                 }
                 return $pretty_date;
