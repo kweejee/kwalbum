@@ -55,6 +55,8 @@ class Kwalbum_ItemAdder
 	private function save()
 	{
 		$item = $this->_item;
+        $item->sort_date = Kwalbum_Helper::replaceBadDate($_POST['date'].' '.$_POST['time']);
+        $item->visible_date = $item->sort_date;
 
 		// get exif data from jpeg files
 		if ($item->type == 'jpeg') {
@@ -104,7 +106,8 @@ class Kwalbum_ItemAdder
 
 				// replace the set date if one is found in the picture's exif data
 				if (isset($exif['DateTimeOriginal'])) {
-					$item->visible_date = $item->sort_date = Kwalbum_Helper :: replaceBadDate($exif['DateTimeOriginal']);
+                    $item->sort_date = Kwalbum_Helper::replaceBadDate($exif['DateTimeOriginal']);
+                    $item->visible_date = $item->sort_date;
 				}
 
 				if (!empty($exif['GPSLatitude'])) {

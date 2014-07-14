@@ -92,10 +92,10 @@ class Controller_User extends Controller_Kwalbum
 			return;
 		}
 
-		$url = $this->url;
-
-		if (!$date = $this->date)
-			$date = date('Y-m-d');
+        $date = $this->date;
+        if (!$date) {
+            $date = date('Y-m-d');
+        }
 		$time = date('H:i');
 
 		$content = new View('kwalbum/user/write');

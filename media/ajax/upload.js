@@ -64,9 +64,9 @@ $(document).ready(function(){
 		'fileExt':'*.jpg;*.JPG;*.jpe;*.JPE;*.jpeg;*.JPEG;*.png;*.PNG;*.gif;*.GIF',
 		'fileDesc':'Image Files Only'
 	});
-	$("#date").datepicker();
+    $("#date").datepicker({dateFormat: "yy-mm-dd"});
 });
-var kwablum_refresh_upload_data = function()
+var kwablum_refresh_upload_data = function ()
 {
 	$('#files').uploadifySettings('scriptData',{
 		'loc':$("#loc").val(),
@@ -79,10 +79,10 @@ var kwablum_refresh_upload_data = function()
 		'import_keywords':($('#import_keywords').attr('checked') ? 1 : 0),
 		'session_id':'SESSION_ID'
 	});
-}
-function kwalbum_upload()
+};
+var kwalbum_upload = function ()
 {
 	kwablum_refresh_upload_data();
 	$('#group_option').val('existing');
 	$('#files').uploadifyUpload();
-}
+};

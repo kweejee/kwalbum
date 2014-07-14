@@ -42,5 +42,5 @@ $(document).ready(function(){
 			});
 		}
 	});
-	$("#date").datepicker();
+    $("#date").datepicker({dateFormat: "yy-mm-dd"});
 });
