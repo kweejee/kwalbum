@@ -71,7 +71,7 @@ class UnitTest_Kwalbum_Model extends UnitTest_Case
 		$user->email = 'testid@example.com';
 		$user->save();
 
-		$item = Model::factory('kwalbum_item');
+		$item = Model::factory('Kwalbum_Item');
 		$item->type = 'png';
 		$item->user_id = 1;
 		$item->description = 'd escription';
@@ -103,7 +103,7 @@ class UnitTest_Kwalbum_Model extends UnitTest_Case
 
 	public function test_add_and_delete_location()
 	{
-		$location = Model::factory('kwalbum_location');
+		$location = Model::factory('Kwalbum_Location');
 		$location->name = 'Here';
 		$this->assert_empty($location->id);
 		$location->save();
@@ -129,7 +129,7 @@ class UnitTest_Kwalbum_Model extends UnitTest_Case
 
 	public function test_add_and_delete_person()
 	{
-		$person = Model::factory('kwalbum_person');
+		$person = Model::'Kwalbum_Person');
 		$person->name = 'Me';
 		$this->assert_empty($person->id);
 		$person->save();
@@ -145,7 +145,7 @@ class UnitTest_Kwalbum_Model extends UnitTest_Case
 
 	public function test_add_and_delete_tag()
 	{
-		$tag = Model::factory('kwalbum_tag');
+		$tag = Model::'Kwalbum_Tag');
 		$tag->name = 'blue sky';
 		$this->assert_empty($tag->id);
 		$tag->save();
@@ -161,15 +161,15 @@ class UnitTest_Kwalbum_Model extends UnitTest_Case
 
 	public function test_add_and_delete_item()
 	{
-		$location = Model::factory('kwalbum_location');
+		$location = Model::factory('Kwalbum_Location');
 		$location->name = 'Item Is Here';
 		$location->save();
 		$this->assert_not_empty($location->id);
 		$count = $location->count;
-		$unknown_location = Model::factory('kwalbum_location')->load(1);
+		$unknown_location = Model::factory('Kwalbum_Location')->load(1);
 		$unknown_count = $unknown_location->count;
 
-		$item = Model::factory('kwalbum_item');
+		$item = Model::factory('Kwalbum_Item');
 		$item->type = 'jpeg';
 		$item->user_id = 1;
 		$item->description = 'd escription';
@@ -242,19 +242,19 @@ class UnitTest_Kwalbum_Model extends UnitTest_Case
 
 	public function test_item_tag()
 	{
-		$item = Model::factory('kwalbum_item');
+		$item = Model::factory('Kwalbum_Item');
 		$item->user_id = 1;
 		$item->location = 'Here';
 		$item->save();
 		$this->assert_not_empty($item->id);
 
-		$tag = Model::factory('kwalbum_tag');
+		$tag = Model::'Kwalbum_Tag');
 		$tag->name = 'tree tag';
 		$tag->save();
 
 		$this->assert_similar($tag->count, 0);
 
-		$tag2 = Model::factory('kwalbum_tag');
+		$tag2 = Model::'Kwalbum_Tag');
 		$tag2->name = 'second tag thing';
 		$tag2->save();
 
@@ -284,18 +284,18 @@ class UnitTest_Kwalbum_Model extends UnitTest_Case
 
 	public function test_delete_tag_of_item()
 	{
-		$item = Model::factory('kwalbum_item');
+		$item = Model::factory('Kwalbum_Item');
 		$item->user_id = 1;
 		$item->location_id = 1;
 		$item->save();
 
-		$tag = Model::factory('kwalbum_tag');
+		$tag = Model::'Kwalbum_Tag');
 		$tag->name = 'tree tag';
 		$tag->save();
 		$item->tags = $tag;
 		$this->assert_equal(sizeof($item->tags), 1);
 
-		$tag2 = Model::factory('kwalbum_tag');
+		$tag2 = Model::'Kwalbum_Tag');
 		$tag2->name = 'second tag thing';
 		$item->tags = $tag2;
 		$item->save();
@@ -309,15 +309,15 @@ class UnitTest_Kwalbum_Model extends UnitTest_Case
 
 	public function test_delete_item_with_tag()
 	{
-		$tag = Model::factory('kwalbum_tag');
+		$tag = Model::'Kwalbum_Tag');
 		$tag->name = 'tree tag';
 		$tag->save();
-		$item = Model::factory('kwalbum_item');
+		$item = Model::factory('Kwalbum_Item');
 		$item->user_id = 1;
 		$item->location_id = 1;
 		$item->tags = $tag;
 		$item->save();
-		$item2 = Model::factory('kwalbum_item');
+		$item2 = Model::factory('Kwalbum_Item');
 		$item2->user_id = 1;
 		$item2->location_id = 1;
 		$item2->tags = $tag;
@@ -335,20 +335,20 @@ class UnitTest_Kwalbum_Model extends UnitTest_Case
 
 	public function test_item_person()
 	{
-		$item = Model::factory('kwalbum_item');
+		$item = Model::factory('Kwalbum_Item');
 		$item->user_id = 1;
 		$item->location_id = 1;
 		$item->save();
 		$this->assert_not_empty($item->id);
 
-		$person1 = Model::factory('kwalbum_person');
+		$person1 = Model::'Kwalbum_Person');
 		$person1->name = 'person 1';
 		$person1->save();
 		$this->assert_equal($person1->count, 0);
 		$item->persons = array($person1);
 		$item->save();
 
-		$person2 = Model::factory('kwalbum_person');
+		$person2 = Model::'Kwalbum_Person');
 		$person2->name = 'second person';
 		$person2->save();
 
@@ -376,14 +376,14 @@ class UnitTest_Kwalbum_Model extends UnitTest_Case
 
 	public function test_delete_person_of_item()
 	{
-		$item = Model::factory('kwalbum_item');
+		$item = Model::factory('Kwalbum_Item');
 		$item->user_id = 1;
 		$item->location_id = 1;
 		$item->save();
-		$person1 = Model::factory('kwalbum_person');
+		$person1 = Model::'Kwalbum_Person');
 		$person1->name = 'person 1';
 		$person1->save();
-		$person2 = Model::factory('kwalbum_person');
+		$person2 = Model::'Kwalbum_Person');
 		$person2->name = 'second person';
 		$person2->save();
 		$item->persons = array($person1, $person2);
@@ -398,15 +398,15 @@ class UnitTest_Kwalbum_Model extends UnitTest_Case
 
 	public function test_delete_item_with_person()
 	{
-		$person1 = Model::factory('kwalbum_person');
+		$person1 = Model::'Kwalbum_Person');
 		$person1->name = 'person 1';
 		$person1->save();
-		$item = Model::factory('kwalbum_item');
+		$item = Model::factory('Kwalbum_Item');
 		$item->user_id = 1;
 		$item->location_id = 1;
 		$item->persons = $person1;
 		$item->save();
-		$item2 = Model::factory('kwalbum_item');
+		$item2 = Model::factory('Kwalbum_Item');
 		$item2->user_id = 1;
 		$item2->location_id = 1;
 		$item2->persons = $person1;
@@ -424,14 +424,14 @@ class UnitTest_Kwalbum_Model extends UnitTest_Case
 
 	public function test_delete_location_of_item()
 	{
-		$location = Model::factory('kwalbum_location');
+		$location = Model::factory('Kwalbum_Location');
 		$location->name = 'Delete Test Location';
 		$location->save();
-		$item = Model::factory('kwalbum_item');
+		$item = Model::factory('Kwalbum_Item');
 		$item->user_id = 1;
 		$item->location = $location->name;
 		$item->save();
-		$item2 = Model::factory('kwalbum_item');
+		$item2 = Model::factory('Kwalbum_Item');
 		$item2->user_id = 1;
 		$item2->location = $location->name;
 		$item2->save();
@@ -439,7 +439,7 @@ class UnitTest_Kwalbum_Model extends UnitTest_Case
 		$location->reload();
 		$this->assert_equal($location->count, 2);
 
-		$default_location = Model::factory('kwalbum_location')->load(1);
+		$default_location = Model::factory('Kwalbum_Location')->load(1);
 		$starting_count = $default_location->count;
 		$location->delete();
 
@@ -455,9 +455,9 @@ class UnitTest_Kwalbum_Model extends UnitTest_Case
 		$user = Model::factory('Kwalbum_User');
 		$user->name = 'Tester Personer';
 		$user->save();
-		$item = Model::factory('kwalbum_item');
+		$item = Model::factory('Kwalbum_Item');
 		$item->user_id = $user->id;
-		$item->location = Model::factory('kwalbum_location')->load(1);
+		$item->location = Model::factory('Kwalbum_Location')->load(1);
 		$item->save();
 		$user->delete();
 
@@ -468,20 +468,20 @@ class UnitTest_Kwalbum_Model extends UnitTest_Case
 
 	public function test_add_and_delete_comment_test()
 	{
-		$item = Model::factory('kwalbum_item');
+		$item = Model::factory('Kwalbum_Item');
 		$item->user_id = 1;
 		$item->location_id = 1;
 		$item->save();
 		$this->assert_false($item->has_comments);
 
-		$comment = Model::factory('kwalbum_comment');
+		$comment = Model::factory('Kwalbum_Comment');
 		$comment->item_id = $item->id;
 		$comment->name = 'Test Name';
 		$comment->text = 'Test Text';
 		$comment->ip = '192.168.0.1';
 		$comment->save();
 
-		$comment2 = Model::factory('kwalbum_comment');
+		$comment2 = Model::factory('Kwalbum_Comment');
 		$comment2->item_id = $item->id;
 		$comment2->name = 'Test Name 2';
 		$comment2->text = 'Test Text 2';
@@ -534,7 +534,7 @@ class UnitTest_Kwalbum_Model extends UnitTest_Case
 		$db->query(Database::DELETE, $sql);
 		$sql = 'DELETE FROM `kwalbum_locations` WHERE id > 1';
 		$db->query(Database::DELETE, $sql);
-		$location = Model::factory('kwalbum_location')->load(1);
+		$location = Model::factory('Kwalbum_Location')->load(1);
 		$location->count = 0;
 		$location->save();
 	}

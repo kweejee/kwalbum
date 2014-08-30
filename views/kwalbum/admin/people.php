@@ -1,5 +1,5 @@
 <div class="box">
-	<big><b><?php echo html::anchor($kwalbum_url.'/~admin', 'Admin Options'); ?>: Editing People</b></big>
+	<big><b><?php echo HTML::anchor($kwalbum_url.'/~admin', 'Admin Options'); ?>: Editing People</b></big>
 
 <table border="1">
 	<tr><th>Count</th><th style="width:255px;">Name</th><th>Delete?</th></tr>
@@ -8,13 +8,13 @@ $people = Model_Kwalbum_Person::getAllArray();
 foreach ($people as $person)
 {
 	echo "	<tr id='row{$person['id']}'><td>"
-		.html::anchor($kwalbum_url.'/people/'.$person['name'], $person['count'])
+		.HTML::anchor($kwalbum_url.'/people/'.$person['name'], $person['count'])
 		."</td><td><span id='per{$person['id']}'>{$person['name']}</span></td><td style='text-align:center'>"
 		."<a href='#' onClick='deletePerson({$person['id']});return false;'>[X]</a></td></tr>";
 }
 echo "</table></div>";
 
-echo html::script($kwalbum_url.'/media/ajax/jquery.jeditable.mini.js')
+echo HTML::script($kwalbum_url.'/media/ajax/jquery.jeditable.mini.js')
 ?>
 <script type="text/javascript">
 function deletePerson(id){

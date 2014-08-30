@@ -113,7 +113,7 @@ class Model_Kwalbum_User extends Kwalbum_Model
 
         if ($result->count() > 0) {
             foreach ($result as $row) {
-                $users[] = Model :: factory('Kwalbum_User')->load($row['id']);
+                $users[] = Model::factory('Kwalbum_User')->load($row['id']);
             }
         }
 
@@ -153,7 +153,7 @@ class Model_Kwalbum_User extends Kwalbum_Model
     /**
      * Check if a user can edit an item
      *
-     * @param kwalbum_item object of item to check about editing
+     * @param Kwalbum_Item object of item to check about editing
      * @return true/false if user can edit the item
      */
     public function can_edit_item($item = null)
@@ -175,7 +175,7 @@ class Model_Kwalbum_User extends Kwalbum_Model
     /**
      * Check if a user can see an item
      *
-     * @param kwalbum_item object of item to check about editing
+     * @param Kwalbum_Item object of item to check about editing
      * @return true/false if user can view the item
      */
     public function can_view_item($item = null)

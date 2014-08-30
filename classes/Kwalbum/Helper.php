@@ -125,7 +125,7 @@ class Kwalbum_Helper
 			}
 		}
 
-        return html::anchor(
+        return HTML::anchor(
                 "{$kwalbum_url}/~{$item->id}/{$kwalbum_url_params}",
                 $link_text,
                 array('class' => 'kwalbumThumbnailLink', 'id' => "kwalbumItem_{$item->id}")

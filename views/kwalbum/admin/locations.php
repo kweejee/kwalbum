@@ -17,8 +17,8 @@ foreach ($all_locations as $loc) {
 uksort($locations, 'strnatcasecmp');
 $hide_levels = Model_Kwalbum_Item::$hide_level_names;
 
-echo html::script($kwalbum_url.'/media/ajax/jquery.jeditable.mini.js')
-    .html::script($kwalbum_url.'/media/ajax/admin/locations.js');
+echo HTML::script($kwalbum_url.'/media/ajax/jquery.jeditable.mini.js')
+    .HTML::script($kwalbum_url.'/media/ajax/admin/locations.js');
 ?>
 <div class="box">
 	<big><b>Editing Locations</b></big>
@@ -34,7 +34,7 @@ echo html::script($kwalbum_url.'/media/ajax/jquery.jeditable.mini.js')
         </tr>
 <?php
 foreach ($locations as $full_name => $loc) {
-    $count_link = html::anchor(
+    $count_link = HTML::anchor(
         $kwalbum_url.'/'.$full_name,
         '<span title="Items with this exact location">'.$loc['count'].'</span> / <span title="Total including child locations">'.($loc['count']+$loc['child_count']).'</span>'
     );

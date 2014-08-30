@@ -35,7 +35,7 @@
 	<div class="box">
 <?php
 echo ' <span class="kwalbumPageNumbers">(item '.$item_index.' of '.$total_items.') - '
-	.html::anchor($kwalbum_url.'/'
+	.HTML::anchor($kwalbum_url.'/'
 	.($kwalbum_url_params ? $kwalbum_url_params : null)
 	.($page_number > 1 ? 'page/'.$page_number.'/' : null)
 	.(($kwalbum_url_params or $page_number > 1) ? null : '~browse/'),
@@ -80,8 +80,8 @@ echo ' <span class="kwalbumPageNumbers">(item '.$item_index.' of '.$total_items.
 
 		echo '<br/><span id="delete"><input type="button" id="delete_button" value="Delete Item"/></span><br/><br/>';
 
-	echo html::script($kwalbum_url.'/media/ajax/jquery.jeditable.mini.js')
-		.html::script($kwalbum_url.'/media/ajax/edit.js');
+	echo HTML::script($kwalbum_url.'/media/ajax/jquery.jeditable.mini.js')
+		.HTML::script($kwalbum_url.'/media/ajax/edit.js');
 
 	?>
 	<strong>Views:</strong> <?php echo $item->count; ?><br/>

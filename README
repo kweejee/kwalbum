@@ -13,7 +13,7 @@ INSTALLATION
      'kwalbum' => MODPATH.'kwalbum',
    after
      Kohana::modules(array(
-   Also make sure that 
+   Also make sure that
      'database'   => MODPATH.'database',   // Database access
    and
      'image'      => MODPATH.'image',      // Image manipulation
@@ -21,17 +21,17 @@ INSTALLATION
 5. Create a writable directory for items to be uploaded to.  The default
    configured location is application/items
 6. Optionally, copy modules/kwalbum/config/kwalbum.php to
-   application/config/kwalbum.php and edit.  Note that the reason to copy the
+   application/config/kwalbum.php and edit.  The reason to copy the
    file to applications/config is to ensure it is not overwritten when the
    Kwalbum module is updated.
 7. Open Kwalbum in your web browser and go to the install page.
-   If Kwalbum is at http://localhost/kwalbum/index.php then the install page
-   is at http://localhost/kwalbum/index.php/~install
+   If Kwalbum is at http://localhost/kwalbum then the install page
+   is at http://localhost/kwalbum/~install
 
 REQUIREMENTS
 ------------
 
-Kohana 3.2
+Kohana 3.3
 PHP 5.3+
 GD module for PHP
 MySQL 5.1+

@@ -190,8 +190,8 @@ class Model_Kwalbum_Comment extends Kwalbum_Model
 		$i = 0;
 		foreach ($result as $row)
 		{
-			$thumbnails[$i]['item'] = Model :: factory('kwalbum_item')->load($row['item_id']);
-			$thumbnails[$i]['comment'] = Model :: factory('kwalbum_comment')->load($row['comment_id']);
+			$thumbnails[$i]['item'] = Model::factory('Kwalbum_Item')->load($row['item_id']);
+			$thumbnails[$i]['comment'] = Model::factory('Kwalbum_Comment')->load($row['comment_id']);
 			$i++;
 		}
 

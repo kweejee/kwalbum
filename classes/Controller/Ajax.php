@@ -34,7 +34,7 @@ class Controller_Ajax extends Controller_Kwalbum
 
 	public function action_SetLocation()
 	{
-		$item = Model :: factory('kwalbum_item')->load((int)$_POST['item']);
+		$item = Model::factory('Kwalbum_Item')->load((int)$_POST['item']);
 		$this->_testPermission($item);
 		$item->location = htmlspecialchars(trim($_POST['value']));
 		$item->save();
@@ -43,7 +43,7 @@ class Controller_Ajax extends Controller_Kwalbum
 
 	public function action_SetDate()
 	{
-		$item = Model :: factory('kwalbum_item')->load((int)$_POST['item']);
+		$item = Model::factory('Kwalbum_Item')->load((int)$_POST['item']);
 		$this->_testPermission($item);
 		$date = Kwalbum_Helper::replaceBadDate($_POST['value'].' '.$item->time);
 		if ($item->visible_date == $item->sort_date)
@@ -55,7 +55,7 @@ class Controller_Ajax extends Controller_Kwalbum
 
 	public function action_SetTime()
 	{
-		$item = Model :: factory('kwalbum_item')->load((int)$_POST['item']);
+		$item = Model::factory('Kwalbum_Item')->load((int)$_POST['item']);
 		$this->_testPermission($item);
 		$date = Kwalbum_Helper::replaceBadDate($item->date.' '.$_POST['value']);
 		if ($item->visible_date == $item->sort_date)
@@ -67,7 +67,7 @@ class Controller_Ajax extends Controller_Kwalbum
 
 	public function action_SetSortDate()
 	{
-		$item = Model :: factory('kwalbum_item')->load((int)$_POST['item']);
+		$item = Model::factory('Kwalbum_Item')->load((int)$_POST['item']);
 		$this->_testPermission($item);
 		$date = Kwalbum_Helper :: replaceBadDate($_POST['value']);
 		$item->sort_date = $date;
@@ -76,14 +76,14 @@ class Controller_Ajax extends Controller_Kwalbum
 	}
 	public function action_GetRawDescription()
 	{
-		$item = Model :: factory('kwalbum_item')->load((int)$_GET['item']);
+		$item = Model::factory('Kwalbum_Item')->load((int)$_GET['item']);
 		$this->_testPermission($item);
 		echo $item->description;
 	}
 
 	public function action_SetDescription()
 	{
-		$item = Model :: factory('kwalbum_item')->load((int)$_POST['item']);
+		$item = Model::factory('Kwalbum_Item')->load((int)$_POST['item']);
 		$this->_testPermission($item);
 		$item->description = trim($_POST['value']);
 		$item->save();
@@ -92,7 +92,7 @@ class Controller_Ajax extends Controller_Kwalbum
 
 	public function action_GetVisibility()
 	{
-		$item = Model :: factory('kwalbum_item')->load((int)$_GET['item']);
+		$item = Model::factory('Kwalbum_Item')->load((int)$_GET['item']);
 		$this->_testPermission($item);
 		$vis = array();
         foreach (Model_Kwalbum_Item::$hide_level_names as $level => $name) {
@@ -106,7 +106,7 @@ class Controller_Ajax extends Controller_Kwalbum
 
 	public function action_SetVisibility()
 	{
-		$item = Model :: factory('kwalbum_item')->load((int)$_POST['item']);
+		$item = Model::factory('Kwalbum_Item')->load((int)$_POST['item']);
 		$this->_testPermission($item);
         $visibility = (int) (@ $_POST['value']);
         if ($visibility < 0)
@@ -132,7 +132,7 @@ class Controller_Ajax extends Controller_Kwalbum
 
 	public function action_SetTags()
 	{
-		$item = Model :: factory('kwalbum_item')->load((int)$_POST['item']);
+		$item = Model::factory('Kwalbum_Item')->load((int)$_POST['item']);
 		$this->_testPermission($item);
 		$tags = explode(',', htmlspecialchars($_POST['value']));
 		for ($i = 0; $i < count($tags); $i++)
@@ -147,7 +147,7 @@ class Controller_Ajax extends Controller_Kwalbum
 
 	public function action_SetPersons()
 	{
-		$item = Model :: factory('kwalbum_item')->load((int)$_POST['item']);
+		$item = Model::factory('Kwalbum_Item')->load((int)$_POST['item']);
 		$this->_testPermission($item);
 		$persons = explode(',', htmlspecialchars($_POST['value']));
 		for ($i = 0; $i < count($persons); $i++)
@@ -176,7 +176,7 @@ class Controller_Ajax extends Controller_Kwalbum
 
 	public function action_AddComment()
 	{
-		$item = Model::factory('kwalbum_item')->load((int)$_POST['item']);
+		$item = Model::factory('Kwalbum_Item')->load((int)$_POST['item']);
 		if ( ! $this->user->can_view_item($item))
 		{
 			echo 'no commenting for you';
@@ -196,7 +196,7 @@ class Controller_Ajax extends Controller_Kwalbum
 			echo 0;
 			return;
 		}
-		$item = Model::factory('kwalbum_item')->load((int)$_POST['item']);
+		$item = Model::factory('Kwalbum_Item')->load((int)$_POST['item']);
 		if (!$this->user->can_edit_item($item)) {
 			echo 0;
 			return;
@@ -211,7 +211,7 @@ class Controller_Ajax extends Controller_Kwalbum
 			echo 0;
 			return;
 		}
-		$item = Model::factory('kwalbum_item')->load((int)$_POST['item']);
+		$item = Model::factory('Kwalbum_Item')->load((int)$_POST['item']);
 		if (!$this->user->can_edit_item($item)) {
 			echo 0;
 			return;

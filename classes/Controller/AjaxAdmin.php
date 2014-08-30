@@ -21,7 +21,7 @@ class Controller_AjaxAdmin extends Controller_Kwalbum
             echo 'Invalid id';
             exit;
         }
-        $loc = Model::factory('kwalbum_location')->load((int)$id[1]);
+        $loc = Model::factory('Kwalbum_Location')->load((int)$id[1]);
         if (!empty($_POST['value'])) {
 			$loc->display_name = htmlspecialchars($_POST['value']);
 			$loc->save();
@@ -41,7 +41,7 @@ class Controller_AjaxAdmin extends Controller_Kwalbum
         }
         $this->_testPermission();
         $levels = array_slice(Model_Kwalbum_Item::$hide_level_names, 0, 3);
-        $loc = Model::factory('kwalbum_location')->load((int)$id[1]);
+        $loc = Model::factory('Kwalbum_Location')->load((int)$id[1]);
         $levels['selected'] = $field == 'name' ? $loc->name_hide_level : $loc->coordinate_hide_level;
         echo json_encode($levels);
         exit;
@@ -61,7 +61,7 @@ class Controller_AjaxAdmin extends Controller_Kwalbum
             echo 'Invalid id';
             exit;
         }
-        $loc = Model::factory('kwalbum_location')->load((int)$id[1]);
+        $loc = Model::factory('Kwalbum_Location')->load((int)$id[1]);
         if ($loc->id > 1 and isset($_POST['value']) and $_POST['value'] >= 0 and $_POST['value'] <= 2) {
             if ($field == 'name') {
                 $loc->name_hide_level = (int)$_POST['value'];
@@ -100,7 +100,7 @@ class Controller_AjaxAdmin extends Controller_Kwalbum
 	function action_DeleteLocation()
 	{
 		$this->_testPermission();
-		Model :: factory('kwalbum_location')
+		Model::factory('Kwalbum_Location')
 			->load((int)$_POST['id'])
 			->delete();
 		exit;
@@ -109,7 +109,7 @@ class Controller_AjaxAdmin extends Controller_Kwalbum
 	function action_EditPersonName()
 	{
 		$this->_testPermission();
-		$person = Model :: factory('kwalbum_person')->load((int)$_POST['id']);
+		$person = Model::factory('Kwalbum_Person')->load((int)$_POST['id']);
 		if ( ! empty($_POST['value']))
 		{
 			$person->name = htmlspecialchars(trim($_POST['value']));
@@ -122,7 +122,7 @@ class Controller_AjaxAdmin extends Controller_Kwalbum
 	function action_DeletePerson()
 	{
 		$this->_testPermission();
-		Model :: factory('kwalbum_person')
+		Model::factory('Kwalbum_Person')
 			->load((int)$_POST['id'])
 			->delete();
 		exit;
@@ -131,7 +131,7 @@ class Controller_AjaxAdmin extends Controller_Kwalbum
 	function action_EditTagName()
 	{
 		$this->_testPermission();
-		$tag = Model :: factory('kwalbum_tag')->load((int)$_POST['id']);
+		$tag = Model::factory('Kwalbum_Tag')->load((int)$_POST['id']);
 		if ( ! empty($_POST['value']))
 		{
 			$tag->name = htmlspecialchars(trim($_POST['value']));
@@ -144,7 +144,7 @@ class Controller_AjaxAdmin extends Controller_Kwalbum
 	function action_DeleteTag()
 	{
 		$this->_testPermission();
-		Model :: factory('kwalbum_tag')
+		Model::factory('Kwalbum_Tag')
 			->load((int)$_POST['id'])
 			->delete();
 		exit;
@@ -161,7 +161,7 @@ class Controller_AjaxAdmin extends Controller_Kwalbum
         }
 		$this->_testPermission();
 		$perms = Model_Kwalbum_User::$permission_names;
-		$user = Model :: factory('Kwalbum_User')->load((int)$id[1]);
+		$user = Model::factory('Kwalbum_User')->load((int)$id[1]);
 		$perms['selected'] = $user->permission_level;
 		echo json_encode($perms);
 		exit;
@@ -191,7 +191,7 @@ class Controller_AjaxAdmin extends Controller_Kwalbum
 	function action_DeleteUser()
 	{
 		$this->_testPermission();
-		Model :: factory('Kwalbum_User')
+		Model::factory('Kwalbum_User')
 			->load((int)$_POST['userid'])
 			->delete();
 		exit;

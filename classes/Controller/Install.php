@@ -32,7 +32,7 @@ class Controller_Install extends Controller_Kwalbum
 		// Do not continue installation if at least 1 user exists in the database
 		try
 		{
-			$user = Model::factory('kwalbum_user');
+			$user = Model::factory('Kwalbum_User');
 			if ($user->load(1)->loaded == true)
 			{
 				$view = View::factory('kwalbum/install/2');
@@ -113,7 +113,7 @@ class Controller_Install extends Controller_Kwalbum
 					$user->save();
 
 					// default location
-					$location = Model::factory('kwalbum_location');
+					$location = Model::factory('Kwalbum_Location');
 					$location->name = 'Unknown Location';
 					$location->save();
 					$this->template->content = new View('kwalbum/install/2');

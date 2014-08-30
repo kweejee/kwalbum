@@ -1,5 +1,5 @@
 <div class="box">
-	<big><b><?php echo html::anchor($kwalbum_url.'/~admin', 'Admin Options'); ?>: Editing Tags</b></big>
+	<big><b><?php echo HTML::anchor($kwalbum_url.'/~admin', 'Admin Options'); ?>: Editing Tags</b></big>
 
 <table border="1">
 	<tr><th>Count</th><th style="width:255px;">Name</th><th>Delete?</th></tr>
@@ -8,13 +8,13 @@ $tags = Model_Kwalbum_Tag::getAllArray();
 foreach ($tags as $tag)
 {
 	echo "	<tr id='row{$tag['id']}'><td>"
-		.html::anchor($kwalbum_url.'/tags/'.$tag['name'], $tag['count'])
+		.HTML::anchor($kwalbum_url.'/tags/'.$tag['name'], $tag['count'])
 		."</td><td><span id='tag{$tag['id']}'>{$tag['name']}</span></td><td style='text-align:center'>"
 		."<a href='#' onClick='deleteTag({$tag['id']});return false;'>[X]</a></td></tr>";
 }
 echo "</table></div>";
 
-echo html::script($kwalbum_url.'/media/ajax/jquery.jeditable.mini.js')
+echo HTML::script($kwalbum_url.'/media/ajax/jquery.jeditable.mini.js')
 ?>
 <script type="text/javascript">
 function deleteTag(id){

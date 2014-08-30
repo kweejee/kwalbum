@@ -75,11 +75,11 @@ class Controller_User extends Controller_Kwalbum
 		$template = $this->template;
 		$template->content = $content;
 		$template->title = 'Upload';
-		$template->head .= html::script($this->url.'/media/ajax/uploadify/swfobject.js')
-		//	.html::script('http://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject_src.js')
-			.html::style($this->url.'/media/ajax/uploadify/uploadify.css')
-			.html::script($this->url.'/media/ajax/uploadify/jquery.uploadify.v2.1.4.min.js')
-			.html::script($this->url.'/media/ajax/upload.js')
+		$template->head .= HTML::script($this->url.'/media/ajax/uploadify/swfobject.js')
+		//	.HTML::script('http://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject_src.js')
+			.HTML::style($this->url.'/media/ajax/uploadify/uploadify.css')
+			.HTML::script($this->url.'/media/ajax/uploadify/jquery.uploadify.v2.1.4.min.js')
+			.HTML::script($this->url.'/media/ajax/upload.js')
 		;
 	}
 
@@ -142,7 +142,7 @@ class Controller_User extends Controller_Kwalbum
 		$template = $this->template;
 		$template->content = $content;
 		$template->title = 'Write';
-		$template->head .= html::script('kwalbum/media/ajax/write.js')
+		$template->head .= HTML::script('kwalbum/media/ajax/write.js')
 		;
 	}
 

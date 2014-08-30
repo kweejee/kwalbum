@@ -862,7 +862,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 			->param(':id', $this->id)
 			->execute();
 		foreach ($result as $row) {
-			$comments[] = Model::factory('kwalbum_comment')->load($row['id']);
+			$comments[] = Model::factory('Kwalbum_Comment')->load($row['id']);
 		}
 		return $comments;
 	}
@@ -1021,7 +1021,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 		$items = array();
 		foreach ($result as $row)
 		{
-			$items[] = Model::factory('kwalbum_item')->load($row['id']);
+			$items[] = Model::factory('Kwalbum_Item')->load($row['id']);
 		}
 
 		return $items;
@@ -1129,7 +1129,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 			->param(':sort_value', $this->getSortValue())
 			->param(':id', $this->id)
 			->execute();
-		return Model::factory('kwalbum_item')->load((int)$result[0]['id']);
+		return Model::factory('Kwalbum_Item')->load((int)$result[0]['id']);
 	}
 
     /**
@@ -1157,7 +1157,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 			->param(':sort_value', $this->getSortValue())
 			->param(':id', $this->id)
 			->execute();
-		return Model::factory('kwalbum_item')->load((int)$result[0]['id']);
+		return Model::factory('Kwalbum_Item')->load((int)$result[0]['id']);
 	}
 
     /**
