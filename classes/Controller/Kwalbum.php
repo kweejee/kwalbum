@@ -144,7 +144,7 @@ class Controller_Kwalbum extends Controller_Template
 		}
 
 		// Set up user if logged in
-		$this->user = Model::factory('kwalbum_user');
+		$this->user = Model::factory('Kwalbum_User');
 		$this->user->load_from_cookie($this->request->action());
 
 		// item id

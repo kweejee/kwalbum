@@ -161,7 +161,7 @@ class Controller_AjaxAdmin extends Controller_Kwalbum
         }
 		$this->_testPermission();
 		$perms = Model_Kwalbum_User::$permission_names;
-		$user = Model :: factory('kwalbum_user')->load((int)$id[1]);
+		$user = Model :: factory('Kwalbum_User')->load((int)$id[1]);
 		$perms['selected'] = $user->permission_level;
 		echo json_encode($perms);
 		exit;
@@ -177,7 +177,7 @@ class Controller_AjaxAdmin extends Controller_Kwalbum
             echo 'Invalid id';
             exit;
         }
-        $user = Model::factory('kwalbum_user')->load((int)$id[1]);
+        $user = Model::factory('Kwalbum_User')->load((int)$id[1]);
         if (isset($_POST['value'])) {
             if ($user->id > 2 and $user->id != $this->user->id) {
                 $user->permission_level = (int)$_POST['value'];
@@ -191,7 +191,7 @@ class Controller_AjaxAdmin extends Controller_Kwalbum
 	function action_DeleteUser()
 	{
 		$this->_testPermission();
-		Model :: factory('kwalbum_user')
+		Model :: factory('Kwalbum_User')
 			->load((int)$_POST['userid'])
 			->delete();
 		exit;

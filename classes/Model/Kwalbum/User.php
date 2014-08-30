@@ -113,7 +113,7 @@ class Model_Kwalbum_User extends Kwalbum_Model
 
         if ($result->count() > 0) {
             foreach ($result as $row) {
-                $users[] = Model :: factory('kwalbum_user')->load($row['id']);
+                $users[] = Model :: factory('Kwalbum_User')->load($row['id']);
             }
         }
 
@@ -299,7 +299,7 @@ class Model_Kwalbum_User extends Kwalbum_Model
      */
     public static function login($username, $password, $length=0)
     {
-        $user = Model::factory('kwalbum_user')
+        $user = Model::factory('Kwalbum_User')
             ->load($username, 'login_name');
 
         if (!$user->password_equals($password)) {

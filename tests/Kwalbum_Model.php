@@ -20,7 +20,7 @@ class UnitTest_Kwalbum_Model extends UnitTest_Case
 
 	public function test_add_and_delete_user()
 	{
-		$user = Model::factory('kwalbum_user');
+		$user = Model::factory('Kwalbum_User');
 		$user->login_name = 'loginname';
 		$user->name = 'Test Name';
 		$user->email = 'testid@example.com';
@@ -57,7 +57,7 @@ class UnitTest_Kwalbum_Model extends UnitTest_Case
 
 	public function test_invalid_user()
 	{
-		$user = Model::factory('kwalbum_user');
+		$user = Model::factory('Kwalbum_User');
 		$this->assert_false($user->load(999999)->loaded);
 		$this->assert_false($user->load(-1)->loaded);
 		$this->assert_false($user->load('hi')->loaded);
@@ -66,7 +66,7 @@ class UnitTest_Kwalbum_Model extends UnitTest_Case
 
 	public function test_user_permissions()
 	{
-		$user = Model::factory('kwalbum_user');
+		$user = Model::factory('Kwalbum_User');
 		$user->name = 'Test Name';
 		$user->email = 'testid@example.com';
 		$user->save();
@@ -452,7 +452,7 @@ class UnitTest_Kwalbum_Model extends UnitTest_Case
 
 	public function test_delete_user_of_item()
 	{
-		$user = Model::factory('kwalbum_user');
+		$user = Model::factory('Kwalbum_User');
 		$user->name = 'Tester Personer';
 		$user->save();
 		$item = Model::factory('kwalbum_item');

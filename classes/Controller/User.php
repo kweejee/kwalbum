@@ -186,7 +186,7 @@ class Controller_User extends Controller_Kwalbum
 				$email = htmlspecialchars(trim($data['email']));
 				$password = $data['password'];
 
-				$user = Model::factory('kwalbum_user');
+				$user = Model::factory('Kwalbum_User');
 
 				// TODO: extend Validate to include custom error checking and clean this part up
 				$has_errors = false;
@@ -253,7 +253,7 @@ class Controller_User extends Controller_Kwalbum
 
 			$hash = $temp[0];
 			$id = (int)$temp[1];
-			$user = Model::factory('kwalbum_user')->load($id);
+			$user = Model::factory('Kwalbum_User')->load($id);
 
 			if ( ! $user->reset_code or $user->reset_code != $hash)
 			{
@@ -283,7 +283,7 @@ class Controller_User extends Controller_Kwalbum
 		{
 			$login = $_POST['name'];
 			$email = $_POST['email'];
-			$user = Model::factory('kwalbum_user')->load($login, 'login_name');
+			$user = Model::factory('Kwalbum_User')->load($login, 'login_name');
 			if ($user->email == $email)
 			{
 				if ( ! $user->reset_code)

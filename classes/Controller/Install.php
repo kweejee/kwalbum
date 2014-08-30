@@ -84,7 +84,7 @@ class Controller_Install extends Controller_Kwalbum
 					$this->_create_tables();
 
 					// admin user
-					$user = Model::factory('kwalbum_user');
+					$user = Model::factory('Kwalbum_User');
 					$user->name = $name;
 					$user->login_name = $login_name;
 					$user->email = $email;
