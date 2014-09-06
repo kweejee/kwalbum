@@ -56,30 +56,24 @@ class Model_Kwalbum_Item extends Kwalbum_Model
         }
     }
 	/**
-	 * Load an item based on $field matching $id
-	 *
-	 * @param mixed $id
-	 * @param string $field
-	 * @return Model_Kwalbum_Item
+	 * @param string $value
+	 * @return \Model_Kwalbum_Item
 	 */
-	public function load($id = null, $field = 'id')
+	public function load($value = null)
 	{
 		$this->clear();
-
-		if ($id === null)
-		{
+		if (is_null($value)) {
 			return $this;
 		}
 
 		$result = DB::query(Database::SELECT,
 			"SELECT *
 			FROM kwalbum_items
-			WHERE $field = :id
+			WHERE id = :value
 			LIMIT 1")
-			->param(':id', $id)
+			->param(':value', $value)
 			->execute();
-		if ($result->count() == 0)
-		{
+		if ($result->count() == 0) {
 			return $this;
 		}
 

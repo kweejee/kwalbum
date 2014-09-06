@@ -42,7 +42,7 @@ abstract class Kwalbum_Model extends Model
 	 * Load data into $this or clear $this if $id is null or invalid.
 	 *
 	 */
-	abstract public function load($id = null, $field = 'id');
+	abstract public function load($value = null);
 
 	/**
 	 * Call load() using an id found where the object's main field, such

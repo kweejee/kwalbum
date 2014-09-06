@@ -15,28 +15,30 @@ class Model_Kwalbum_Location extends Kwalbum_Model
 		$name_hide_level, $coordinate_hide_level, $description;
 	private $_display_name, $_original_name;
 
-	public function load($id = null, $field = 'id')
+    /**
+     * Load a location where $field equals $value
+     *
+     * @param string $value
+     * @param string $field
+     * @return \Model_Kwalbum_Location
+     */
+	public function load($value = null, $field = 'id')
 	{
-		if ($id === null)
-		{
-			$this->clear();
-			return $this;
-		}
-
-		$field = mysql_escape_string($field);
+        $this->clear();
+		if (is_null($value) or $field !== 'id') {
+            return $this;
+        }
 		$query = DB::query(Database::SELECT,
 			"SELECT loc.*, p.name AS parent_name
 			FROM kwalbum_locations loc
 			LEFT JOIN kwalbum_locations p ON (p.id = loc.parent_location_id)
-			WHERE loc.{$field} = :id
+			WHERE loc.{$field} = :value
 			LIMIT 1")
-			->param(':id', $id);
+			->param(':value', $value);
 
 		$result = $query->execute();
 
-		if ($result->count() == 0)
-		{
-			$this->clear();
+		if ($result->count() == 0) {
 			return $this;
 		}
 

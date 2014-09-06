@@ -35,23 +35,21 @@ class Model_Kwalbum_Comment extends Kwalbum_Model
 		}
 	}
 
-	public function load($id = null, $field = 'id')
+	public function load($value = null)
 	{
-		if ($id === null)
-		{
-			$id = $this->id;
+        $this->clear();
+		if (is_null($value)) {
+			return $this;
 		}
 
 		$result = DB::query(Database::SELECT,
 			"SELECT id, item_id, name, text, create_dt, ip
 			FROM kwalbum_comments
-			WHERE $field = :id
+			WHERE id = :value
 			LIMIT 1")
-			->param(':id', $id)
+			->param(':value', $value)
 			->execute();
-		if ($result->count() == 0)
-		{
-			$this->clear();
+		if ($result->count() == 0) {
 			return $this;
 		}
 
