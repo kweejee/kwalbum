@@ -76,12 +76,10 @@ class Controller_Item extends Controller_Kwalbum
 
 	private function _send_file($filepathname, $filename_addition = '', $download = false)
 	{
-		$request = $this->request;
-
 		if ( ! $filepath = realpath($filepathname))
 		{
 			// Return a 404 status
-			$request->response()->status(404);
+			$this->response->status(404);
 			Kohana::$log->add('~item/_send_file', '404: '.$filepathname);
 			return;
 		}
@@ -151,15 +149,14 @@ class Controller_Item extends Controller_Kwalbum
 		$file = fopen($filepath, 'rb');
 
 		// Set the headers for a download
-		$response = $request->response();
-		$response->headers('Content-Disposition', ( $download ? 'attachment; ' : null)
+		$this->response->headers('Content-Disposition', ( $download ? 'attachment; ' : null)
 			.'filename="'.$filename.$filename_addition
 			.'.'.$extension.'"');
-		$response->headers('Content-Type', $mime);
-		$response->headers('Content-Length', $size);
+		$this->response->headers('Content-Type', $mime);
+		$this->response->headers('Content-Length', $size);
 
 		// Send all headers now
-		$response->send_headers();
+		$this->response->send_headers();
 
 		while (ob_get_level())
 		{
