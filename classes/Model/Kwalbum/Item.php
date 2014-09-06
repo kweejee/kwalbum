@@ -276,7 +276,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 
 		// Set update_date
 
-		if ($update_update_date_with_update_date) {
+		if ($update_update_date_with_update_date or empty($this->update_date)) {
 			$this->update_date = date('Y-m-d H:i:s');
 		}
 
