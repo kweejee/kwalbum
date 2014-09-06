@@ -162,7 +162,7 @@ class Kwalbum_ItemAdder
 		} else {
 			$item->save();
 		}
-		return $item->id;
+		return (int) $item->id;
 	}
 
     /**
