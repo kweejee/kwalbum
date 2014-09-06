@@ -237,9 +237,8 @@ class Controller_Kwalbum extends Controller_Template
 		if (is_file($file))
 		{
 			// Set the content type for this extension
-			$response = $this->request->create_response();
-			$response->headers('Content-Type', File::mime_by_ext($ext));
-			$response->send_headers();
+			$this->response->headers('Content-Type', File::mime_by_ext($ext));
+			$this->response->send_headers();
 
 			// Send the file content as the response
 			if ($ext == 'css' || $ext == 'js')
@@ -260,6 +259,6 @@ class Controller_Kwalbum extends Controller_Template
 			}
 		}
 		// Return a 404 status
-		$this->request->response()->status(404);
+		$this->response->status(404);
 	}
 }

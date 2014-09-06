@@ -220,12 +220,15 @@ class Controller_Ajax extends Controller_Kwalbum
 		echo 1;
 	}
 
+    /**
+     * Handle file upload request and echo "success" or json of errors
+     *
+     * @return null
+     */
 	public function action_upload()
 	{
-		if ( ! $this->user->is_logged_in)
-		{
-			if ( ! isset($_SERVER['PHP_AUTH_USER']))
-			{
+		if (!$this->user->is_logged_in) {
+			if (!isset($_SERVER['PHP_AUTH_USER'])) {
 				header('WWW-Authenticate: Basic realm="Upload"');
 				header('HTTP/1.1 401 Unauthorized');
 				die('Invalid login');
@@ -233,39 +236,32 @@ class Controller_Ajax extends Controller_Kwalbum
 			$this->user = Model_Kwalbum_User::login(
 				$_SERVER['PHP_AUTH_USER'],
 				$_SERVER['PHP_AUTH_PW']);
-			if (!$this->user)
-			{
+			if (!$this->user) {
 				die('Invalid login');
 			}
 		}
-		if ( ! $this->user->can_add)
-		{
-			$this->request->response()->status(500);
+		if (!$this->user->can_add) {
+			$this->response->status(500);
 			die('You do not have permission to add items');
 		}
 
-		if ( ! empty($_FILES))
-		{
+		if (!empty($_FILES)) {
 			$adder = new Kwalbum_ItemAdder($this->user);
 			$errors = array();
 
 			$files = array();
-			if (isset($_FILES['files']))
-			{
+			if (isset($_FILES['files'])) {
 				$files = is_array($_FILES['files'])
 				       ? $_FILES['files']
 				       : array($_FILES['files']);
-			}
-			elseif (isset($_FILES['userfile']))
-			{
+			} elseif (isset($_FILES['userfile'])) {
 				$files = array($_FILES['userfile']);
 			}
 			try {
 				foreach ($files as $file)
 				{
 					$result = $adder->save_upload($file);
-					if ($result != (int) $result)
-					{
+					if (!is_int($result)) {
 						$errors []= $result;
 					}
 				}
@@ -273,14 +269,15 @@ class Controller_Ajax extends Controller_Kwalbum
 				$errors []= $e->getMessage();
 			}
 			if (!empty($errors)) {
-				$this->request->response()->status(500);
+				$this->response->status(500);
+                $this->response->headers('Content-Type', File::mime_by_ext('json'));
 				echo json_encode(array('errors'=>$errors));
 			} else {
 				echo 'success';
 			}
 			return;
 		}
-		$this->request->response()->status(500);
+		$this->response->status(500);
 		echo 'No files sent';
 	}
 
