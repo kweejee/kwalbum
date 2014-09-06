@@ -246,10 +246,6 @@ class Model_Kwalbum_Location extends Kwalbum_Model
     {
         switch ($key) {
             case 'display_name':
-                return $this->name_hide_level;
-                if ($this->name_hide_level > $this->user->permission) {
-                    return '';
-                }
                 return $this->_display_name;
             case 'name_hide_level_description':
                 return Model_Kwalbum_Item::$hide_level_names[$this->name_hide_level];
