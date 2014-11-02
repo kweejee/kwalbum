@@ -37,7 +37,7 @@ img{border-style:hidden;}
     background-color: #FFFFFF;
     border: 1px solid #999999;
     display: none;
-    position: absolute;
+    position: fixed;
     padding: 5px;
 }
 .kwalbumResizeBox {
