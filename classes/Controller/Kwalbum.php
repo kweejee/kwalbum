@@ -21,6 +21,7 @@ class Controller_Kwalbum extends Controller_Template
 
 	public function before()
 	{
+        $redirect = false;
 		$this->template = new View('kwalbum/template');
 		$this->url = URL::base(true, 'http').'kwalbum';
 
@@ -34,6 +35,7 @@ class Controller_Kwalbum extends Controller_Template
 		{
 			$this->location = $_GET['location'];
 			Model_Kwalbum_Item::append_where('location', $this->location);
+            $redirect = true;
 		}
 
         // date
@@ -52,6 +54,7 @@ class Controller_Kwalbum extends Controller_Template
                 $month2 = 0;
                 $day2 = 0;
             }
+            $redirect = true;
         } else {
             $year = (int)$this->request->param('year');
             $month = (int)$this->request->param('month');
@@ -93,6 +96,7 @@ class Controller_Kwalbum extends Controller_Template
 		{
 			$this->tags = explode(',', $_GET['tags']);
 			Model_Kwalbum_Item::append_where('tags', $this->tags);
+            $redirect = true;
 		}
 		else
 			$this->tags = null;
@@ -107,6 +111,7 @@ class Controller_Kwalbum extends Controller_Template
 		{
 			$this->people = explode(',', $_GET['people']);
 			Model_Kwalbum_Item::append_where('people', $this->people);
+            $redirect = true;
 		}
 		else
 			$this->people = null;
@@ -132,6 +137,7 @@ class Controller_Kwalbum extends Controller_Template
 			{
 				$this->create_dt .= ' '.$_GET['created_time'];
 				Model_Kwalbum_Item::append_where('create_dt', $this->create_dt);
+                $redirect = true;
 			}
 			else
 			{
@@ -199,6 +205,10 @@ class Controller_Kwalbum extends Controller_Template
 				$this->template->set_global('previous_item', $this->previous_item);
 				$this->template->set_global('next_item', $this->next_item);
 			}
+            
+            if ($redirect) {
+                header('Location: '.$this->url.'/'.$this->params);
+            }
 
 			$this->page_number = $page_number;
 
