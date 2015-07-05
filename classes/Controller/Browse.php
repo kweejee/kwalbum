@@ -61,16 +61,10 @@ class Controller_Browse extends Controller_Kwalbum
                 if ($tags_to_add) {
                     $item->tags = array_merge($item->tags, $tags_to_add);
                 }
-                if ($tags_to_add) {
-                    $tags = $item->tags;
-                    foreach ($tags_to_remove as $tag) {
-                        $key = array_search($tag, $tags);
-                        if ($key !== false) {
-                            unset($tags[$key]);
-                        }
-                    }
-                    $item->tags = $tags;
+                if ($tags_to_remove) {
+                    $item->tags = array_diff($item->tags, $tags_to_remove);
                 }
+
                 if ($persons_to_add) {
                     $item->persons = array_merge($item->persons, $persons_to_add);
                 }
