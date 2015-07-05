@@ -4,7 +4,7 @@ $all_locations_returned = Model_Kwalbum_Location::getAllArray();
 $locations = array();
 foreach ($all_locations_returned as $loc) {
     $full_name = Model_Kwalbum_Location::getFullName($loc['parent_name'], $loc['name']);
-	$locations[$full_name] = $loc;
+	$locations[$full_name.$loc['id']] = $loc;
 }
 uksort($locations, 'strnatcasecmp');
 $hide_levels = Model_Kwalbum_Item::$hide_level_names;
@@ -25,7 +25,8 @@ echo HTML::script($kwalbum_url.'/media/ajax/jquery.jeditable.mini.js')
             <th style="width:150px;">Coordinate Visibility</th>
         </tr>
 <?php
-foreach ($locations as $full_name => $loc) {
+foreach ($locations as $loc) {
+    $full_name = Model_Kwalbum_Location::getFullName($loc['parent_name'], $loc['name']);
     $count_link = HTML::anchor(
         $kwalbum_url.'/'.$full_name,
         '<span title="Items with this exact location">'.$loc['count'].'</span> / <span title="Total including child locations">'.($loc['count']+$loc['child_count']).'</span>'
