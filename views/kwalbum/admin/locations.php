@@ -1,18 +1,10 @@
 <?php
 $config = Kohana::$config->load('kwalbum');
-$all_locations = Model_Kwalbum_Location::getAllArray();
+$all_locations_returned = Model_Kwalbum_Location::getAllArray();
 $locations = array();
-foreach ($all_locations as $loc) {
-	$locations[$loc['id']] = $loc;
-}
-$all_locations = $locations;
-$locations = array();
-foreach ($all_locations as $loc) {
-    $loc_parent = '';
-    if ($loc['parent_location_id']) {
-        $loc_parent = $all_locations[$loc['parent_location_id']]['name'].$config->location_separator_1;
-    }
-	$locations[$loc_parent.$loc['name']] = $loc;
+foreach ($all_locations_returned as $loc) {
+    $full_name = Model_Kwalbum_Location::getFullName($loc['parent_name'], $loc['name']);
+	$locations[$full_name] = $loc;
 }
 uksort($locations, 'strnatcasecmp');
 $hide_levels = Model_Kwalbum_Item::$hide_level_names;

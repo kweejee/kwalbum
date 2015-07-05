@@ -23,10 +23,34 @@ class Controller_AjaxAdmin extends Controller_Kwalbum
         }
         $loc = Model::factory('Kwalbum_Location')->load((int)$id[1]);
         if (!empty($_POST['value'])) {
-			$loc->display_name = htmlspecialchars($_POST['value']);
+            $names = explode(trim(Kwalbum_Model::get_config('location_separator_1')), htmlspecialchars($_POST['value']));
+			$parent_name = '';
+			if (count($names) > 1) {
+				$parent_name = trim($names[0]);
+				array_shift($names);
+				foreach ($names as $i => $name) {
+					$names[$i] = trim($name);
+					if (!$name) {
+						unset($names[$i]);
+                    }
+				}
+				$loc->name = implode(Kwalbum_Model::get_config('location_separator_2'), $names);
+			} else {
+				$loc->name = trim($names[0]);
+			}
+			if ($parent_name) {
+				if (!$loc->name) {
+					$loc->name = $parent_name;
+					$loc->parent_name = '';
+				} else {
+					$loc->parent_name = $parent_name;
+				}
+			} else {
+				$loc->parent_name = '';
+			}
 			$loc->save();
 		}
-		echo $loc->display_name;
+		echo (string) $loc;
 		exit;
 	}
 

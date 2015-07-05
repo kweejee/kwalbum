@@ -13,7 +13,7 @@ class Model_Kwalbum_Location extends Kwalbum_Model
 {
 	public $id, $name, $latitude, $longitude, $count, $child_count, $thumbnail_item_id, $parent_name,
 		$name_hide_level, $coordinate_hide_level, $description;
-	private $_display_name, $_original_name;
+	private $_original_name;
 
     /**
      * Load a location where $field equals $value
@@ -48,7 +48,6 @@ class Model_Kwalbum_Location extends Kwalbum_Model
 		$this->name = $row['name'];
 		$this->_original_name = $this->name;
 		$this->parent_name = $row['parent_name'];
-		$this->_display_name = ($row['parent_name'] ? $row['parent_name'].self::get_config('location_separator_1') : '').$row['name'];
 		$this->latitude = (float)$row['latitude'];
 		$this->longitude = (float)$row['longitude'];
 		$this->count = (int)$row['count'];
@@ -235,20 +234,34 @@ class Model_Kwalbum_Location extends Kwalbum_Model
 	{
 		$this->id = $this->latitude = $this->longitude = $this->count = $this->child_count = $this->thumbnail_item_id
 			= $this->name_hide_level = $this->coordinate_hide_level = 0;
-		$this->name = $this->parent_name = $this->_display_name = $this->description = '';
+		$this->name = $this->parent_name = $this->description = '';
 		$this->loaded = false;
 	}
 
+    /**
+     * @return string
+     */
     public function __toString()
     {
-        return $this->__get('display_name');
+        return self::getFullName($this->parent_name, $this->name);
+    }
+
+    /**
+     * Get full name including parent name if set
+     *
+     * @param string $parent_name
+     * @param string $name
+     * @return string
+     */
+    public static function getFullName($parent_name, $name)
+    {
+        $parent = trim($parent_name) ? trim($parent_name).self::get_config('location_separator_1') : '';
+        return $parent.trim($name);
     }
 
     public function  __get($key)
     {
         switch ($key) {
-            case 'display_name':
-                return $this->_display_name;
             case 'name_hide_level_description':
                 return Model_Kwalbum_Item::$hide_level_names[$this->name_hide_level];
             case 'coordinate_hide_level_description':
@@ -256,54 +269,12 @@ class Model_Kwalbum_Location extends Kwalbum_Model
         }
     }
 
-	public function  __set($key, $value) {
-		if ($key == 'display_name')
-		{
-			$names = explode(trim(self::get_config('location_separator_1')), $value);
-			$parent_name = '';
-			if (count($names) > 1)
-			{
-				$parent_name = trim($names[0]);
-				array_shift($names);
-				foreach ($names as $i => $name)
-				{
-					$names[$i] = trim($name);
-					if (!$name)
-						unset($names[$i]);
-				}
-				$this->name = implode(self::get_config('location_separator_2'), $names);
-			}
-			else
-			{
-				$this->name = trim($names[0]);
-			}
-			if ($parent_name)
-			{
-				if (!$this->name)
-				{
-					$this->name = $parent_name;
-					$this->parent_name = '';
-					$this->_display_name = $this->name;
-				}
-				else
-				{
-					$this->parent_name = $parent_name;
-					$this->_display_name = $this->parent_name.self::get_config('location_separator_1').$this->name;
-				}
-			}
-			else
-			{
-				$this->parent_name = '';
-				$this->_display_name = $this->name;
-			}
-		}
-	}
-
 	static public function getAllArray($order_by = '')
 	{
 		$result = DB::query(Database::SELECT,
-			"SELECT *
-			FROM kwalbum_locations
+			"SELECT loc.*, p.name AS parent_name
+			FROM kwalbum_locations loc
+			LEFT JOIN kwalbum_locations p ON (p.id = loc.parent_location_id)
 			{$order_by}")
 			->execute();
 		return $result;
