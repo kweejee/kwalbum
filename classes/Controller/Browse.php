@@ -16,7 +16,7 @@ class Controller_Browse extends Controller_Kwalbum
     {
         parent::before();
 
-        if (!empty($_POST['kwalbum_mass_check'])) {
+        if ($this->in_edit_mode && !empty($_POST['kwalbum_mass_check'])) {
             if (!empty($_POST['loc'])) {
                 $location = trim(htmlspecialchars($_POST['loc']));
             }
