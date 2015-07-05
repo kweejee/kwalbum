@@ -79,12 +79,14 @@ class Model_Kwalbum_Location extends Kwalbum_Model
 				$result = DB::query(Database::SELECT,
 					"SELECT id
 					FROM kwalbum_locations
-					WHERE name = :name")
+                    WHERE name = :name
+                        AND parent_location_id = 0
+                    ORDER BY id ASC
+                   LIMIT 1")
 					->param(':name', $this->parent_name)
 					->execute();
 			}
-			if (isset($result) and count($result) == 1)
-			{
+            if (!empty($result)) {
 				$parent_id = $result[0]['id'];
 			}
 			else
