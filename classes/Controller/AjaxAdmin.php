@@ -11,9 +11,9 @@
 
 class Controller_AjaxAdmin extends Controller_Kwalbum
 {
-	function action_EditLocationName()
-	{
-		$this->_testPermission();
+    function action_EditLocationName()
+    {
+        $this->_testPermission();
         if (!empty($_POST['id'])) {
             $id = explode('_', $_POST['id']);
         }
@@ -24,35 +24,35 @@ class Controller_AjaxAdmin extends Controller_Kwalbum
         $loc = Model::factory('Kwalbum_Location')->load((int)$id[1]);
         if (!empty($_POST['value'])) {
             $names = explode(trim(Kwalbum_Model::get_config('location_separator_1')), htmlspecialchars($_POST['value']));
-			$parent_name = '';
-			if (count($names) > 1) {
-				$parent_name = trim($names[0]);
-				array_shift($names);
-				foreach ($names as $i => $name) {
-					$names[$i] = trim($name);
-					if (!$name) {
-						unset($names[$i]);
+            $parent_name = '';
+            if (count($names) > 1) {
+                $parent_name = trim($names[0]);
+                array_shift($names);
+                foreach ($names as $i => $name) {
+                    $names[$i] = trim($name);
+                    if (!$name) {
+                        unset($names[$i]);
                     }
-				}
-				$loc->name = implode(Kwalbum_Model::get_config('location_separator_2'), $names);
-			} else {
-				$loc->name = trim($names[0]);
-			}
-			if ($parent_name) {
-				if (!$loc->name) {
-					$loc->name = $parent_name;
-					$loc->parent_name = '';
-				} else {
-					$loc->parent_name = $parent_name;
-				}
-			} else {
-				$loc->parent_name = '';
-			}
-			$loc->save();
-		}
-		echo (string) $loc;
-		exit;
-	}
+                }
+                $loc->name = implode(Kwalbum_Model::get_config('location_separator_2'), $names);
+            } else {
+                $loc->name = trim($names[0]);
+            }
+            if ($parent_name) {
+                if (!$loc->name) {
+                    $loc->name = $parent_name;
+                    $loc->parent_name = '';
+                } else {
+                    $loc->parent_name = $parent_name;
+                }
+            } else {
+                $loc->parent_name = '';
+            }
+            $loc->save();
+        }
+        echo (string) $loc;
+        exit;
+    }
 
     protected function getHideLevelOptions($field)
     {
@@ -121,61 +121,59 @@ class Controller_AjaxAdmin extends Controller_Kwalbum
         exit;
     }
 
-	function action_DeleteLocation()
-	{
-		$this->_testPermission();
-		Model::factory('Kwalbum_Location')
-			->load((int)$_POST['id'])
-			->delete();
-		exit;
-	}
+    function action_DeleteLocation()
+    {
+        $this->_testPermission();
+        Model::factory('Kwalbum_Location')
+            ->load((int)$_POST['id'])
+            ->delete();
+        exit;
+    }
 
-	function action_EditPersonName()
-	{
-		$this->_testPermission();
-		$person = Model::factory('Kwalbum_Person')->load((int)$_POST['id']);
-		if ( ! empty($_POST['value']))
-		{
-			$person->name = htmlspecialchars(trim($_POST['value']));
-			$person->save();
-		}
-		echo $person->name;
-		exit;
-	}
+    function action_EditPersonName()
+    {
+        $this->_testPermission();
+        $person = Model::factory('Kwalbum_Person')->load((int)$_POST['id']);
+        if ( ! empty($_POST['value'])) {
+            $person->name = htmlspecialchars(trim($_POST['value']));
+            $person->save();
+        }
+        echo $person->name;
+        exit;
+    }
 
-	function action_DeletePerson()
-	{
-		$this->_testPermission();
-		Model::factory('Kwalbum_Person')
-			->load((int)$_POST['id'])
-			->delete();
-		exit;
-	}
+    function action_DeletePerson()
+    {
+        $this->_testPermission();
+        Model::factory('Kwalbum_Person')
+            ->load((int)$_POST['id'])
+            ->delete();
+        exit;
+    }
 
-	function action_EditTagName()
-	{
-		$this->_testPermission();
-		$tag = Model::factory('Kwalbum_Tag')->load((int)$_POST['id']);
-		if ( ! empty($_POST['value']))
-		{
-			$tag->name = htmlspecialchars(trim($_POST['value']));
-			$tag->save();
-		}
-		echo $tag->name;
-		exit;
-	}
+    function action_EditTagName()
+    {
+        $this->_testPermission();
+        $tag = Model::factory('Kwalbum_Tag')->load((int)$_POST['id']);
+        if ( ! empty($_POST['value'])) {
+            $tag->name = htmlspecialchars(trim($_POST['value']));
+            $tag->save();
+        }
+        echo $tag->name;
+        exit;
+    }
 
-	function action_DeleteTag()
-	{
-		$this->_testPermission();
-		Model::factory('Kwalbum_Tag')
-			->load((int)$_POST['id'])
-			->delete();
-		exit;
-	}
+    function action_DeleteTag()
+    {
+        $this->_testPermission();
+        Model::factory('Kwalbum_Tag')
+            ->load((int)$_POST['id'])
+            ->delete();
+        exit;
+    }
 
-	function action_GetUserPermission()
-	{
+    function action_GetUserPermission()
+    {
         if (!empty($_GET['id'])) {
             $id = explode('_', $_GET['id']);
         }
@@ -183,16 +181,16 @@ class Controller_AjaxAdmin extends Controller_Kwalbum
             echo 'Invalid id';
             exit;
         }
-		$this->_testPermission();
-		$perms = Model_Kwalbum_User::$permission_names;
-		$user = Model::factory('Kwalbum_User')->load((int)$id[1]);
-		$perms['selected'] = $user->permission_level;
-		echo json_encode($perms);
-		exit;
-	}
+        $this->_testPermission();
+        $perms = Model_Kwalbum_User::$permission_names;
+        $user = Model::factory('Kwalbum_User')->load((int)$id[1]);
+        $perms['selected'] = $user->permission_level;
+        echo json_encode($perms);
+        exit;
+    }
 
-	function action_EditUserPermission()
-	{
+    function action_EditUserPermission()
+    {
         $this->_testPermission();
         if (!empty($_POST['id'])) {
             $id = explode('_', $_POST['id']);
@@ -210,33 +208,34 @@ class Controller_AjaxAdmin extends Controller_Kwalbum
         }
         echo $user->permission_description;
         exit;
-	}
+    }
 
-	function action_DeleteUser()
-	{
-		$this->_testPermission();
-		Model::factory('Kwalbum_User')
-			->load((int)$_POST['userid'])
-			->delete();
-		exit;
-	}
+    function action_DeleteUser()
+    {
+        $this->_testPermission();
+        Model::factory('Kwalbum_User')
+            ->load((int)$_POST['userid'])
+            ->delete();
+        exit;
+    }
 
-	function action_SaveMapLocation()
-	{
-		$this->_testPermission();
-		$loc = new Model_Kwalbum_Location;
-		$loc->load($_POST['id']);
-		$loc->latitude = (float)$_POST['lat'];
-		$loc->longitude = (float)$_POST['lon'];
-		$loc->save();
-		echo 1;
-		exit;
-	}
+    function action_SaveMapLocation()
+    {
+        $this->_testPermission();
+        $loc = new Model_Kwalbum_Location;
+        $loc->load($_POST['id']);
+        $loc->latitude = (float)$_POST['lat'];
+        $loc->longitude = (float)$_POST['lon'];
+        $loc->save();
+        echo 1;
+        exit;
+    }
 
-	private function _testPermission()
-	{
-		if ($this->user->is_admin)
-			return;
-		exit;
-	}
+    private function _testPermission()
+    {
+        if ($this->user->is_admin) {
+            return;
+        }
+        exit;
+    }
 }
