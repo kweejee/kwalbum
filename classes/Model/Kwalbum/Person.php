@@ -14,24 +14,21 @@ class Model_Kwalbum_Person extends Kwalbum_Model
 {
 	public $id, $name, $count, $loaded;
 
-	public function load($id = null, $field = 'id')
+	public function load($value = null)
 	{
-		if ($id == null)
-		{
-			$this->clear();
+        $this->clear();
+		if (is_null($value)) {
 			return $this;
 		}
 
 		$result = DB::query(Database::SELECT,
 			"SELECT id, name, count
 			FROM kwalbum_persons
-			WHERE $field = :id
+			WHERE id = :value
 			LIMIT 1")
-			->param(':id', $id)
+			->param(':value', $value)
 			->execute();
-		if ($result->count() == 0)
-		{
-			$this->clear();
+		if ($result->count() == 0) {
 			return $this;
 		}
 

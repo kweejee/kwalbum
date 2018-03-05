@@ -74,10 +74,10 @@ $meta_image = isset($thumbnail_image) ? '<meta property="og:image" content="'.$t
 	<title><?php echo $title ?></title>
 
 	<?php
-		echo html::style('kwalbum/media/css/jquery-ui/jquery-ui-1.8.17.custom.css');
-		echo html::style($kwalbum_url.'/media/css/default.css');
-		echo html::script('https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js');
-		echo html::script($kwalbum_url.'/media/ajax/jquery-ui-1.8.17.custom.min.js');
+		echo HTML::style('kwalbum/media/css/jquery-ui/jquery-ui-1.8.17.custom.css');
+		echo HTML::style($kwalbum_url.'/media/css/default.css');
+		echo HTML::script('https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js');
+		echo HTML::script($kwalbum_url.'/media/ajax/jquery-ui-1.8.17.custom.min.js');
 		echo isset($head) ? $head : null;
 	?>
 

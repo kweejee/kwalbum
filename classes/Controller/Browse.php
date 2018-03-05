@@ -16,16 +16,13 @@ class Controller_Browse extends Controller_Kwalbum
     {
         parent::before();
 
-        if (!empty($_POST['kwalbum_mass_check'])) {
-            $location = trim(htmlspecialchars(@$_POST['loc']));
-            $visibility = null;
+        if ($this->in_edit_mode && !empty($_POST['kwalbum_mass_check'])) {
+            if (!empty($_POST['loc'])) {
+                $location = trim(htmlspecialchars($_POST['loc']));
+            }
             if (!empty($_POST['vis'])) {
                 $visibility = Kwalbum_ItemAdder::get_visibility($this->user);
             }
-            $tags_to_add = array();
-            $tags_to_remove = array();
-            $persons_to_add = array();
-            $persons_to_remove = array();
             if (!empty($_POST['tags_add'])) {
                 $tags_to_add = explode(',', $_POST['tags_add']);
                 foreach ($tags_to_add as $i => $tag) {
@@ -52,47 +49,27 @@ class Controller_Browse extends Controller_Kwalbum
             }
             foreach ($_POST['kwalbum_mass_check'] as $item_id) {
                 $item = new Model_Kwalbum_Item($item_id);
-                if ($location) {
+                if (isset($location)) {
                     $item->location = $location;
                 }
-                if ($visibility !== null) {
+                if (isset($visibility)) {
                     $item->hide_level = $visibility;
                 }
-                if ($tags_to_add) {
+                if (!empty($tags_to_add)) {
                     $item->tags = array_merge($item->tags, $tags_to_add);
                 }
-                if ($tags_to_add) {
-                    $tags = $item->tags;
-                    foreach ($tags_to_remove as $tag) {
-                        $key = array_search($tag, $tags);
-                        if ($key !== false) {
-                            unset($tags[$key]);
-                        }
-                    }
-                    $item->tags = $tags;
+                if (!empty($tags_to_remove)) {
+                    $item->tags = array_diff($item->tags, $tags_to_remove);
                 }
-                if ($persons_to_add) {
+
+                if (!empty($persons_to_add)) {
                     $item->persons = array_merge($item->persons, $persons_to_add);
                 }
-                if ($persons_to_remove) {
-                    $persons = $item->persons;
-                    foreach ($persons_to_remove as $name) {
-                        $key = array_search($name, $persons);
-                        if ($key !== false) {
-                            unset($persons[$key]);
-                        }
-                    }
-                    $item->persons = $persons;
+                if (!empty($persons_to_remove)) {
+                    $item->persons = array_diff($item->persons, $persons_to_remove);
                 }
                 $item->save();
-
             }
-
-            $tags = explode(',', htmlspecialchars(@ $_POST['tags']));
-            for ($i = 0; $i < count($tags); $i++) {
-                $tags[$i] = trim($tags[$i]);
-            }
-            $item->tags = $tags;
         }
     }
 

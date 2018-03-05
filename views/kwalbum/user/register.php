@@ -19,31 +19,31 @@
 	}
 	else
 	{
-		echo form::open($kwalbum_url.'/~user/register');
+		echo Form::open($kwalbum_url.'/~user/register');
 
-		echo form::label('login_name', 'Login Name');
-		echo form::input('login_name', ($form['login_name']));
+		echo Form::label('login_name', 'Login Name');
+		echo Form::input('login_name', ($form['login_name']));
 		echo (empty($errors['login_name'])) ? '' : '<div class="errors">'.$errors['login_name'].'</div>';
 		echo '<br/>';
 
-		echo form::label('name', 'Name to Display on comments');
-		echo form::input('name', ($form['name']));
+		echo Form::label('name', 'Name to Display on comments');
+		echo Form::input('name', ($form['name']));
 		echo (empty($errors['name'])) ? '' : '<div class="errors">'.$errors['name'].'</div>';
 		echo '<br/>';
 
-		echo form::label('password', 'Password');
-		echo form::password('password', ($form['password']));
+		echo Form::label('password', 'Password');
+		echo Form::password('password', ($form['password']));
 		echo (empty($errors['password'])) ? '' : '<div class="errors">'.$errors['password'].'</div>';
 		echo '<br/>';
 
-		echo form::label('email', 'Email Address in case of lost password');
-		echo form::input('email', ($form['email']));
+		echo Form::label('email', 'Email Address in case of lost password');
+		echo Form::input('email', ($form['email']));
 		echo (empty($errors['email'])) ? '' : '<div class="errors">'.$errors['email'].'</div>';
 		echo '<br/>';
 
-		echo form::submit('submit', 'Create Your Account');
+		echo Form::submit('submit', 'Create Your Account');
 		echo '<br />';
-		echo form::close();
+		echo Form::close();
 	}
 ?>
 </div>

@@ -156,7 +156,7 @@ class Controller_Kwalbum extends Controller_Template
 		// item id
 		if (0 < $this->request->param('id'))
 		{
-			$this->item = Model::factory('kwalbum_item')
+			$this->item = Model::factory('Kwalbum_Item')
 				->load((int) $this->request->param('id'));
 			$this->item->hide_if_needed($this->user);
 			$this->template->set_global('item', $this->item);
@@ -178,7 +178,7 @@ class Controller_Kwalbum extends Controller_Template
 			.($this->create_dt ? 'created/'.implode('/', explode(' ', $this->create_dt)).'/' : null);
 
 		if ($this->request->action() != 'media' and
-		    $this->request->controller() != 'install')
+		    $this->request->controller() != 'Install')
 		{
 			$this->in_edit_mode = ! empty($_SESSION['kwalbum_edit']);
 			$this->total_items = Model_Kwalbum_Item::get_total_items();
@@ -226,7 +226,7 @@ class Controller_Kwalbum extends Controller_Template
 			$this->template->set_global('page_number', $this->page_number);
 
 			$this->template->set_global('in_edit_mode', $this->in_edit_mode);
-			$this->template->set_global('head', html::script($this->url.'/media/ajax/toggle.edit.js'));
+			$this->template->set_global('head', HTML::script($this->url.'/media/ajax/toggle.edit.js'));
 		}
 		$this->template->set_global('kwalbum_url', $this->url);
 		$this->template->set_global('user', $this->user);
@@ -247,9 +247,8 @@ class Controller_Kwalbum extends Controller_Template
 		if (is_file($file))
 		{
 			// Set the content type for this extension
-			$response = $this->request->create_response();
-			$response->headers('Content-Type', File::mime_by_ext($ext));
-			$response->send_headers();
+			$this->response->headers('Content-Type', File::mime_by_ext($ext));
+			$this->response->send_headers();
 
 			// Send the file content as the response
 			if ($ext == 'css' || $ext == 'js')
@@ -270,6 +269,6 @@ class Controller_Kwalbum extends Controller_Template
 			}
 		}
 		// Return a 404 status
-		$this->request->response()->status(404);
+		$this->response->status(404);
 	}
 }

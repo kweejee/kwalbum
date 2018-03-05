@@ -24,7 +24,7 @@ for ($i = 1; $i <= $total_pages; $i++) {
             $class = 'kwalbumPageBetween';
         }
         if ($class) {
-            $page_links .= html::anchor(
+            $page_links .= HTML::anchor(
                 "{$kwalbum_url}/{$kwalbum_url_params}page/{$i}",
                 $i,
                 array('class' => $class)
@@ -45,7 +45,7 @@ $page_links_div = "<div class='kwalbumPageNumbers'><span class='kwalbumPageLabel
 </div>
 <?php
 if ($in_edit_mode) {
-    echo html::script($kwalbum_url.'/media/ajax/mass_edit.js');
+    echo HTML::script($kwalbum_url.'/media/ajax/mass_edit.js');
 
     $hide_level_options = '<option value="">Unchanged</option>'
         .'<option value="-1">Public</option>';
@@ -96,7 +96,7 @@ if ($in_edit_mode) {
     </div>
 <?php
 } else { // in view mode
-    echo html::script($kwalbum_url.'/media/ajax/view.js');
+    echo HTML::script($kwalbum_url.'/media/ajax/view.js');
 
 }
 

@@ -1,24 +1,16 @@
 <?php
 $config = Kohana::$config->load('kwalbum');
-$all_locations = Model_Kwalbum_Location::getAllArray();
+$all_locations_returned = Model_Kwalbum_Location::getAllArray();
 $locations = array();
-foreach ($all_locations as $loc) {
-	$locations[$loc['id']] = $loc;
-}
-$all_locations = $locations;
-$locations = array();
-foreach ($all_locations as $loc) {
-    $loc_parent = '';
-    if ($loc['parent_location_id']) {
-        $loc_parent = $all_locations[$loc['parent_location_id']]['name'].$config->location_separator_1;
-    }
-	$locations[$loc_parent.$loc['name']] = $loc;
+foreach ($all_locations_returned as $loc) {
+    $full_name = Model_Kwalbum_Location::getFullName($loc['parent_name'], $loc['name']);
+	$locations[$full_name.$loc['id']] = $loc;
 }
 uksort($locations, 'strnatcasecmp');
 $hide_levels = Model_Kwalbum_Item::$hide_level_names;
 
-echo html::script($kwalbum_url.'/media/ajax/jquery.jeditable.mini.js')
-    .html::script($kwalbum_url.'/media/ajax/admin/locations.js');
+echo HTML::script($kwalbum_url.'/media/ajax/jquery.jeditable.mini.js')
+    .HTML::script($kwalbum_url.'/media/ajax/admin/locations.js');
 ?>
 <div class="box">
 	<big><b>Editing Locations</b></big>
@@ -33,8 +25,9 @@ echo html::script($kwalbum_url.'/media/ajax/jquery.jeditable.mini.js')
             <th style="width:150px;">Coordinate Visibility</th>
         </tr>
 <?php
-foreach ($locations as $full_name => $loc) {
-    $count_link = html::anchor(
+foreach ($locations as $loc) {
+    $full_name = Model_Kwalbum_Location::getFullName($loc['parent_name'], $loc['name']);
+    $count_link = HTML::anchor(
         $kwalbum_url.'/'.$full_name,
         '<span title="Items with this exact location">'.$loc['count'].'</span> / <span title="Total including child locations">'.($loc['count']+$loc['child_count']).'</span>'
     );

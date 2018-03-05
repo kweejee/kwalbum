@@ -17,7 +17,7 @@ for($i = 1; $i <= $total_pages; $i++)
 	if ($i == $page_number)
 		$page_links .= "<span class='kwalbumCurrentIndex'>$i</span> ";
 	else
-		$page_links .= html::anchor($kwalbum_url.'/~browse/comments/page/'.$i,
+		$page_links .= HTML::anchor($kwalbum_url.'/~browse/comments/page/'.$i,
 			$i).' ';
 }
 $page_links = "<div class='kwalbumPageNumbers'>pages: $page_links</div>";

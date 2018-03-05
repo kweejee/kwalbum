@@ -34,7 +34,7 @@ class Controller_Ajax extends Controller_Kwalbum
 
 	public function action_SetLocation()
 	{
-		$item = Model :: factory('kwalbum_item')->load((int)$_POST['item']);
+		$item = Model::factory('Kwalbum_Item')->load((int)$_POST['item']);
 		$this->_testPermission($item);
 		$item->location = htmlspecialchars(trim($_POST['value']));
 		$item->save();
@@ -43,7 +43,7 @@ class Controller_Ajax extends Controller_Kwalbum
 
 	public function action_SetDate()
 	{
-		$item = Model :: factory('kwalbum_item')->load((int)$_POST['item']);
+		$item = Model::factory('Kwalbum_Item')->load((int)$_POST['item']);
 		$this->_testPermission($item);
 		$date = Kwalbum_Helper::replaceBadDate($_POST['value'].' '.$item->time);
 		if ($item->visible_date == $item->sort_date)
@@ -55,7 +55,7 @@ class Controller_Ajax extends Controller_Kwalbum
 
 	public function action_SetTime()
 	{
-		$item = Model :: factory('kwalbum_item')->load((int)$_POST['item']);
+		$item = Model::factory('Kwalbum_Item')->load((int)$_POST['item']);
 		$this->_testPermission($item);
 		$date = Kwalbum_Helper::replaceBadDate($item->date.' '.$_POST['value']);
 		if ($item->visible_date == $item->sort_date)
@@ -67,7 +67,7 @@ class Controller_Ajax extends Controller_Kwalbum
 
 	public function action_SetSortDate()
 	{
-		$item = Model :: factory('kwalbum_item')->load((int)$_POST['item']);
+		$item = Model::factory('Kwalbum_Item')->load((int)$_POST['item']);
 		$this->_testPermission($item);
 		$date = Kwalbum_Helper :: replaceBadDate($_POST['value']);
 		$item->sort_date = $date;
@@ -76,14 +76,14 @@ class Controller_Ajax extends Controller_Kwalbum
 	}
 	public function action_GetRawDescription()
 	{
-		$item = Model :: factory('kwalbum_item')->load((int)$_GET['item']);
+		$item = Model::factory('Kwalbum_Item')->load((int)$_GET['item']);
 		$this->_testPermission($item);
 		echo $item->description;
 	}
 
 	public function action_SetDescription()
 	{
-		$item = Model :: factory('kwalbum_item')->load((int)$_POST['item']);
+		$item = Model::factory('Kwalbum_Item')->load((int)$_POST['item']);
 		$this->_testPermission($item);
 		$item->description = trim($_POST['value']);
 		$item->save();
@@ -92,7 +92,7 @@ class Controller_Ajax extends Controller_Kwalbum
 
 	public function action_GetVisibility()
 	{
-		$item = Model :: factory('kwalbum_item')->load((int)$_GET['item']);
+		$item = Model::factory('Kwalbum_Item')->load((int)$_GET['item']);
 		$this->_testPermission($item);
 		$vis = array();
         foreach (Model_Kwalbum_Item::$hide_level_names as $level => $name) {
@@ -106,7 +106,7 @@ class Controller_Ajax extends Controller_Kwalbum
 
 	public function action_SetVisibility()
 	{
-		$item = Model :: factory('kwalbum_item')->load((int)$_POST['item']);
+		$item = Model::factory('Kwalbum_Item')->load((int)$_POST['item']);
 		$this->_testPermission($item);
         $visibility = (int) (@ $_POST['value']);
         if ($visibility < 0)
@@ -132,7 +132,7 @@ class Controller_Ajax extends Controller_Kwalbum
 
 	public function action_SetTags()
 	{
-		$item = Model :: factory('kwalbum_item')->load((int)$_POST['item']);
+		$item = Model::factory('Kwalbum_Item')->load((int)$_POST['item']);
 		$this->_testPermission($item);
 		$tags = explode(',', htmlspecialchars($_POST['value']));
 		for ($i = 0; $i < count($tags); $i++)
@@ -147,7 +147,7 @@ class Controller_Ajax extends Controller_Kwalbum
 
 	public function action_SetPersons()
 	{
-		$item = Model :: factory('kwalbum_item')->load((int)$_POST['item']);
+		$item = Model::factory('Kwalbum_Item')->load((int)$_POST['item']);
 		$this->_testPermission($item);
 		$persons = explode(',', htmlspecialchars($_POST['value']));
 		for ($i = 0; $i < count($persons); $i++)
@@ -176,7 +176,7 @@ class Controller_Ajax extends Controller_Kwalbum
 
 	public function action_AddComment()
 	{
-		$item = Model::factory('kwalbum_item')->load((int)$_POST['item']);
+		$item = Model::factory('Kwalbum_Item')->load((int)$_POST['item']);
 		if ( ! $this->user->can_view_item($item))
 		{
 			echo 'no commenting for you';
@@ -196,7 +196,7 @@ class Controller_Ajax extends Controller_Kwalbum
 			echo 0;
 			return;
 		}
-		$item = Model::factory('kwalbum_item')->load((int)$_POST['item']);
+		$item = Model::factory('Kwalbum_Item')->load((int)$_POST['item']);
 		if (!$this->user->can_edit_item($item)) {
 			echo 0;
 			return;
@@ -211,7 +211,7 @@ class Controller_Ajax extends Controller_Kwalbum
 			echo 0;
 			return;
 		}
-		$item = Model::factory('kwalbum_item')->load((int)$_POST['item']);
+		$item = Model::factory('Kwalbum_Item')->load((int)$_POST['item']);
 		if (!$this->user->can_edit_item($item)) {
 			echo 0;
 			return;
@@ -220,12 +220,15 @@ class Controller_Ajax extends Controller_Kwalbum
 		echo 1;
 	}
 
+    /**
+     * Handle file upload request and echo "success" or json of errors
+     *
+     * @return null
+     */
 	public function action_upload()
 	{
-		if ( ! $this->user->is_logged_in)
-		{
-			if ( ! isset($_SERVER['PHP_AUTH_USER']))
-			{
+		if (!$this->user->is_logged_in) {
+			if (!isset($_SERVER['PHP_AUTH_USER'])) {
 				header('WWW-Authenticate: Basic realm="Upload"');
 				header('HTTP/1.1 401 Unauthorized');
 				die('Invalid login');
@@ -233,39 +236,32 @@ class Controller_Ajax extends Controller_Kwalbum
 			$this->user = Model_Kwalbum_User::login(
 				$_SERVER['PHP_AUTH_USER'],
 				$_SERVER['PHP_AUTH_PW']);
-			if (!$this->user)
-			{
+			if (!$this->user) {
 				die('Invalid login');
 			}
 		}
-		if ( ! $this->user->can_add)
-		{
-			$this->request->response()->status(500);
+		if (!$this->user->can_add) {
+			$this->response->status(500);
 			die('You do not have permission to add items');
 		}
 
-		if ( ! empty($_FILES))
-		{
+		if (!empty($_FILES)) {
 			$adder = new Kwalbum_ItemAdder($this->user);
 			$errors = array();
 
 			$files = array();
-			if (isset($_FILES['files']))
-			{
+			if (isset($_FILES['files'])) {
 				$files = is_array($_FILES['files'])
 				       ? $_FILES['files']
 				       : array($_FILES['files']);
-			}
-			elseif (isset($_FILES['userfile']))
-			{
+			} elseif (isset($_FILES['userfile'])) {
 				$files = array($_FILES['userfile']);
 			}
 			try {
 				foreach ($files as $file)
 				{
 					$result = $adder->save_upload($file);
-					if ($result != (int) $result)
-					{
+					if (!is_int($result)) {
 						$errors []= $result;
 					}
 				}
@@ -273,14 +269,15 @@ class Controller_Ajax extends Controller_Kwalbum
 				$errors []= $e->getMessage();
 			}
 			if (!empty($errors)) {
-				$this->request->response()->status(500);
+				$this->response->status(500);
+                $this->response->headers('Content-Type', File::mime_by_ext('json'));
 				echo json_encode(array('errors'=>$errors));
 			} else {
 				echo 'success';
 			}
 			return;
 		}
-		$this->request->response()->status(500);
+		$this->response->status(500);
 		echo 'No files sent';
 	}
 

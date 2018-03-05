@@ -23,7 +23,7 @@ class Kwalbum_ItemAdder
 		if ($user === null)
 			return;
 
-		$item = Model :: factory('kwalbum_item');
+		$item = Model::factory('Kwalbum_Item');
 		$item->user_id = $user->id;
 
 		$item->hide_level = Kwalbum_ItemAdder :: get_visibility($user);
@@ -162,7 +162,7 @@ class Kwalbum_ItemAdder
 		} else {
 			$item->save();
 		}
-		return $item->id;
+		return (int) $item->id;
 	}
 
     /**

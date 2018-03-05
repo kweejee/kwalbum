@@ -22,10 +22,19 @@ class Model_Kwalbum_User extends Kwalbum_Model
         ', see admin only items, access all admin pages');
     static $permission_names = array('', 'Member', 'Privileged', 'Contributor', 'Editor', 'Admin');
 
-    public function load($id = null, $field = 'id')
+    /**
+     * Load a user where $field equals $value
+     *
+     * @param string $value
+     * @param string $field
+     * @return \Model_Kwalbum_User
+     */
+    public function load($value = null, $field = 'id')
     {
         $this->clear();
-        if (is_null($id)) {
+        if (is_null($value)
+            or ($field !== 'id' and $field !== 'login_name' and $field !== 'name')
+        ) {
             return $this;
         }
 
@@ -33,9 +42,9 @@ class Model_Kwalbum_User extends Kwalbum_Model
             $result = DB::query(Database::SELECT,
                 "SELECT id, name, login_name, email, password, token, visit_dt, permission_level, reset_code
                 FROM kwalbum_users
-                WHERE $field = :id
+                WHERE $field = :value
                 LIMIT 1")
-                ->param(':id', $id)
+                ->param(':value', $value)
                 ->execute();
         } catch (Exception $e) {
             return $this;
@@ -113,7 +122,7 @@ class Model_Kwalbum_User extends Kwalbum_Model
 
         if ($result->count() > 0) {
             foreach ($result as $row) {
-                $users[] = Model :: factory('Kwalbum_User')->load($row['id']);
+                $users[] = Model::factory('Kwalbum_User')->load($row['id']);
             }
         }
 
@@ -153,7 +162,7 @@ class Model_Kwalbum_User extends Kwalbum_Model
     /**
      * Check if a user can edit an item
      *
-     * @param kwalbum_item object of item to check about editing
+     * @param Kwalbum_Item object of item to check about editing
      * @return true/false if user can edit the item
      */
     public function can_edit_item($item = null)
@@ -175,7 +184,7 @@ class Model_Kwalbum_User extends Kwalbum_Model
     /**
      * Check if a user can see an item
      *
-     * @param kwalbum_item object of item to check about editing
+     * @param Kwalbum_Item object of item to check about editing
      * @return true/false if user can view the item
      */
     public function can_view_item($item = null)

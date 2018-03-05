@@ -22,7 +22,7 @@
 <div class="box box-right">
 <?php
 echo ' <span class="kwalbumPageNumbers">(item '.$item_index.' of '.$total_items.') - '
-	.html::anchor($kwalbum_url.'/'
+	.HTML::anchor($kwalbum_url.'/'
 	.($kwalbum_url_params ? $kwalbum_url_params : null)
 	.($page_number > 1 ? 'page/'.$page_number.'/' : null)
 	.(($kwalbum_url_params or $page_number > 1) ? null : '~browse/'),
@@ -31,7 +31,7 @@ echo ' <span class="kwalbumPageNumbers">(item '.$item_index.' of '.$total_items.
 	.'<br/>';
 ?>
 
-	<?=($item->location ? html::anchor($kwalbum_url.'/'.$item->location, $item->location).'<br />' : '') ?>
+	<?=($item->location ? HTML::anchor($kwalbum_url.'/'.$item->location, $item->location).'<br />' : '') ?>
 	<?php echo $item->pretty_date; ?>
 	<hr/>
 	<?php echo (
@@ -50,7 +50,7 @@ echo ' <span class="kwalbumPageNumbers">(item '.$item_index.' of '.$total_items.
 				if ($comma)
 					echo ', ';
 				$comma = true;
-				echo html::anchor($kwalbum_url.'/tags/'.$tag, $tag);
+				echo HTML::anchor($kwalbum_url.'/tags/'.$tag, $tag);
 			}
 			echo '<br/>';
 		}
@@ -67,7 +67,7 @@ echo ' <span class="kwalbumPageNumbers">(item '.$item_index.' of '.$total_items.
 				{
 					$person = substr($person, 0, $length);
 				}
-				echo html::anchor($kwalbum_url.'/people/'.$person, $person);
+				echo HTML::anchor($kwalbum_url.'/people/'.$person, $person);
 			}
 			echo '<br/>';
 		}
@@ -97,7 +97,7 @@ echo ' <span class="kwalbumPageNumbers">(item '.$item_index.' of '.$total_items.
 
 <script type="text/javascript">var item_id=<?php echo $item->id?></script>
 <?php
-echo html::script($kwalbum_url.'/media/ajax/comment.js');
+echo HTML::script($kwalbum_url.'/media/ajax/comment.js');
 ?>
 <div class="box box-comments">
 <a name='comments'><b>Comments:</b></a><br/>
@@ -123,7 +123,7 @@ if ($user->can_view_item($item))
 	}
 	else
 	{
-		echo html::anchor($kwalbum_url.'/~user/login', 'Log in to add a comment.');
+		echo HTML::anchor($kwalbum_url.'/~user/login', 'Log in to add a comment.');
 	}
 }
 else

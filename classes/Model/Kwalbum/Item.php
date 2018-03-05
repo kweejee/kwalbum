@@ -56,30 +56,24 @@ class Model_Kwalbum_Item extends Kwalbum_Model
         }
     }
 	/**
-	 * Load an item based on $field matching $id
-	 *
-	 * @param mixed $id
-	 * @param string $field
-	 * @return Model_Kwalbum_Item
+	 * @param string $value
+	 * @return \Model_Kwalbum_Item
 	 */
-	public function load($id = null, $field = 'id')
+	public function load($value = null)
 	{
 		$this->clear();
-
-		if ($id === null)
-		{
+		if (is_null($value)) {
 			return $this;
 		}
 
 		$result = DB::query(Database::SELECT,
 			"SELECT *
 			FROM kwalbum_items
-			WHERE $field = :id
+			WHERE id = :value
 			LIMIT 1")
-			->param(':id', $id)
+			->param(':value', $value)
 			->execute();
-		if ($result->count() == 0)
-		{
+		if ($result->count() == 0) {
 			return $this;
 		}
 
@@ -276,7 +270,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 
 		// Set update_date
 
-		if ($update_update_date_with_update_date) {
+		if ($update_update_date_with_update_date or empty($this->update_date)) {
 			$this->update_date = date('Y-m-d H:i:s');
 		}
 
@@ -862,7 +856,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 			->param(':id', $this->id)
 			->execute();
 		foreach ($result as $row) {
-			$comments[] = Model::factory('kwalbum_comment')->load($row['id']);
+			$comments[] = Model::factory('Kwalbum_Comment')->load($row['id']);
 		}
 		return $comments;
 	}
@@ -1021,7 +1015,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 		$items = array();
 		foreach ($result as $row)
 		{
-			$items[] = Model::factory('kwalbum_item')->load($row['id']);
+			$items[] = Model::factory('Kwalbum_Item')->load($row['id']);
 		}
 
 		return $items;
@@ -1129,7 +1123,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 			->param(':sort_value', $this->getSortValue())
 			->param(':id', $this->id)
 			->execute();
-		return Model::factory('kwalbum_item')->load((int)$result[0]['id']);
+		return Model::factory('Kwalbum_Item')->load((int)$result[0]['id']);
 	}
 
     /**
@@ -1157,7 +1151,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 			->param(':sort_value', $this->getSortValue())
 			->param(':id', $this->id)
 			->execute();
-		return Model::factory('kwalbum_item')->load((int)$result[0]['id']);
+		return Model::factory('Kwalbum_Item')->load((int)$result[0]['id']);
 	}
 
     /**

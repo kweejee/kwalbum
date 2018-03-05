@@ -28,7 +28,7 @@ $(document).ready(function(){
     });
 });
 var deleteLocation = function (id) {
-    if (confirm('You are about to permanently delete "'+$('#loc'+id).text()+'".')) {
+    if (confirm('You are about to permanently delete "'+$('#location_'+id).text()+'".')) {
         $.post(
             "KWALBUM_URL/~ajaxAdmin/DeleteLocation",
             {id: id},

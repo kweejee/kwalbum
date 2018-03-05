@@ -13,7 +13,7 @@
 ?>
 <div class="box">
 <p>
-From here you can <?php echo html::anchor($kwalbum_url.'/~browse', '<b>browse all the pictures</b>')?> or search below to find something specific.
+From here you can <?php echo HTML::anchor($kwalbum_url.'/~browse', '<b>browse all the pictures</b>')?> or search below to find something specific.
 </p>
 
 <form method='get' action='<?php echo $kwalbum_url.'/~browse/';?>'>

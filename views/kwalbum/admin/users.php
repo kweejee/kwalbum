@@ -1,5 +1,5 @@
 <div class="box">
-	<big><b><?php echo html::anchor($kwalbum_url.'/~admin', 'Admin Options'); ?>: Editing User Accounts</b></big>
+	<big><b><?php echo HTML::anchor($kwalbum_url.'/~admin', 'Admin Options'); ?>: Editing User Accounts</b></big>
 
 <table border="1" cellspacing="0">
 	<tr>
@@ -34,6 +34,6 @@ ROW;
 }
 echo "</table></div>";
 
-echo html::script($kwalbum_url.'/media/ajax/jquery.jeditable.mini.js')
-    .html::script($kwalbum_url.'/media/ajax/admin/users.js');
+echo HTML::script($kwalbum_url.'/media/ajax/jquery.jeditable.mini.js')
+    .HTML::script($kwalbum_url.'/media/ajax/admin/users.js');
 ?>
