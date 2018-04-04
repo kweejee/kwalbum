@@ -10,7 +10,8 @@
     $hide_level_options = '';
     foreach (Model_Kwalbum_Item::$hide_level_names as $level => $name) {
         if ($user->permission_level >= $level) {
-            $hide_level_options .= "<option value='{$level}'>{$name}</option>";
+            $selected = $level === 2 ? 'selected' : '';
+            $hide_level_options .= "<option value='{$level}' {$selected}>{$name}</option>";
         }
     }
 ?>
