@@ -54,7 +54,7 @@ foreach ($locations as $loc) {
             </td>
             <td style='text-align:center'>{$delete_content}</td>
             <td>
-                <span id='coord{$loc['id']}' onClick='window.open(\"{$kwalbum_url}/~admin/locationmap?id={$loc['id']}\")'>
+                <span id='coord{$loc['id']}'>
                     {$loc['longitude']},{$loc['latitude']}
                 </span>
             </td>

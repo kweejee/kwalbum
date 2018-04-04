@@ -12,9 +12,9 @@
 ?>
 <div class='kwalbumMenu'>
 	<?php
-	echo HTML::anchor($kwalbum_url, 'main page')
-		.' - '.HTML::anchor($kwalbum_url.'/~map', 'map')
-		.' | ';
+//	echo HTML::anchor($kwalbum_url, 'main page')
+//		.' - '.HTML::anchor($kwalbum_url.'/~map', 'map')
+//		.' | ';
 	if ($user->is_logged_in)
 	{
 		if ($user->can_edit)
