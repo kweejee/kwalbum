@@ -241,7 +241,7 @@ class Controller_Ajax extends Controller_Kwalbum
 			}
 		}
 		if (!$this->user->can_add) {
-			$this->response->status(500);
+			$this->response->status(401); // Unauthorized
 			die('You do not have permission to add items');
 		}
 
@@ -267,8 +267,10 @@ class Controller_Ajax extends Controller_Kwalbum
 				}
 			} catch (Exception $e) {
 				$errors []= $e->getMessage();
+                error_log($e);
 			}
 			if (!empty($errors)) {
+                # TODO: correctly set some responses to 400
 				$this->response->status(500);
                 $this->response->headers('Content-Type', File::mime_by_ext('json'));
 				echo json_encode(array('errors'=>$errors));
@@ -277,7 +279,7 @@ class Controller_Ajax extends Controller_Kwalbum
 			}
 			return;
 		}
-		$this->response->status(500);
+		$this->response->status(400);
 		echo 'No files sent';
 	}
 

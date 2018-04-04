@@ -38,7 +38,7 @@ foreach ($items as $item)
 
 	// show thumbnail based on file type
 	echo '<table><tr><td>';
-	echo Kwalbum_Helper :: getThumbnailLink($item['item'], $kwalbum_url, $kwalbum_url_params);
+	echo Kwalbum_Helper::getThumbnailLink($item['item'], $kwalbum_url, $kwalbum_url_params);
 	echo '</td><td style="vertical-align:text-top;text-align:left;width:600px;">';
 	echo '<h2>'.$item['comment']->date.'<small> : '.$item['comment']->name.'</small></h2>'.$item['comment']->text;
 	echo '</td></tr></table>';

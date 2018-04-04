@@ -15,6 +15,10 @@ return array
 	 * Item upload directory.
 	 */
 	'item_path' => APPPATH.'items/',
+    /**
+     * Part of path that should be saved in database
+     */
+    'path_prefix' => '',
 
 	/**
 	 * Thumbnails per page when browsing.
@@ -53,4 +57,10 @@ return array
 	 * replaced with this to avoid confusing the system.
 	 */
 	,'location_separator_2' => ' - '
+    /**
+     * The environment variable GOOGLE_APPLICATION_CREDENTIALS will need to be set
+     * if these are set for using a Google cloud bucket to store pictures.
+     */
+    ,'google_cloud_project_id' => ''
+    ,'google_cloud_bucket_name' => ''
 );

@@ -3,14 +3,43 @@
  *
  *
  * @author Tim Redmond <kweejee@tummycaching.com>
- * @copyright Copyright 2009-2012 Tim Redmond
+ * @copyright Copyright 2009-2018 Tim Redmond
  * @license GNU General Public License version 3 <http://www.gnu.org/licenses/>
  * @package kwalbum
  * @since Sep 25, 2009
  */
 
+
+use \Google\Cloud\Storage\Bucket;
+use \Google\Cloud\Storage\StorageClient;
+
 class Kwalbum_Helper
 {
+    /** @var Bucket */
+    static private $_google_bucket;
+
+    /**
+     * @return Bucket|false
+     */
+    public static function getGoogleBucket()
+    {
+        if (is_null(self::$_google_bucket)) {
+            $google_project_id = Kwalbum_Model::get_config('google_cloud_project_id');
+            $google_bucket_name = Kwalbum_Model::get_config('google_cloud_bucket_name');
+            if ($google_project_id and $google_bucket_name) {
+                # Instantiates a client
+                $storage = new StorageClient([
+                    'projectId' => $google_project_id
+                ]);
+                $bucket = $storage->bucket($google_bucket_name);
+                self::$_google_bucket = $bucket;
+            } else {
+                self::$_google_bucket = false;
+            }
+        }
+        return self::$_google_bucket;
+    }
+
 	/**
 	* Replace a date with '0000-00-00 00:00:00' if it is not real.
 	* @param string $datetime the questionable datetime submitted by the user
@@ -101,7 +130,7 @@ class Kwalbum_Helper
 		    $item->type == 'gif' or
 		    $item->type == 'png')
 		{
-			$link_text = "<img src='{$kwalbum_url}/~{$item->id}/~item/thumbnail.{$item->filename}' title='{$item->filename}'/>";
+			$link_text = "<img src='{$item->getThumbnailURL($kwalbum_url)}'/>";
 		}
 		elseif ($item->type == 'description only')
 		{

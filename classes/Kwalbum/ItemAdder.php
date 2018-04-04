@@ -60,7 +60,7 @@ class Kwalbum_ItemAdder
 
 		// get exif data from jpeg files
 		if ($item->type == 'jpeg') {
-			$fullpath = $item->path.$item->filename;
+			$fullpath = $item->real_path.$item->filename;
 
 			$import_caption = false;
 			$import_keywords = false;
@@ -134,7 +134,7 @@ class Kwalbum_ItemAdder
 		}
 
 		if ($item->type == 'jpeg' or $item->type == 'png' or $item->type == 'gif') {
-			$this->resizeImage($item->path, $item->filename);
+			$this->resizeImage($item->real_path, $item->filename);
 			if (!empty($exif['Orientation'])) {
 				switch($exif['Orientation']) {
 					case 8:
@@ -183,11 +183,12 @@ class Kwalbum_ItemAdder
         $item = $this->_item;
 
         $targetFile = trim($file['name']);
-        $item->path = $this->makePath();
+        $item->real_path = $this->makePath();
 
         $item->filename = $this->replaceAnnoyingFilenameCharacters($targetFile);
 
-        while (!Model_Kwalbum_Item::check_unique_filename($item->path, $item->filename)) {
+        while (!Model_Kwalbum_Item::check_unique_filename($item->real_path, $item->filename)) {
+            # TODO: Handle race condition if same filename is uploaded in multiple requests at same time
             if (!isset($name)) {
                 $i = 0;
                 $name = pathinfo($item->filename, PATHINFO_FILENAME);
@@ -198,9 +199,10 @@ class Kwalbum_ItemAdder
         }
         $item->type = $this->get_filetype($item->filename);
 
-        if (!Upload :: save($file, $item->filename, $item->path)) {
+        if (!Upload :: save($file, $item->filename, $item->real_path)) {
             return 'Upload could not be saved';
         }
+        # TODO: upload to google if Kwalbum_Helper::getGoogleBucket() returns bucket
 
         return $this->save();
     }
@@ -217,28 +219,6 @@ class Kwalbum_ItemAdder
 		if (empty($item->description))
 			return false;
 		$item->type = Model_Kwalbum_Item :: $types[255];
-
-		return $this->save();
-	}
-
-	/**
-	 * Check filename, check/set filetype, save
-	 */
-	public function save_existing_file()
-	{
-		$item = $this->_item;
-
-		// TODO: get path
-		// $item->path = ???
-
-		// Do not add/save again if the file is already in the database
-		if ( ! Model_Kwalbum_Item::check_unique_filename($item->path, $item->filename))
-		{
-			return false;
-		}
-
-		$item->type = $this->get_filetype($item->filename);
-
 
 		return $this->save();
 	}
@@ -318,7 +298,7 @@ class Kwalbum_ItemAdder
         $path = Kwalbum_Model::get_config('item_path');
         $dirs = explode('-', date('y-m'));
 
-        $path = $path.$dirs[0];
+        $path .= Kwalbum_Model::get_config('path_prefix').$dirs[0];
         if (!file_exists($path) and !mkdir($path)) {
             throw new Kohana_Exception(
                 'Directory :dir could not be created',

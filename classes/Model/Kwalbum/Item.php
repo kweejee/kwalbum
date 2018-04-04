@@ -1,7 +1,5 @@
 <?php
 /**
- *
- *
  * @author Tim Redmond <kweejee@tummycaching.com>
  * @copyright Copyright 2009-2012 Tim Redmond
  * @license GNU General Public License version 3 <http://www.gnu.org/licenses/>
@@ -9,11 +7,15 @@
  * @since 3.0 Jul 6, 2009
  */
 
+use \Google\Cloud\Core\Exception\NotFoundException;
+use \Google\Cloud\Core\Timestamp;
+
+
 class Model_Kwalbum_Item extends Kwalbum_Model
 {
 	public $id, $type, $user_id, $location,
 		$visible_date, $sort_date, $update_date, $create_date,
-		$description, $latitude, $longitude, $path, $filename,
+		$description, $latitude, $longitude, $path, $real_path, $filename,
 		$has_comments, $hide_level, $count, $loaded;
 	private $_user_name, $_original_location, $_original_user_id,
 		 $_location_id, $_tags, $_persons, $_comments, $_comment_count;
@@ -90,7 +92,8 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 		$this->description = $row['description'];
 		$this->latitude = (float)$row['latitude'];
 		$this->longitude = (float)$row['longitude'];
-		$this->path = self::get_config('item_path').$row['path'];
+		$this->path = $row['path'];
+		$this->real_path = self::get_config('item_path').$row['path'];
 		$this->filename = $row['filename'];
 		$this->has_comments = (bool)$row['has_comments'];
 		$this->hide_level = (int)$row['hide_level'];
@@ -243,8 +246,8 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 						// Create new location without parent
 						$result = DB::query(Database::INSERT, "
 							INSERT INTO kwalbum_locations
-							(name)
-							VALUES (:name)")
+							(name, description)
+							VALUES (:name, '')")
 							->param(':name', $loc_name)
 							->execute();
 					}
@@ -295,6 +298,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
             if (!$this->sort_date) {
 				$this->sort_date = $this->update_date;
 			}
+            # TODO: upload to google
         } else {
 			$query = DB::query(Database::UPDATE,
 				"UPDATE kwalbum_items
@@ -311,7 +315,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 			->param(':location_id', $location_id)
 			->param(':user_id', $this->user_id)
 			->param(':description', trim($this->description))
-			->param(':path', str_replace(self::get_config('item_path'), '', $this->path))
+			->param(':path', str_replace(self::get_config('item_path'), '', $this->real_path))
 			->param(':filename', trim($this->filename))
 			->param(':update_date', $this->update_date)
 			->param(':visible_date', $this->visible_date)
@@ -428,23 +432,65 @@ class Model_Kwalbum_Item extends Kwalbum_Model
             ->param(':id', $this->id)
             ->execute();
 
-        // Delete the thumbnail and resized if they exist
-        if (file_exists($this->path.'r/'.$this->filename)) {
-            unlink($this->path.'r/'.$this->filename);
-        }
-        if (file_exists($this->path.'t/'.$this->filename)) {
-            unlink($this->path.'t/'.$this->filename);
-        }
+        if ($this->filename) {
+            $bucket = Kwalbum_Helper::getGoogleBucket();
+            if ($bucket) {
+                try {
+                    /** @var \Google\Cloud\Storage\StorageObject */
+                    $object = $bucket->object($this->path.'r/'.$this->filename);
+                    $object->delete();
+                } catch(NotFoundException $e) {
+                    # pass
+                }
+                try {
+                    $object = $bucket->object($this->path.'t/'.$this->filename);
+                    $object->delete();
+                } catch(NotFoundException $e) {
+                    # pass
+                }
+            }
+            // Delete the thumbnail and resized if they exist
+            if (file_exists($this->real_path.'r/'.$this->filename)) {
+                unlink($this->real_path.'r/'.$this->filename);
+            }
+            if (file_exists($this->real_path.'t/'.$this->filename)) {
+                unlink($this->real_path.'t/'.$this->filename);
+            }
 
-        // Move the main file to the trash directory and possibly overwrite
-        // an existing "deleted" file of the same name
-        $old_name = $this->path.$this->filename;
-        $new_name = $delete_path.'/'.date('YmdHis').'_'.$this->filename;
-        if (!rename($old_name, $new_name)) {
-            throw new Kohana_Exception(
-                'Could not move :old to :new',
-                array(':old' => Debug::path($old_name), ':new' => Debug::path($new_name))
-            );
+            // Move the main file to the trash directory and possibly overwrite
+            // an existing "deleted" file of the same name
+            $old_name = $this->real_path.$this->filename;
+            $new_name = $delete_path.'/'.date('YmdHis').'_'.$this->filename;
+            if (!file_exists($old_name) && $bucket) {
+                try {
+                    /** @var \Google\Cloud\Storage\StorageObject */
+                    $object = $bucket->object($this->path.$this->filename);
+                    $object->downloadToFile($new_name);
+                } catch(NotFoundException $e) {
+                    error_log($e);
+                }
+                try {
+                    $object->delete();
+                } catch(NotFoundException $e) {
+                    # pass
+                }
+            } else {
+                if ($bucket) {
+                    try {
+                        /** @var \Google\Cloud\Storage\StorageObject */
+                        $object = $bucket->object($this->path.$this->filename);
+                        $object->delete();
+                    } catch(NotFoundException $e) {
+                    # pass
+                    }
+                }
+                if (!rename($old_name, $new_name)) {
+                    throw new Kohana_Exception(
+                        'Could not move :old to :new',
+                        array(':old' => Debug::path($old_name), ':new' => Debug::path($new_name))
+                    );
+                }
+            }
         }
 
         $this->clear();
@@ -525,8 +571,8 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 	public function rotate($degrees)
 	{
 		if ($this->type == 'jpeg' and $degrees > 0) {
-			$this->rotateJpeg($this->path.'r/'.$this->filename, $degrees);
-			$this->rotateJpeg($this->path.'t/'.$this->filename, $degrees);
+			$this->rotateJpeg($this->real_path.'r/'.$this->filename, $degrees);
+			$this->rotateJpeg($this->real_path.'t/'.$this->filename, $degrees);
 		}
 	}
 
@@ -661,10 +707,10 @@ class Model_Kwalbum_Item extends Kwalbum_Model
                 return $pretty_date;
             case 'date':
                 $date = explode(' ', $this->visible_date);
-                return $date[0];
+                return $date ? $date[0] : '';
             case 'time':
                 $date = explode(' ', $this->visible_date);
-                return $date[1];
+                return count($date) > 1 ? $date[1] : '';
             case 'user_name':
                 if ($this->_user_name === null) {
                     $result = DB::query(Database::SELECT,
@@ -696,6 +742,44 @@ class Model_Kwalbum_Item extends Kwalbum_Model
             case 'hide_level_name':
                 return isset(Model_Kwalbum_Item::$hide_level_names[$this->hide_level]) ? Model_Kwalbum_Item::$hide_level_names[$this->hide_level] : 'unknown';
         }
+    }
+
+    public function getThumbnailURL($kwalbum_url)
+    {
+        return $this->getItemURL($kwalbum_url, 't/');
+    }
+
+    public function getResizedURL($kwalbum_url)
+    {
+        return $this->getItemURL($kwalbum_url, 'r/');
+    }
+
+    public function getDownloadURL($kwalbum_url)
+    {
+        return $this->getItemURL($kwalbum_url, 'download.');
+    }
+
+    public function getItemURL($kwalbum_url, $subpath = '')
+    {
+        $bucket = Kwalbum_Helper::getGoogleBucket();
+        if (!$bucket or file_exists($this->real_path.$this->filename)) {
+            if ($subpath === 't/') {
+                $subpath = 'thumbnail.';
+            } elseif ($subpath === 'r/') {
+                $subpath = 'resized.';
+            } elseif ($subpath === '') {
+                $subpath = 'original.';
+            }
+            return $kwalbum_url.'/~'.$this->id.'/~item/'.$subpath.$this->filename;
+        }
+
+        $options = [];
+        if ($subpath === 'download.') {
+            $options['saveAsName'] = $this->filename;
+            $subpath = '';
+        }
+        $object = $bucket->object($this->path.$subpath.$this->filename);
+        return $object->signedUrl(new Timestamp(new DateTime('tomorrow')), $options);
     }
 
     /**
@@ -754,7 +838,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
         $this->id = $this->user_id = $this->location_id = $this->latitude
             = $this->longitude = $this->hide_level = $this->count = 0;
         $this->description = $this->visible_date = $this->sort_date = $this->update_date
-            = $this->create_date = $this->path = $this->filename = '';
+            = $this->create_date = $this->path = $this->real_path = $this->filename = '';
         $this->_tags = $this->_persons = $this->_comments = null;
         $this->_location = $this->_user_name = '';
         $this->_original_location = $this->_original_user_id = 0;
@@ -771,7 +855,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
             $this->id = $id;
             $this->sort_date = $sort_date;
             $this->type = Model_Kwalbum_Item :: $types[3];
-            $this->path = MODPATH.'kwalbum/media/';
+            $this->real_path = MODPATH.'kwalbum/media/';
             $this->filename = 'no.png';
             $this->hide_level = 100;
             $this->location = '';
@@ -861,9 +945,10 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 		return $comments;
 	}
 
-	static public function check_unique_filename($path = null, $filename = null)
+	static public function check_unique_filename($real_path = null, $filename = null)
 	{
-		if ($path == null or $filename == null)
+        // TODO: make not static and check real_path locally and path on google if used
+		if ($real_path == null or $filename == null)
 	        throw new Kohana_Exception('$path or $filename was not given when calling Model_Kwalbum_Item::check_unique_filename($path, $filename)');
 
 		$result = DB::query(Database::SELECT,
@@ -871,7 +956,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 			FROM kwalbum_items
 			WHERE path = :path AND filename = :filename
 			LIMIT 1")
-			->param(':path', str_replace(self::get_config('item_path'), '', $path))
+			->param(':path', str_replace(self::get_config('item_path'), '', $real_path))
 			->param(':filename', $filename)
 			->execute();
 		if ($result->count() == 0)

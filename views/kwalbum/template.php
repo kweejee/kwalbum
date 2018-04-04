@@ -55,7 +55,7 @@ if (isset($content->item) and $content->item instanceof Model_Kwalbum_Item)
 		)
 	);
 	if ($item->type == 'jpeg' or $item->type == 'gif' or $item->type == 'png')
-		$thumbnail_image = "{$kwalbum_url}/~{$item->id}/~item/thumbnail.{$item->filename}";
+		$thumbnail_image = $item->getThumbnailURL($kwalbum_url);
 }
 
 $meta_description = isset($description) ? '<meta property="og:description" content="'.htmlspecialchars($description).'" />' : '';
@@ -88,11 +88,6 @@ echo View::factory('kwalbum/mainmenu')->render();
 echo '<hr/>';
 echo $content
 ?>
-
-<p class="copyright">
-	Rendered in {execution_time} seconds, using {memory_usage} of memory<br />
-	Powered by <a href="https://github.com/kweejee/kwalbum">Kwalbum</a> and <a href="http://kohanaframework.org/">Kohana</a>
-</p>
 
 </body>
 </html>

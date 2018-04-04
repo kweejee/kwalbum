@@ -15,15 +15,20 @@ class Controller_Kwalbum extends Controller_Template
 	const ALLOW_PRODUCTION = true;
 
 	public $location, $date, $date2, $tags, $people, $create_dt, $params;
-	public $user, $item, $previous_item, $next_item;
+	public $user, $previous_item, $next_item;
 	public $total_items, $total_pages, $item_index, $page_number;
 	public $in_edit_mode;
+    /**
+     *
+     * @var Model_Kwalbum_Item
+     */
+    public $item;
 
 	public function before()
 	{
         $redirect = false;
 		$this->template = new View('kwalbum/template');
-		$this->url = URL::base(true, 'http').'kwalbum';
+		$this->url = URL::base(true).'kwalbum';
 
 		// get location from URL
 		if ( $this->request->param('location'))
@@ -205,7 +210,7 @@ class Controller_Kwalbum extends Controller_Template
 				$this->template->set_global('previous_item', $this->previous_item);
 				$this->template->set_global('next_item', $this->next_item);
 			}
-            
+
             if ($redirect) {
                 header('Location: '.$this->url.'/'.$this->params);
             }

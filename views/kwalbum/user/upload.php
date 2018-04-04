@@ -54,7 +54,7 @@
 			<a href="http://filext.com/file-extension/gpx" target='_blank'>gpx</a>, xml, zip, mp3,
 			wav, <a href="http://filext.com/file-extension/odt" target='_blank'>odt</a>, ods,
 			<a href="http://filext.com/file-extension/ogg">ogg</a>, doc, and <a href="http://filext.com/file-extension/flv">flv</a>*/?>
-			. Files larger than <?php echo floor(ini_get('memory_limit') / 8); ?>M may not upload correctly.</small>
+			. Files larger than <?php echo floor((int)ini_get('memory_limit') / 8);  ?>M may not upload correctly.</small>
 		</td>
 		<td class="inputs">
 			<select name="group_option" id="group_option">

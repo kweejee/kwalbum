@@ -10,6 +10,9 @@
  * @since 3.0 Jun 30, 2009
  */
 
+use \Google\Cloud\Core\Timestamp;
+use \DateTime;
+
 
 class Controller_Item extends Controller_Kwalbum
 {
@@ -43,12 +46,12 @@ class Controller_Item extends Controller_Kwalbum
 
 	function action_hidden()
 	{
-		$this->_send_file($this->item->path.$this->item->filename);
+		$this->_send_file($this->item->real_path.$this->item->filename);
 	}
 
 	function action_thumbnail()
 	{
-		$this->_send_file($this->item->path.'t/'.$this->item->filename, '_thumbnail');
+		$this->_send_file($this->item->real_path.'t/'.$this->item->filename, '_thumbnail');
 	}
 
 	function action_resize()
@@ -59,19 +62,27 @@ class Controller_Item extends Controller_Kwalbum
 	function action_resized()
 	{
 		$this->item->increase_count();
-		$this->_send_file($this->item->path.'r/'.$this->item->filename, '_resized');
+		$this->_send_file($this->item->real_path.'r/'.$this->item->filename, '_resized');
 	}
 
 	function action_original()
 	{
 		$this->item->increase_count();
-		$this->_send_file($this->item->path.$this->item->filename);
+		$this->_send_file($this->item->real_path.$this->item->filename);
 	}
 
 	function action_download()
 	{
 		$this->item->increase_count();
-		$this->_send_file($this->item->path.$this->item->filename, '', true);
+        $bucket = Kwalbum_Helper::getGoogleBucket();
+        if (!$bucket or file_exists($this->item->real_path.$this->item->filename)) {
+            $this->_send_file($this->item->real_path.$this->item->filename, '', true);
+        }
+        $bucket = Kwalbum_Helper::getGoogleBucket();
+        $object = $bucket->object($this->path.$this->filename);
+        $download_url = $object->signedUrl(new Timestamp(new DateTime('tomorrow')), ['saveAsName' => $item->filename]);
+        header('Location: '.$download_url);
+        exit;
 	}
 
 	private function _send_file($filepathname, $filename_addition = '', $download = false)

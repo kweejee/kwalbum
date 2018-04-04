@@ -12,13 +12,13 @@
 if ($item->type == 'jpeg' or $item->type == 'gif' or $item->type == 'png')
 {
 	echo HTML::anchor(
-        "{$kwalbum_url}/~{$item->id}/~item/original.{$item->filename}",
-		"<img src='{$kwalbum_url}/~{$item->id}/~item/resized.{$item->filename}'"
+        $item->getItemURL($kwalbum_url),
+		"<img src='{$item->getResizedURL($kwalbum_url)}'"
         ." title='{$item->filename}'"
         ." alt='{$item->filename}'"
         ." class='kwalbumResizeImg' />"
     )
-		.'<br/>'.HTML::anchor($kwalbum_url.'/~'.$item->id.'/~item/download.'.$item->filename, 'download');
+		.'<br/>'.HTML::anchor($item->getDownloadURL($kwalbum_url), 'download');
 }
 else if ($item->type == 'description only')
 {
