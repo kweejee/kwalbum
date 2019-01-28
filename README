@@ -5,14 +5,14 @@ Kwalbum Without Albums
 INSTALLATION
 ------------
 
-1. Install Kohana from http://kohanaframework.org
-2. Make sure Kohana's database module has been enabled and configured.
-3. Move the kwalbum directory to kohana's modules directory.
-4. Configure Kohana to use the Kwalbum module.
-   In your application/bootstrap.php file add
+1. Install Koseven from https://github.com/koseven/koseven
+2. Make sure Koseven's database module has been enabled and configured.
+3. Move the kwalbum directory to Koseven's modules directory.
+4. Configure Koseven to use the Kwalbum module.
+   In your app/bootstrap.php file add
      'kwalbum' => MODPATH.'kwalbum',
    after
-     Kohana::modules(array(
+     Koseven::modules(array(
    Also make sure that
      'database'   => MODPATH.'database',   // Database access
    and
@@ -21,8 +21,8 @@ INSTALLATION
 5. Create a writable directory for items to be uploaded to.  The default
    configured location is application/items
 6. Optionally, copy modules/kwalbum/config/kwalbum.php to
-   application/config/kwalbum.php and edit.  The reason to copy the
-   file to applications/config is to ensure it is not overwritten when the
+   app/config/kwalbum.php and edit.  The reason to copy the
+   file to app/config is to ensure it is not overwritten when the
    Kwalbum module is updated.
 7. Open Kwalbum in your web browser and go to the install page.
    If Kwalbum is at http://localhost/kwalbum then the install page
@@ -31,7 +31,7 @@ INSTALLATION
 REQUIREMENTS
 ------------
 
-Kohana 3.3
-PHP 5.3+
+Koseven 3.3.9+
+PHP 7.1+
 GD module for PHP
 MySQL 5.1+
