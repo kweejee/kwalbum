@@ -211,6 +211,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 				}
 
 				// If new location does not exist then create it
+                // TODO: Use Location model
 				if ($result->count() == 0) {
 					if (isset($parent_loc_name)) {
 						// Get parent location id
@@ -237,8 +238,8 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 						// Create new location with parent
 						$result = DB::query(Database::INSERT, "
 							INSERT INTO kwalbum_locations
-							(name, parent_location_id)
-							VALUES (:name, :parent_id)")
+							(name, parent_location_id, description)
+							VALUES (:name, :parent_id, '')")
 							->param(':name', $loc_name)
 							->param(':parent_id', $parent_loc_id)
 							->execute();
