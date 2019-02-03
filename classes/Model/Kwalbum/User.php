@@ -82,7 +82,7 @@ class Model_Kwalbum_User extends Kwalbum_Model
                 $this->permission_level = 1;
             }
             // Creating a new user does not mean they are visiting.
-            $this->visit_date = '0000-00-00 00:00:00';
+            $this->visit_date = '1999-01-01 00:00:00';
         } else {
             $query = DB::query(Database::UPDATE,
                 "UPDATE kwalbum_users
