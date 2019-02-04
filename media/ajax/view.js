@@ -98,7 +98,7 @@ kwalbum.loadResizedImage = function (item_elem_id) {
 
     $("#kwalbumResizeMessage").show();
     kwalbum.centerResizePopup();
-    var resize_url = window.location.pathname+"/~ajax/GetResizedImage?id="+item_id;
+    var resize_url = "/kwalbum/~ajax/GetResizedImage?id="+item_id;
     $.ajax({
         url: resize_url,
         dataType: 'json',

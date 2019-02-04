@@ -38,7 +38,8 @@ $page_links_div = "<div class='kwalbumPageNumbers'><span class='kwalbumPageLabel
 // show page
 ?>
 <div id="kwalbumResizePopup">
-    Press Esc to close or use the arrow keys to move forward and back.
+    Press Esc to <a href="javascript:$('#kwalbumResizePopup').hide();">close</a> or use the arrow keys to move
+    <a href="javascript:kwalbum.goToNextImage();">forward</a> and <a href="javascript:kwalbum.goToNextImage(true);">back</a>.
     <div id="kwalbumResizeBox">
         <div id="kwalbumResizeMessage">Loading...</div>
     </div>
