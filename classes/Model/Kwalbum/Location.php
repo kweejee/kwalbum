@@ -301,7 +301,7 @@ class Model_Kwalbum_Location extends Kwalbum_Model
             $parent_query = '';
             $names = explode(trim(self::get_config('location_separator_1')), $name);
             if (count($names) > 1) {
-                $parent_name = mysql_escape_string(trim($names[0]));
+                $parent_name = trim($names[0]);
                 array_shift($names);
                 foreach ($names as &$n) {
                     $n = trim($n);
@@ -310,7 +310,7 @@ class Model_Kwalbum_Location extends Kwalbum_Model
             }
             $part_name = "{$name}%";
             if ($parent_name) {
-                $parent_query = "AND p.name = '{$parent_name}'";
+                $parent_query = "AND p.name = :parent_name";
             }
             $not_query = 'loc.name != :name';
 
@@ -330,12 +330,14 @@ class Model_Kwalbum_Location extends Kwalbum_Model
                         $locations[] = ($row['parent'] ? $row['parent'].self::get_config('location_separator_1') : '').$row['name'];
                         $not_query .= " AND loc.name != '{$row['name']}'";
                     }
-                    $limit -= $result->count();
+                    if ($limit) {
+                        $limit -= $result->count();
+                    }
                 }
             }
 
             // Select from starting matches if searching by name or select from all
-            $result = DB::query(Database::SELECT,
+            $query = DB::query(Database::SELECT,
                 "SELECT loc.name AS name, p.id, p.name AS parent
                 FROM kwalbum_locations loc
                 LEFT JOIN kwalbum_locations p ON (p.id = loc.parent_location_id)
@@ -347,8 +349,11 @@ class Model_Kwalbum_Location extends Kwalbum_Model
                 ->param(':name', $name)
                 ->param(':min_count', (int) $min_count)
                 ->param(':permission_level', (int) $user->permission_level)
-                ->param(':limit', $limit)
-                ->execute();
+                ->param(':limit', $limit);
+            if ($parent_name) {
+                $query = $query->param(':parent_name', $parent_name);
+            }
+            $result = $query->execute();
 
             if ($result->count() > 0) {
                 $new_locations = array();
@@ -366,7 +371,7 @@ class Model_Kwalbum_Location extends Kwalbum_Model
             // Select from any partial matches if the result limit hasn't been reached yet
             if ($limit > 0) {
                 $part_name = "%{$name}%";
-                $result = DB::query(Database::SELECT,
+                $query = DB::query(Database::SELECT,
                     "SELECT loc.name AS name, p.id, p.name AS parent
                     FROM kwalbum_locations loc
                     LEFT JOIN kwalbum_locations p ON (p.id = loc.parent_location_id)
@@ -378,8 +383,12 @@ class Model_Kwalbum_Location extends Kwalbum_Model
                     ->param(':name', $name)
                     ->param(':min_count', (int) $min_count)
                     ->param(':permission_level', (int) $user->permission_level)
-                    ->param(':limit', $limit)
-                    ->execute();
+                    ->param(':limit', $limit);
+                if ($parent_name) {
+                    $query = $query->param(':parent_name', $parent_name);
+                }
+                $result = $query->execute();
+
                 $new_locations = array();
                 foreach ($result as $row) {
                     $new_locations[] = ($row['parent'] ? $row['parent'].self::get_config('location_separator_1') : '').$row['name'];
