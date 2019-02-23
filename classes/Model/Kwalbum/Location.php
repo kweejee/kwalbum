@@ -365,7 +365,9 @@ class Model_Kwalbum_Location extends Kwalbum_Model
                     usort($new_locations, 'strnatcasecmp');
                 }
                 $locations = array_merge($locations, $new_locations);
-                $limit -= $result->count();
+                if ($limit) {
+                    $limit -= $result->count();
+                }
             }
 
             // Select from any partial matches if the result limit hasn't been reached yet
@@ -398,7 +400,9 @@ class Model_Kwalbum_Location extends Kwalbum_Model
                     usort($new_locations, 'strnatcasecmp');
                 }
                 $locations = array_merge($locations, $new_locations);
-                $limit -= $result->count();
+                if ($limit) {
+                    $limit -= $result->count();
+                }
             }
 
             // Select from starting matches of parent if the result limit hasn't been reached yet
@@ -429,7 +433,9 @@ class Model_Kwalbum_Location extends Kwalbum_Model
                         usort($new_locations, 'strnatcasecmp');
                     }
                     $locations = array_merge($locations, $new_locations);
-                    $limit -= $result->count();
+                    if ($limit) {
+                        $limit -= $result->count();
+                    }
                 }
             }
         } else {
