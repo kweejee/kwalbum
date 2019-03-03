@@ -16,32 +16,85 @@ class Model_Kwalbum_Location extends Kwalbum_Model
     private $_original_name;
 
     /**
+     *
+     * @param int|string $id_or_name
+     * @return $this
+     */
+    public function __construct($id_or_name = null)
+    {
+        if (is_int($id_or_name)) {
+            $this->load($id_or_name);
+        }
+        $this->clear();
+
+        if ($id_or_name !== null) {
+            // Cleanup name
+			$names = explode(trim(self::get_config('location_separator_1')), $id_or_name);
+			foreach ($names as $i => &$name) {
+				$name = trim($name);
+				if (!$name) {
+					unset($names[$i]);
+                }
+			}
+            if (count($names) > 1) {
+                $this->parent_name = $names[0];
+                // combine children
+                array_shift($names);
+                $this->name = implode(self::get_config('location_separator_2'), $names);
+            } else {
+                $this->name = $names[0];
+            }
+
+            // Maybe find existing location by name
+            if ($this->parent_name) {
+                $query = DB::query(Database::SELECT, "
+                    SELECT loc.id
+                    FROM kwalbum_locations loc
+                    LEFT JOIN kwalbum_locations p ON (p.id = loc.parent_location_id)
+                    WHERE loc.name = :name AND p.name = :parent_name
+                    LIMIT 1")
+                    ->param(':parent_name', $this->parent_name);
+            } else {
+                $query = DB::query(Database::SELECT, "
+                    SELECT id
+                    FROM kwalbum_locations
+                    WHERE name = :name
+                    LIMIT 1");
+            }
+            $result = $query->param(':name', $this->name)
+                    ->execute();
+            if ($result->count() != 0) {
+                $this->load($result[0]['id']);
+            }
+        }
+
+        return $this;
+    }
+
+
+    /**
      * Load a location where $field equals $value
      *
-     * @param string $value
-     * @param string $field
+     * @param int $value id
      * @return \Model_Kwalbum_Location
      */
-    public function load($value = null, $field = 'id')
+    public function load($value = null)
     {
         $this->clear();
-        if (is_null($value) or $field !== 'id') {
+        if (is_null($value)) {
             return $this;
         }
         $query = DB::query(Database::SELECT,
             "SELECT loc.*, p.name AS parent_name
             FROM kwalbum_locations loc
             LEFT JOIN kwalbum_locations p ON (p.id = loc.parent_location_id)
-            WHERE loc.{$field} = :value
+            WHERE loc.id = :value
             LIMIT 1")
             ->param(':value', $value);
-
         $result = $query->execute();
-
         if ($result->count() == 0) {
             return $this;
         }
-
         $row = $result[0];
 
         $this->id = (int)$row['id'];

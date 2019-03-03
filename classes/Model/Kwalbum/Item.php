@@ -9,7 +9,7 @@
 
 use \Google\Cloud\Core\Exception\NotFoundException;
 use \Google\Cloud\Core\Timestamp;
-
+use Model_Kwalbum_Location;
 
 class Model_Kwalbum_Item extends Kwalbum_Model
 {
@@ -131,147 +131,43 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 		// Set type
 		$types = array_flip(Model_Kwalbum_Item::$types);
 		$type_id = $types[$this->type];
-		// Set location
 
+        // Set location
+        $this->location = trim($this->location);
+        if (empty($this->location)) {
+            // use default "unknown" location id
+            $this->location = 1;
+        }
+        $new_location = new Model_Kwalbum_Location($this->location);
 		// Item has an original location so check for name changes
-		if ($this->_location_id) {
-			if (trim($this->location) != $this->_original_location) {
-                // Update original location's item count if the name is different
-				DB::query(Database::UPDATE, "
-					UPDATE kwalbum_locations loc
-					LEFT JOIN kwalbum_locations p ON (p.id = loc.parent_location_id)
-					SET loc.count = loc.count-1, p.child_count = p.child_count-1
-					WHERE loc.id = :id")
-					->param(':id', $this->_location_id)
-					->execute();
-			} else {
-                // Use the original id if there are no changes
-				$location_id = $this->_location_id;
-			}
+		if ($this->_location_id and (string)$new_location != $this->_original_location) {
+            // Update original location's item count if the location has changed
+            DB::query(Database::UPDATE, "
+                UPDATE kwalbum_locations loc
+                LEFT JOIN kwalbum_locations p ON (p.id = loc.parent_location_id)
+                SET loc.count = loc.count-1, p.child_count = p.child_count-1
+                WHERE loc.id = :id")
+                ->param(':id', $this->_location_id)
+                ->execute();
+            // Reset location id
+            $this->_location_id = null;
 		}
-
-		// If there is no location id set then there is a change so get id for new location name
-		if (!isset($location_id)) {
-			$names = explode(trim(self::get_config('location_separator_1')), $this->location);
-			foreach ($names as $i => $name) {
-				$name = trim($name);
-				if (!$name) {
-					unset($names[$i]);
-                }
-			}
-			$this->location = implode(trim(self::get_config('location_separator_1')), $names);
-
-			if (empty($this->location)) {
-                // The location name is unknown so use default unknown id and name
-				$location_id = $this->_location_id = 1;
-				$result = DB::query(Database::SELECT, "
-					SELECT name
-					FROM kwalbum_locations
-					WHERE id = 1
-					LIMIT 1")
-					->execute();
-				$this->location = $this->_original_location = $result[0]['name'];
-			} else {
-                // Get new location id for known name
-				$loc_name = $this->location;
-				$names = explode(trim(self::get_config('location_separator_1')), $loc_name);
-				if (count($names) > 1) {
-					$parent_loc_name = trim($names[0]);
-					array_shift($names);
-					foreach ($names as $i => $name) {
-						$names[$i] = trim($name);
-						if (!$name) {
-							unset($names[$i]);
-                        }
-					}
-					$loc_name = implode(self::get_config('location_separator_2'), $names);
-					if (!$loc_name) {
-						$loc_name = $parent_loc_name;
-						unset($parent_loc_name);
-					}
-				}
-				// Get id if new location already exists
-				if (isset($parent_loc_name)) {
-					$result = DB::query(Database::SELECT, "
-						SELECT loc.id
-						FROM kwalbum_locations loc
-						LEFT JOIN kwalbum_locations p ON (p.id = loc.parent_location_id)
-						WHERE loc.name = :name AND p.name = :parent_name
-						LIMIT 1")
-						->param(':name', $loc_name)
-						->param(':parent_name', $parent_loc_name)
-						->execute();
-				} else {
-					$result = DB::query(Database::SELECT, "
-						SELECT id
-						FROM kwalbum_locations
-						WHERE name = :name
-						LIMIT 1")
-						->param(':name', $loc_name)
-						->execute();
-				}
-
-				// If new location does not exist then create it
-                // TODO: Use Location model
-				if ($result->count() == 0) {
-					if (isset($parent_loc_name)) {
-						// Get parent location id
-						$result = DB::query(Database::SELECT, "
-							SELECT id
-							FROM kwalbum_locations
-							WHERE name = :name
-							LIMIT 1")
-							->param(':name', $parent_loc_name)
-							->execute();
-
-							// If new location's parent does not exist then create it
-							if ($result->count() == 0)
-							{
-								$result = DB::query(Database::INSERT, "
-									INSERT INTO kwalbum_locations
-									(name)
-									VALUES (:name)")
-									->param(':name', $parent_loc_name)
-									->execute();
-
-							}
-							$parent_loc_id = $result[0];
-						// Create new location with parent
-						$result = DB::query(Database::INSERT, "
-							INSERT INTO kwalbum_locations
-							(name, parent_location_id, description)
-							VALUES (:name, :parent_id, '')")
-							->param(':name', $loc_name)
-							->param(':parent_id', $parent_loc_id)
-							->execute();
-					} else {
-						// Create new location without parent
-						$result = DB::query(Database::INSERT, "
-							INSERT INTO kwalbum_locations
-							(name, description)
-							VALUES (:name, '')")
-							->param(':name', $loc_name)
-							->execute();
-					}
-
-					$location_id = $result[0];
-				} else {
-					$location_id = $result[0]['id'];
-				}
-			}
-
+        // Set a new location on the item
+        if (!$this->_location_id) {
+            if (!$new_location->id) {
+                $new_location->save();
+            }
+            $this->location = (string)$new_location;
 			// Update count on new location
 			DB::query(Database::UPDATE,
 				"UPDATE kwalbum_locations loc LEFT JOIN kwalbum_locations p ON (p.id = loc.parent_location_id)
 				SET loc.count = loc.count+1, p.child_count = p.child_count+1
 				WHERE loc.id = :id")
-				->param(':id', $location_id)
+				->param(':id', $new_location->id)
 				->execute();
+            $this->_location_id = $new_location->id;
+            $this->_original_location = $this->location;
 		}
-
-		// Save any changes to location id and original name
-		$this->_location_id = $location_id;
-		$this->_original_location_name = $this->location;
 
         $this->update_date = date('Y-m-d H:i:s');
 
@@ -314,7 +210,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 		}
 		$query
 			->param(':type_id', $type_id)
-			->param(':location_id', $location_id)
+			->param(':location_id', $this->_location_id)
 			->param(':user_id', $this->user_id)
 			->param(':description', trim($this->description))
 			->param(':path', str_replace(self::get_config('item_path'), '', $this->real_path))
