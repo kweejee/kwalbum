@@ -122,10 +122,11 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 	/**
 	 * Save object changes to the database through inserts or updates
 	 *
-	 * @param boolean $update_update_date_with_update_date
+     * @todo Use a transaction
+	 * @param date $create_date_from_previous_save
 	 * @return Model_Kwalbum_Item
 	 */
-	public function save($update_update_date_with_update_date = true)
+	public function save($create_date_from_previous_save = null)
 	{
 		// Set type
 		$types = array_flip(Model_Kwalbum_Item::$types);
@@ -272,18 +273,18 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 		$this->_location_id = $location_id;
 		$this->_original_location_name = $this->location;
 
-		// Set update_date
-
-		if ($update_update_date_with_update_date or empty($this->update_date)) {
-			$this->update_date = date('Y-m-d H:i:s');
-		}
+        $this->update_date = date('Y-m-d H:i:s');
 
 		// Save actual item
 
 		if ($this->loaded == false)
 		{
 			// create_date is never updated, only set at insert
-			$this->create_date = $this->update_date;
+            if ($create_date_from_previous_save !== null) {
+                $this->create_date = $create_date_from_previous_save;
+            } else {
+                $this->create_date = $this->update_date;
+            }
 			$query = DB::query(Database::INSERT,
 				"INSERT INTO kwalbum_items
 				(type_id, location_id, user_id, description, path, filename,
@@ -336,7 +337,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 		// Set tags and persons once we know we have an item_id for the relationship.
 
 		// Remove duplicates of new persons and tags while making sure
-		// the arrays exist before recreating the relationhips
+		// the arrays exist before recreating the relationships
 		$this->_persons = $this->getPersons();
 		$this->_tags = $this->getTags();
 

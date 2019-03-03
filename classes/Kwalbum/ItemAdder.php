@@ -152,13 +152,12 @@ class Kwalbum_ItemAdder
 
 		if (isset($_POST['group_option']) and $_POST['group_option'] == 'existing') {
 			$result = DB::query(Database::SELECT,
-			"SELECT update_dt
+			"SELECT create_dt
 			FROM kwalbum_items
-			ORDER BY id DESC
+			ORDER BY create_dt DESC
 			LIMIT 1")
 			->execute();
-			$item->update_date = $result[0]['update_dt'];
-			$item->save(false);
+			$item->save(date($result[0]['create_dt']));
 		} else {
 			$item->save();
 		}
