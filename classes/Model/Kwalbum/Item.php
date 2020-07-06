@@ -7,9 +7,8 @@
  * @since 3.0 Jul 6, 2009
  */
 
-use \Google\Cloud\Core\Exception\NotFoundException;
-use \Google\Cloud\Core\Timestamp;
-use Model_Kwalbum_Location;
+use Google\Cloud\Core\Exception\NotFoundException;
+use Google\Cloud\Core\Timestamp;
 
 class Model_Kwalbum_Item extends Kwalbum_Model
 {
@@ -176,7 +175,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 		if ($this->loaded == false)
 		{
 			// create_date is never updated, only set at insert
-            if ($create_date_from_previous_save !== null) {
+            if (!empty($create_date_from_previous_save)) {
                 $this->create_date = $create_date_from_previous_save;
             } else {
                 $this->create_date = $this->update_date;
@@ -196,7 +195,6 @@ class Model_Kwalbum_Item extends Kwalbum_Model
             if (!$this->sort_date) {
 				$this->sort_date = $this->update_date;
 			}
-            # TODO: upload to google
         } else {
 			$query = DB::query(Database::UPDATE,
 				"UPDATE kwalbum_items
@@ -661,6 +659,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
     {
         $bucket = Kwalbum_Helper::getGoogleBucket();
         if (!$bucket or file_exists($this->real_path.$this->filename)) {
+            // use the local file url
             if ($subpath === 't/') {
                 $subpath = 'thumbnail.';
             } elseif ($subpath === 'r/') {
@@ -671,6 +670,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
             return $kwalbum_url.'/~'.$this->id.'/~item/'.$subpath.$this->filename;
         }
 
+        // use a google bucket url
         $options = [];
         if ($subpath === 'download.') {
             $options['saveAsName'] = $this->filename;

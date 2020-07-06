@@ -201,9 +201,9 @@ class Kwalbum_ItemAdder
         if (!Upload :: save($file, $item->filename, $item->real_path)) {
             return 'Upload could not be saved';
         }
-        # TODO: upload to google if Kwalbum_Helper::getGoogleBucket() returns bucket
 
         return $this->save();
+        # TODO: upload to google if $this->save returns int and Kwalbum_Helper::getGoogleBucket() returns bucket
     }
 
 	/**

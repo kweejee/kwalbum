@@ -104,7 +104,7 @@ class Controller_Kwalbum extends Controller_Template
             $redirect = true;
 		}
 		else
-			$this->tags = null;
+			$this->tags = [];
 
 		// people names
 		$this->people = explode(',', urldecode($this->request->param('people')));
@@ -119,7 +119,7 @@ class Controller_Kwalbum extends Controller_Template
             $redirect = true;
 		}
 		else
-			$this->people = null;
+			$this->people = [];
 
 		// created timestamp
 		if ($this->request->param('created_date'))
