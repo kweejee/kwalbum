@@ -18,6 +18,8 @@ class Controller_Kwalbum extends Controller_Template
 	public $user, $previous_item, $next_item;
 	public $total_items, $total_pages, $item_index, $page_number;
 	public $in_edit_mode;
+	public $url;
+
     /**
      *
      * @var Model_Kwalbum_Item

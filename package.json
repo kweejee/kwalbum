@@ -1,0 +1,22 @@
+{
+  "name": "kwalbum",
+  "version": "1.0.0",
+  "description": "Kwalbum Without Albums",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kweejee/kwalbum.git"
+  },
+  "author": "Tim Redmond",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kweejee/kwalbum/issues"
+  },
+  "homepage": "https://github.com/kweejee/kwalbum#readme",
+  "dependencies": {
+    "blueimp-file-upload": "^10.30.1"
+  }
+}

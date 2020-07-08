@@ -18,12 +18,24 @@ class Kwalbum_ItemAdder
 {
 	private $_item;
 
+    // PHP File Upload error message codes:
+    // https://php.net/manual/en/features.file-upload.errors.php
+    protected $error_messages = [
+        UPLOAD_ERR_INI_SIZE => 'The uploaded file exceeds the upload_max_filesize directive in php.ini',
+        UPLOAD_ERR_FORM_SIZE => 'The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form',
+        UPLOAD_ERR_PARTIAL => 'The uploaded file was only partially uploaded',
+        UPLOAD_ERR_NO_FILE => 'No file was uploaded',
+        UPLOAD_ERR_NO_TMP_DIR => 'Missing a temporary folder',
+        UPLOAD_ERR_CANT_WRITE => 'Failed to write file to disk',
+        UPLOAD_ERR_EXTENSION => 'A PHP extension stopped the file upload',
+    ];
+
 	public function __construct($user = null)
 	{
 		if ($user === null)
 			return;
 
-		$item = Model::factory('Kwalbum_Item');
+		$item = new Model_Kwalbum_Item();
 		$item->user_id = $user->id;
 
 		$item->hide_level = Kwalbum_ItemAdder :: get_visibility($user);
@@ -167,7 +179,7 @@ class Kwalbum_ItemAdder
     /**
      * Clean filename, check/set filetype, create path, move uploaded file, save
      * @param array $file a single file from $_FILES
-     * @return mixed error string or id of new item
+     * @return string|Model_Kwalbum_Item error string or new item
      * @since 3.0
      */
     public function save_upload($file)
@@ -175,8 +187,8 @@ class Kwalbum_ItemAdder
         if (empty($file)) {
             return 'Missing file';
         }
-        if ($file['error'] == 1) {
-            return 'File not uploaded.  Is the file too large?';
+        if ($file['error'] != UPLOAD_ERR_OK) {
+            return isset($this->error_messages[$file['error']]) ? $this->error_messages[$file['error']] : $file['error'];
         }
 
         $item = $this->_item;
@@ -196,14 +208,19 @@ class Kwalbum_ItemAdder
             $i++;
             $item->filename = "{$name}_{$i}.{$extension}";
         }
-        $item->type = $this->get_filetype($item->filename);
+        try {
+            $item->type = $this->get_filetype($item->filename);
+        } catch (Kohana_Exception $ex) {
+            return $ex->getMessage();
+        }
 
         if (!Upload :: save($file, $item->filename, $item->real_path)) {
             return 'Upload could not be saved';
         }
 
-        return $this->save();
+        $this->save();
         # TODO: upload to google if $this->save returns int and Kwalbum_Helper::getGoogleBucket() returns bucket
+        return $item;
     }
 
 	/**
@@ -241,7 +258,7 @@ class Kwalbum_ItemAdder
 		}
 
 		throw new Kohana_Exception(':type is not an acceptable file type', array (
-		    ':type' => Kohana :: debug($type)
+		    ':type' => $type
 		));
 	}
 

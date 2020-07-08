@@ -10,8 +10,7 @@
  * @since 3.0 Jun 30, 2009
  */
 
-use \Google\Cloud\Core\Timestamp;
-use \DateTime;
+use Google\Cloud\Core\Timestamp;
 
 
 class Controller_Item extends Controller_Kwalbum
