@@ -17,11 +17,10 @@
 ?>
 <div class="box">
 <form id="upload_form"
-      action="<?php echo $kwalbum_url.'/'.$kwalbum_url_params ?>~user/upload"
+      action="<?php echo $kwalbum_url ?>/~ajax/upload"
       method="post"
       enctype="multipart/form-data"
       autocomplete="off">
-<input type='hidden' name='overLimit' value='no'/>
 	<table>
 	<tr>
 		<td colspan='2' class="inputs">
@@ -54,8 +53,11 @@
 			<a href="http://filext.com/file-extension/mp4" target='_blank'>mp4</a>,txt, html,
 			<a href="http://filext.com/file-extension/gpx" target='_blank'>gpx</a>, xml, zip, mp3,
 			wav, <a href="http://filext.com/file-extension/odt" target='_blank'>odt</a>, ods,
-			<a href="http://filext.com/file-extension/ogg">ogg</a>, doc, and <a href="http://filext.com/file-extension/flv">flv</a>*/?>
-			. Files larger than <?php echo floor((int)ini_get('memory_limit') / 8);  ?>M may not upload correctly.</small>
+			<a href="http://filext.com/file-extension/ogg">ogg</a>, doc, and <a href="http://filext.com/file-extension/flv">flv</a>*/?>.
+            Files larger than <?php echo min(
+                floor((int)ini_get('memory_limit') / 8),
+                    (int)ini_get('upload_max_filesize'),
+                    (int)ini_get('post_max_size'));  ?>M may not upload correctly.</small>
 		</td>
 		<td class="inputs">
 			<select name="group_option" id="group_option">
@@ -66,9 +68,14 @@
 	</tr>
 	<tr>
 		<td colspan="2">
-			<input type="file" name="files[]" id="files" />
-			<a href="javascript:kwalbum_upload();">Upload Files</a>
-			| <a href="<?php echo $kwalbum_url ?>/~user/write">Ignore Queue and Write Text Item</a>
+            <span class="btn btn-success fileinput-button">
+              <span>Select &amp; Upload files...</span>
+            <input id="fileupload" type="file" name="file" data-url="<?php echo $kwalbum_url.'/~ajax/upload' ?>" multiple>
+            </span>
+            <div id="progress">
+                <p class="bar" style="width: 0%;"></p>
+            </div>
+			<a href="<?php echo $kwalbum_url ?>/~user/write">Write text item instead of uploading files</a>
 		</td>
 		<td rowspan="2" style="vertical-align:top;" class="inputs">
 			<input type="checkbox" name="import_caption" id="import_caption">Copy IPTC Caption to Description</input><br/>

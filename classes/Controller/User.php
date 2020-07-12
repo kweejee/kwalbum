@@ -75,12 +75,11 @@ class Controller_User extends Controller_Kwalbum
 		$template = $this->template;
 		$template->content = $content;
 		$template->title = 'Upload';
-		$template->head .= HTML::script($this->url.'/media/ajax/uploadify/swfobject.js')
-		//	.HTML::script('http://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject_src.js')
-			.HTML::style($this->url.'/media/ajax/uploadify/uploadify.css')
-			.HTML::script($this->url.'/media/ajax/uploadify/jquery.uploadify.v2.1.4.min.js')
-			.HTML::script($this->url.'/media/ajax/upload.js')
-		;
+        $template->head .= HTML::script($this->url.'/media/node_modules/blueimp-file-upload/js/jquery.iframe-transport.js')
+            .HTML::script($this->url.'/media/node_modules/blueimp-file-upload/js/jquery.fileupload.js')
+            .HTML::style($this->url.'/media/node_modules/blueimp-file-upload/css/jquery.fileupload.css')
+            .HTML::style($this->url.'/media/node_modules/blueimp-file-upload/css/jquery.fileupload-ui.css')
+            .HTML::script($this->url.'/media/ajax/upload.js');
 	}
 
 	function action_write()

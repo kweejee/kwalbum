@@ -247,40 +247,33 @@ class Controller_Ajax extends Controller_Kwalbum
 
 		if (!empty($_FILES)) {
 			$adder = new Kwalbum_ItemAdder($this->user);
-			$errors = array();
-
-			$files = array();
-			if (isset($_FILES['files'])) {
-				$files = is_array($_FILES['files'])
-				       ? $_FILES['files']
-				       : array($_FILES['files']);
-			} elseif (isset($_FILES['userfile'])) {
-				$files = array($_FILES['userfile']);
-			}
+			$response_body = [];
 			try {
-				foreach ($files as $file)
-				{
-					$result = $adder->save_upload($file);
-					if (!is_int($result)) {
-						$errors []= $result;
-					}
+                if (isset($_FILES['file'])) {
+					$result = $adder->save_upload($_FILES['file']);
+					if (is_string($result)) {
+                        $this->response->status(400);
+                        $response_body['errors'] = [$result];
+					} else {
+                        $response_body['files'] = [[
+                            'visibleDate' => $result->visible_date,
+                            'name' => $result->filename,
+                            'thumbnailUrl' => $result->getThumbnailURL($this->url),
+                            'url' => "{$this->url}/~{$result->id}" ,
+                        ]];
+                    }
 				}
 			} catch (Exception $e) {
-				$errors []= $e->getMessage();
                 error_log($e);
+                $this->response->status(500);
+                $response_body['errors'] = [$e->getMessage()];
 			}
-			if (!empty($errors)) {
-                # TODO: correctly set some responses to 400
-				$this->response->status(500);
-                $this->response->headers('Content-Type', File::mime_by_ext('json'));
-				echo json_encode(array('errors'=>$errors));
-			} else {
-				echo 'success';
-			}
-			return;
+		} else {
+		    $this->response->status(400);
+            $response_body['errors'] = ['No files sent'];
 		}
-		$this->response->status(400);
-		echo 'No files sent';
+        $this->response->headers('Content-Type', File::mime_by_ext('json'));
+		echo json_encode($response_body);
 	}
 
 	private function _testPermission($item =  null)
@@ -309,7 +302,7 @@ class Controller_Ajax extends Controller_Kwalbum
 			exit;
 
 		$old_tags = '';
-		$not_included = array();
+		$not_included = [];
 
 		for($i = 0; $i < $size; $i++)
 		{
@@ -328,7 +321,7 @@ class Controller_Ajax extends Controller_Kwalbum
 
 		$tags = call_user_func_array(array($class, $function), array(0, 10, 0, $tag, 'count DESC', $not_included));
 
-		$output_tags = array();
+		$output_tags = [];
 		foreach($tags as $tag)
 		{
 			$output_tags[] = $old_tags.$tag;
@@ -349,14 +342,14 @@ class Controller_Ajax extends Controller_Kwalbum
 
 		$resizedview = new View('kwalbum/item/resized');
 		$resizedview->item = $item;
-		$data = array(
+		$data = [
             'id' => $item->id,
             'type' => $item->type,
             'img_html' => $resizedview->render(),
             'description' => $item->description,
             'next_id' => $item->getNextItem()->id,
             'prev_id' => $item->getPreviousItem()->id,
-        );
+        ];
         echo json_encode($data);
     }
 }
