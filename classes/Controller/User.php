@@ -75,10 +75,10 @@ class Controller_User extends Controller_Kwalbum
 		$template = $this->template;
 		$template->content = $content;
 		$template->title = 'Upload';
-        $template->head .= HTML::script($this->url.'/media/node_modules/blueimp-file-upload/js/jquery.iframe-transport.js')
-            .HTML::script($this->url.'/media/node_modules/blueimp-file-upload/js/jquery.fileupload.js')
-            .HTML::style($this->url.'/media/node_modules/blueimp-file-upload/css/jquery.fileupload.css')
-            .HTML::style($this->url.'/media/node_modules/blueimp-file-upload/css/jquery.fileupload-ui.css')
+        $template->head .= HTML::script($this->url.'/node_modules/blueimp-file-upload/js/jquery.iframe-transport.js')
+            .HTML::script($this->url.'/node_modules/blueimp-file-upload/js/jquery.fileupload.js')
+            .HTML::style($this->url.'/node_modules/blueimp-file-upload/css/jquery.fileupload.css')
+            .HTML::style($this->url.'/node_modules/blueimp-file-upload/css/jquery.fileupload-ui.css')
             .HTML::script($this->url.'/media/ajax/upload.js');
 	}
 

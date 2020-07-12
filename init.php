@@ -9,6 +9,14 @@ Route::set('kwalbum_media', 'kwalbum/media/<file>', array(
 		'action'     => 'media',
 	));
 
+Route::set('kwalbum_node_modules', 'kwalbum/node_modules/<file>', array(
+    'file' => '.+',
+))
+    ->defaults(array(
+        'controller' => 'kwalbum',
+        'action'     => 'node_modules',
+    ));
+
 Route::set('Kwalbum_Item', 'kwalbum/~<id>(/<year>(/<month>(/<day>))(/to/<year2>(/<month2>(/<day2>))))(/<location>)(/tags/<tags>)(/people/<people>)(/created/<created_date>(/<created_time>))(/~item(/<action>(<ext>)))(/page/<page>)', array(
 		'id' => '[0-9]+',
 		'action' => '[a-zA-Z0-9]+?',

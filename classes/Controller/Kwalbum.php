@@ -239,6 +239,35 @@ class Controller_Kwalbum extends Controller_Template
 		$this->template->set_global('user', $this->user);
 	}
 
+    public function action_node_modules()
+    {
+        $file = $this->request->param('file');
+        $this->auto_render = false;
+
+        // Find the file extension
+        $ext = pathinfo($file, PATHINFO_EXTENSION);
+
+        // Remove the extension from the filename
+        $file = substr($file, 0, -(strlen($ext) + 1));
+
+        $file = Kohana::find_file('node_modules', $file, $ext);
+        if (is_file($file))
+        {
+            // Set the content type for this extension
+            $this->response->headers('Content-Type', File::mime_by_ext($ext));
+            $this->response->send_headers();
+
+            $img = @ fopen($file, 'rb');
+            if ($img)
+            {
+                fpassthru($img);
+                exit;
+            }
+        }
+        // Return a 404 status
+        $this->response->status(404);
+    }
+
 	public function action_media()
 	{
 		$file = $this->request->param('file');
