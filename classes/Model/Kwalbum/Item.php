@@ -1045,8 +1045,11 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 		}
 	}
 
-	static public function get_index($id, $sort_value)
-	{
+    static public function get_index($id, $sort_value): int
+    {
+        if ($id == null || $sort_value == null)
+            return 0;
+
 		$where_query = Model_Kwalbum_Item::get_where_query();
 		if ( ! $where_query)
 			$where_query = ' WHERE ';
@@ -1075,17 +1078,18 @@ class Model_Kwalbum_Item extends Kwalbum_Model
     {
         switch ($this->_sort_field) {
             case 'update_dt':
-                return $this->update_date;
+                return !empty($this->update_date) ? $this->update_date : date("Y-m-d H:i:s");
             case 'create_dt':
-                return $this->create_date;
+                return !empty($this->create_date) ? $this->create_date : date("Y-m-d H:i:s");
+            default:
+                return !empty($this->sort_date) ? $this->sort_date : date("Y-m-d H:i:s");
         }
-        return $this->sort_date;
     }
 
     /**
      * @return Model_Kwalbum_Item
      */
-    public function getPreviousItem()
+    public function getPreviousItem(): Model_Kwalbum_Item
     {
 		$where_query = Model_Kwalbum_Item::get_where_query();
 		$where_query .= $where_query
@@ -1105,15 +1109,17 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 		$result = DB::query(Database::SELECT, $query)
 			->param(':sort_value', $this->getSortValue())
 			->param(':id', $this->id)
-			->execute();
-		return Model::factory('Kwalbum_Item')->load((int)$result[0]['id']);
-	}
+            ->execute()
+            ->current();
+
+        return Model::factory('Kwalbum_Item')->load(empty($result) ? null : (int)$result['id']);
+    }
 
     /**
      * @return Model_Kwalbum_Item
      */
-    public function getNextItem()
-	{
+    public function getNextItem(): Model_Kwalbum_Item
+    {
 		$where_query = Model_Kwalbum_Item::get_where_query();
 		if ( ! $where_query)
 			$where_query = ' WHERE ';
@@ -1133,9 +1139,11 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 		$result = DB::query(Database::SELECT, $query)
 			->param(':sort_value', $this->getSortValue())
 			->param(':id', $this->id)
-			->execute();
-		return Model::factory('Kwalbum_Item')->load((int)$result[0]['id']);
-	}
+            ->execute()
+            ->current();
+
+       return Model::factory('Kwalbum_Item')->load(empty($result) ? null : (int)$result['id']);
+    }
 
     /**
      * @param int $index

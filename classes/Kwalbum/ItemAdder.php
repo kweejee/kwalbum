@@ -272,9 +272,6 @@ class Kwalbum_ItemAdder
      */
     private function replaceAnnoyingFilenameCharacters($old_name)
     {
-        if (get_magic_quotes_gpc()) {
-            $old_name = stripslashes($old_name);
-        }
         return strtr(
             $old_name,
             array (
