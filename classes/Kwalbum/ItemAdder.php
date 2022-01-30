@@ -73,30 +73,16 @@ class Kwalbum_ItemAdder
         if ($item->type == 'jpeg') {
             $fullpath = $item->real_path . $item->filename;
 
-            $import_caption = false;
-            $import_keywords = false;
-            if (isset($_POST['import_caption']) and $_POST['import_caption'] == 1) {
-                $import_caption = true;
-            }
-            if (isset($_POST['import_keywords']) and $_POST['import_keywords'] == 1) {
-                $import_keywords = true;
-            }
+            $import_caption = !empty($_POST['import_caption']);
 
-            if ($import_caption || $import_keywords) {
+            if ($import_caption) {
                 $info = null;
                 $size = getimagesize($fullpath, $info);
                 if (isset($info['APP13'])) {
                     $iptc = iptcparse($info['APP13']);
                     foreach ($iptc as $key => $data) {
-                        if ($key == '2#120' and $import_caption) {
+                        if ($key == '2#120') {
                             $item->description = trim($data[0]);
-                        }
-                        if ($key == '2#025' and $import_keywords) {
-                            if (!is_array($data))
-                                $data = array($data);
-                            foreach ($data as $keyword) {
-                                $item->addTag(htmlspecialchars($keyword));
-                            }
                         }
                     }
                 }
@@ -104,7 +90,7 @@ class Kwalbum_ItemAdder
 
             $exif = @exif_read_data($fullpath);
             if ($exif) {
-                //Kohana::$log->add('var', Kohana::debug($exif));
+//                Kohana::$log->add('var', print_r($exif));
                 /*
                 if ($irb = get_Photoshop_IRB($jpeg_header_data)) {
                     $xmp = Read_XMP_array_from_text(get_XMP_text($jpeg_header_data));

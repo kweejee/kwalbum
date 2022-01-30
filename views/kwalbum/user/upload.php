@@ -78,8 +78,7 @@
 			<a href="<?php echo $kwalbum_url ?>/~user/write">Write text item instead of uploading files</a>
 		</td>
 		<td rowspan="2" style="vertical-align:top;" class="inputs">
-			<input type="checkbox" name="import_caption" id="import_caption">Copy IPTC Caption to Description</input><br/>
-			<input type="checkbox" name="import_keywords" id="import_keywords">Copy IPTC Keywords to Tags</input>
+			<input type="checkbox" name="import_caption" id="import_caption" checked>Copy IPTC Caption to Description</input><br/>
 		</td>
 	</tr>
 	</table>
