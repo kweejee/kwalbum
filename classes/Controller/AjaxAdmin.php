@@ -50,7 +50,7 @@ class Controller_AjaxAdmin extends Controller_Kwalbum
             }
             $loc->save();
         }
-        echo (string) $loc;
+        echo (string)$loc;
         exit;
     }
 
@@ -75,7 +75,7 @@ class Controller_AjaxAdmin extends Controller_Kwalbum
      * @param string $field
      * @return Model_Kwalbum_Location
      */
-    protected function setLocationHideLevel($field)
+    protected function setLocationHideLevel(string $field): Model_Kwalbum_Location
     {
         $this->_testPermission();
         if (!empty($_POST['id'])) {
@@ -134,7 +134,7 @@ class Controller_AjaxAdmin extends Controller_Kwalbum
     {
         $this->_testPermission();
         $person = Model::factory('Kwalbum_Person')->load((int)$_POST['id']);
-        if ( ! empty($_POST['value'])) {
+        if (!empty($_POST['value'])) {
             $person->name = htmlspecialchars(trim($_POST['value']));
             $person->save();
         }
@@ -155,7 +155,7 @@ class Controller_AjaxAdmin extends Controller_Kwalbum
     {
         $this->_testPermission();
         $tag = Model::factory('Kwalbum_Tag')->load((int)$_POST['id']);
-        if ( ! empty($_POST['value'])) {
+        if (!empty($_POST['value'])) {
             $tag->name = htmlspecialchars(trim($_POST['value']));
             $tag->save();
         }

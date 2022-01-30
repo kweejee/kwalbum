@@ -1,4 +1,5 @@
-<?php defined('SYSPATH') OR die('No direct access allowed.');
+<?php defined('SYSPATH') or die('No direct access allowed.');
+
 /**
  *
  *
@@ -9,61 +10,59 @@
  * @package kwalbum
  * @since 3.0 Jun 30, 2009
  */
-
-
 class Controller_Admin extends Controller_Kwalbum
 {
-	// allow to run in production
-	const ALLOW_PRODUCTION = true;
+    // allow to run in production
+    const ALLOW_PRODUCTION = true;
 
-	function action_index()
-	{
-		if ( ! $this->_testAdmin())
-			return;
-		$this->template->content = new View('kwalbum/admin');
-		$this->template->title = 'Admin Options';
+    function action_index()
+    {
+        if (!$this->_testAdmin())
+            return;
+        $this->template->content = new View('kwalbum/admin');
+        $this->template->title = 'Admin Options';
 
-	}
+    }
 
-	function action_locations()
-	{
-		if ( ! $this->_testAdmin())
-			return;
-		$this->template->content = new View('kwalbum/admin/locations');
-		$this->template->title = 'Edit Locations';
-	}
+    function action_locations()
+    {
+        if (!$this->_testAdmin())
+            return;
+        $this->template->content = new View('kwalbum/admin/locations');
+        $this->template->title = 'Edit Locations';
+    }
 
-	function action_tags()
-	{
-		if ( ! $this->_testAdmin())
-			return;
-		$this->template->content = new View('kwalbum/admin/tags');
-		$this->template->title = 'Edit Tags';
-	}
+    function action_tags()
+    {
+        if (!$this->_testAdmin())
+            return;
+        $this->template->content = new View('kwalbum/admin/tags');
+        $this->template->title = 'Edit Tags';
+    }
 
-	function action_people()
-	{
-		if ( ! $this->_testAdmin())
-			return;
-		$this->template->content = new View('kwalbum/admin/people');
-		$this->template->title = 'Edit People';
-	}
+    function action_people()
+    {
+        if (!$this->_testAdmin())
+            return;
+        $this->template->content = new View('kwalbum/admin/people');
+        $this->template->title = 'Edit People';
+    }
 
-	function action_users()
-	{
-		if ( ! $this->_testAdmin())
-			return;
-		$this->template->content = new View('kwalbum/admin/users');
-		$this->template->title = 'Edit Users';
-	}
+    function action_users()
+    {
+        if (!$this->_testAdmin())
+            return;
+        $this->template->content = new View('kwalbum/admin/users');
+        $this->template->title = 'Edit Users';
+    }
 
-	private function _testAdmin()
-	{
-		if ($this->user->is_admin)
-			return true;
+    private function _testAdmin()
+    {
+        if ($this->user->is_admin)
+            return true;
 
-		$this->template->content = 'Admin Only';
-		$this->template->title = 'Admin Only';
-		return false;
-	}
+        $this->template->content = 'Admin Only';
+        $this->template->title = 'Admin Only';
+        return false;
+    }
 }

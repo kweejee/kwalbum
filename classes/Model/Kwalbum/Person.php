@@ -1,4 +1,5 @@
-<?php defined('SYSPATH') OR die('No direct access allowed.');
+<?php defined('SYSPATH') or die('No direct access allowed.');
+
 /**
  *
  *
@@ -9,220 +10,206 @@
  * @package kwalbum
  * @since 3.0 Jul 6, 2009
  */
-
 class Model_Kwalbum_Person extends Kwalbum_Model
 {
-	public $id, $name, $count, $loaded;
+    public $id, $name, $count, $loaded;
 
-	public function load($value = null)
-	{
+    public function load($value = null)
+    {
         $this->clear();
-		if (is_null($value)) {
-			return $this;
-		}
+        if (is_null($value)) {
+            return $this;
+        }
 
-		$result = DB::query(Database::SELECT,
-			"SELECT id, name, count
+        $result = DB::query(Database::SELECT,
+            "SELECT id, name, count
 			FROM kwalbum_persons
 			WHERE id = :value
 			LIMIT 1")
-			->param(':value', $value)
-			->execute();
-		if ($result->count() == 0) {
-			return $this;
-		}
+            ->param(':value', $value)
+            ->execute();
+        if ($result->count() == 0) {
+            return $this;
+        }
 
-		$row = $result[0];
+        $row = $result[0];
 
-		$this->id = (int)$row['id'];
-		$this->name = $row['name'];
-		$this->count = (int)$row['count'];
-		$this->loaded = true;
+        $this->id = (int)$row['id'];
+        $this->name = $row['name'];
+        $this->count = (int)$row['count'];
+        $this->loaded = true;
 
-		return $this;
-	}
+        return $this;
+    }
 
-	public function save()
-	{
-		$id = $this->id;
+    public function save()
+    {
+        $id = $this->id;
 
-		if ($this->loaded === false)
-		{
-			$result = DB::query(Database::SELECT,
-				"SELECT id, count
+        if ($this->loaded === false) {
+            $result = DB::query(Database::SELECT,
+                "SELECT id, count
 				FROM kwalbum_persons
 				WHERE name = :name
 				LIMIT 1")
-				->param(':name', $this->name)
-				->execute();
-			if ($result->count() == 0)
-			{
-				$result = DB::query(Database::INSERT,
-					"INSERT INTO kwalbum_persons
+                ->param(':name', $this->name)
+                ->execute();
+            if ($result->count() == 0) {
+                $result = DB::query(Database::INSERT,
+                    "INSERT INTO kwalbum_persons
 					(name, count)
 					VALUES (:name, :count)")
-					->param(':name', $this->name)
-					->param(':count', $this->count)
-					->execute();
-				$this->id = $result[0];
-				$this->loaded = true;
-				return;
-			}
+                    ->param(':name', $this->name)
+                    ->param(':count', $this->count)
+                    ->execute();
+                $this->id = $result[0];
+                $this->loaded = true;
+                return;
+            }
 
-			$this->id = $id = (int)$result[0]['id'];
-			$this->count = (int)$result[0]['count'];
-			$this->loaded = true;
-		}
+            $this->id = $id = (int)$result[0]['id'];
+            $this->count = (int)$result[0]['count'];
+            $this->loaded = true;
+        }
 
-		DB::query(Database::UPDATE,
-			"UPDATE kwalbum_persons
+        DB::query(Database::UPDATE,
+            "UPDATE kwalbum_persons
 			SET name = :name, count = :count
 			WHERE id = :id")
-			->param(':id', $id)
-			->param(':name', $this->name)
-			->param(':count', $this->count)
-			->execute();
-	}
+            ->param(':id', $id)
+            ->param(':name', $this->name)
+            ->param(':count', $this->count)
+            ->execute();
+    }
 
-	public function delete()
-	{
-		// Delete relations between the person and items
-		DB::query(Database::DELETE,
-			"DELETE FROM kwalbum_items_persons
+    public function delete()
+    {
+        // Delete relations between the person and items
+        DB::query(Database::DELETE,
+            "DELETE FROM kwalbum_items_persons
 			WHERE person_id = :id")
-			->param(':id', $this->id)
-			->execute();
+            ->param(':id', $this->id)
+            ->execute();
 
-		// Delete the person
-		DB::query(Database::DELETE,
-			"DELETE FROM kwalbum_persons
+        // Delete the person
+        DB::query(Database::DELETE,
+            "DELETE FROM kwalbum_persons
 			WHERE id = :id")
-			->param(':id', $this->id)
-			->execute();
+            ->param(':id', $this->id)
+            ->execute();
 
-		$this->clear();
-	}
+        $this->clear();
+    }
 
-	public function clear()
-	{
-		$this->id = $this->count = 0;
-		$this->name = '';
-		$this->loaded = false;
-	}
+    public function clear()
+    {
+        $this->id = $this->count = 0;
+        $this->name = '';
+        $this->loaded = false;
+    }
 
-	public function __toString()
-	{
-		return $this->name;
-	}
+    public function __toString()
+    {
+        return $this->name;
+    }
 
-	static public function getAllArray($order = 'name ASC')
-	{
-		$result = DB::query(Database::SELECT,
-			"SELECT *
+    static public function getAllArray($order = 'name ASC')
+    {
+        $result = DB::query(Database::SELECT,
+            "SELECT *
 			FROM kwalbum_persons
 			ORDER BY $order")
-			->execute();
-		return $result;
-	}
+            ->execute();
+        return $result;
+    }
 
-	static public function getNameArray($min_count = 1, $limit = null, $offset = 0,
-		$name = '', $order = 'name ASC', $not_included = array())
-	{
-		$name = trim($name);
-		$tags = array();
-		$query = '';
-		$db = Database::instance();
+    static public function getNameArray($min_count = 1, $limit = null, $offset = 0,
+                                        $name = '', $order = 'name ASC', $not_included = array())
+    {
+        $name = trim($name);
+        $tags = array();
+        $query = '';
+        $db = Database::instance();
 
-		if (count($not_included) > 0)
-		{
-			foreach($not_included as $word)
-			{
-				$query .= " AND name != ".$db->escape($word);
-			}
-		}
+        if (count($not_included) > 0) {
+            foreach ($not_included as $word) {
+                $query .= " AND name != " . $db->escape($word);
+            }
+        }
 
-		if ($name)
-		{
+        if ($name) {
 
-			// Select almost exact (not case sensitive) match first
-			$result = DB::query(Database::SELECT,
-				'SELECT name
+            // Select almost exact (not case sensitive) match first
+            $result = DB::query(Database::SELECT,
+                'SELECT name
 				FROM kwalbum_persons
-				WHERE name = :name '.$query)
-				->param(':name', $name)
-				->execute();
-			if ($result->count() == 1)
-			{
-				$tags[] = $result[0]['name'];
-				$limit--;
-			}
+				WHERE name = :name ' . $query)
+                ->param(':name', $name)
+                ->execute();
+            if ($result->count() == 1) {
+                $tags[] = $result[0]['name'];
+                $limit--;
+            }
 
-			// Select from starting matches
-			$partName = "$name%";
-			$query .= ' AND name != :name';
-			$result = DB::query(Database::SELECT,
-				"SELECT name
+            // Select from starting matches
+            $partName = "$name%";
+            $query .= ' AND name != :name';
+            $result = DB::query(Database::SELECT,
+                "SELECT name
 				FROM kwalbum_persons
 				WHERE name LIKE :partName AND count >= :min_count $query
 				ORDER BY $order"
-				.($limit ? ' LIMIT :limit' : null))
-				->param(':partName', $partName)
-				->param(':name', $name)
-				->param(':min_count', $min_count)
-				->param(':limit', $limit)
-				->execute();
+                . ($limit ? ' LIMIT :limit' : null))
+                ->param(':partName', $partName)
+                ->param(':name', $name)
+                ->param(':min_count', $min_count)
+                ->param(':limit', $limit)
+                ->execute();
 
-			if ($result->count() > 0)
-			{
-				foreach($result as $row)
-				{
-					$tags[] = $row['name'];
-					$query .= " AND name != ".$db->escape($row['name']);
-				}
-				$limit -= $result->count();
-			}
+            if ($result->count() > 0) {
+                foreach ($result as $row) {
+                    $tags[] = $row['name'];
+                    $query .= " AND name != " . $db->escape($row['name']);
+                }
+                $limit -= $result->count();
+            }
 
-			// Select from any partial matches if the result limit hasn't been reached yet
-			if ($limit > 0)
-			{
-				$partName = "%$name%";
-				$result = DB::query(Database::SELECT,
-					"SELECT name
+            // Select from any partial matches if the result limit hasn't been reached yet
+            if ($limit > 0) {
+                $partName = "%$name%";
+                $result = DB::query(Database::SELECT,
+                    "SELECT name
 					FROM kwalbum_persons
 					WHERE name LIKE :partName AND count >= :min_count $query"
-					." ORDER BY $order"
-					.($limit ? ' LIMIT :limit' : null))
-					->param(':partName', $partName)
-					->param(':name', $name)
-					->param(':min_count', $min_count)
-					->param(':limit', $limit)
-					->execute();
+                    . " ORDER BY $order"
+                    . ($limit ? ' LIMIT :limit' : null))
+                    ->param(':partName', $partName)
+                    ->param(':name', $name)
+                    ->param(':min_count', $min_count)
+                    ->param(':limit', $limit)
+                    ->execute();
 
-				foreach($result as $row)
-				{
-					$tags[] = $row['name'];
-				}
-			}
-		}
-		else
-		{
-			$result = DB::query(Database::SELECT,
-				"SELECT name
+                foreach ($result as $row) {
+                    $tags[] = $row['name'];
+                }
+            }
+        } else {
+            $result = DB::query(Database::SELECT,
+                "SELECT name
 				FROM kwalbum_persons
 				WHERE count >= :min_count
 				ORDER BY $order"
-				.($limit ? ' LIMIT :offset,:limit' : null))
-				->param(':offset', $offset)
-				->param(':min_count', $min_count)
-				->param(':limit', $limit)
-				->execute();
+                . ($limit ? ' LIMIT :offset,:limit' : null))
+                ->param(':offset', $offset)
+                ->param(':min_count', $min_count)
+                ->param(':limit', $limit)
+                ->execute();
 
-			foreach ($result as $row)
-			{
-				$tags[] = $row['name'];
-			}
-		}
+            foreach ($result as $row) {
+                $tags[] = $row['name'];
+            }
+        }
 
-		return $tags;
-	}
+        return $tags;
+    }
 }

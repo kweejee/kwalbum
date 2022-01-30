@@ -1,4 +1,5 @@
 <?php defined('SYSPATH') or die('No direct script access.');
+
 /**
  *
  *
@@ -8,8 +9,6 @@
  * @package kwalbum
  * @since Sep 1, 2009
  */
-
-
 class Controller_Browse extends Controller_Kwalbum
 {
     public function before()

@@ -1,4 +1,5 @@
-<?php defined('SYSPATH') OR die('No direct access allowed.');
+<?php defined('SYSPATH') or die('No direct access allowed.');
+
 /**
  *
  *
@@ -8,7 +9,6 @@
  * @package kwalbum
  * @since 3.0 Jul 6, 2009
  */
-
 class Model_Kwalbum_Location extends Kwalbum_Model
 {
     public $id, $name, $latitude, $longitude, $count, $child_count, $thumbnail_item_id, $parent_name,
@@ -29,13 +29,13 @@ class Model_Kwalbum_Location extends Kwalbum_Model
 
         if ($id_or_name !== null) {
             // Cleanup name
-			$names = explode(trim(self::get_config('location_separator_1')), $id_or_name);
-			foreach ($names as $i => &$name) {
-				$name = trim($name);
-				if (!$name) {
-					unset($names[$i]);
+            $names = explode(trim(self::get_config('location_separator_1')), $id_or_name);
+            foreach ($names as $i => &$name) {
+                $name = trim($name);
+                if (!$name) {
+                    unset($names[$i]);
                 }
-			}
+            }
             if (count($names) > 1) {
                 $this->parent_name = $names[0];
                 // combine children
@@ -62,7 +62,7 @@ class Model_Kwalbum_Location extends Kwalbum_Model
                     LIMIT 1");
             }
             $result = $query->param(':name', $this->name)
-                    ->execute();
+                ->execute();
             if ($result->count() != 0) {
                 $this->load($result[0]['id']);
             }
@@ -76,9 +76,9 @@ class Model_Kwalbum_Location extends Kwalbum_Model
      * Load a location where $field equals $value
      *
      * @param int $value id
-     * @return \Model_Kwalbum_Location
+     * @return Model_Kwalbum_Location
      */
-    public function load($value = null)
+    public function load($value = null): Model_Kwalbum_Location
     {
         $this->clear();
         if (is_null($value)) {
@@ -119,14 +119,13 @@ class Model_Kwalbum_Location extends Kwalbum_Model
      *
      * @return Model_Kwalbum_Location
      */
-    public function save()
+    public function save(): Model_Kwalbum_Location
     {
         $id = $this->id;
 
         $parent_id = 0;
         if ($this->parent_name) {
-            if ($this->parent_name != $this->_original_name)
-            {
+            if ($this->parent_name != $this->_original_name) {
                 $result = DB::query(Database::SELECT,
                     "SELECT id
                     FROM kwalbum_locations
@@ -142,7 +141,7 @@ class Model_Kwalbum_Location extends Kwalbum_Model
             } else {
                 $parent = clone $this;
                 $parent->id = 0;
-                $parent->name = '_____temporary name_____'.time();
+                $parent->name = '_____temporary name_____' . time();
                 $parent->parent_name = '';
                 $parent_id = $parent->save()->id;
                 $parent->name = $this->parent_name;
@@ -157,7 +156,7 @@ class Model_Kwalbum_Location extends Kwalbum_Model
                 WHERE name = :name AND parent_location_id = :parent_id
                 LIMIT 1")
                 ->param(':name', $this->name)
-                ->param(':parent_id', (int) $parent_id)
+                ->param(':parent_id', (int)$parent_id)
                 ->execute();
             if ($result->count() == 0) {
                 $result = DB::query(Database::INSERT,
@@ -169,12 +168,12 @@ class Model_Kwalbum_Location extends Kwalbum_Model
                     ->param(':name', $this->name)
                     ->param(':latitude', $this->latitude ? $this->latitude : 0)
                     ->param(':longitude', $this->longitude ? $this->longitude : 0)
-                    ->param(':count', (int) $this->count)
-                    ->param(':child_count', (int) $this->child_count)
+                    ->param(':count', (int)$this->count)
+                    ->param(':child_count', (int)$this->child_count)
                     ->param(':thumbnail_item_id', $this->thumbnail_item_id ? $this->thumbnail_item_id : 0)
-                    ->param(':parent_id', (int) $parent_id)
-                    ->param(':name_hide_level', (int) $this->name_hide_level)
-                    ->param(':coordinate_hide_level', (int) $this->coordinate_hide_level)
+                    ->param(':parent_id', (int)$parent_id)
+                    ->param(':name_hide_level', (int)$this->name_hide_level)
+                    ->param(':coordinate_hide_level', (int)$this->coordinate_hide_level)
                     ->param(':description', $this->description ? $this->description : '')
                     ->execute();
                 $this->id = $result[0];
@@ -184,18 +183,18 @@ class Model_Kwalbum_Location extends Kwalbum_Model
             }
 
             $row = $result[0];
-            $this->id = $id = (int) $row['id'];
+            $this->id = $id = (int)$row['id'];
             if (!$this->latitude) {
-                $this->latitude = (float) $row['latitude'];
+                $this->latitude = (float)$row['latitude'];
             }
             if (!$this->longitude) {
-                $this->longitude = (float) $row['longitude'];
+                $this->longitude = (float)$row['longitude'];
             }
             if (!$this->count) {
-                $this->count = (int) $row['count'];
+                $this->count = (int)$row['count'];
             }
             if (!$this->child_count) {
-                $this->child_count = (int) $row['child_count'];
+                $this->child_count = (int)$row['child_count'];
             }
         } else {
             $query = DB::query(Database::UPDATE,
@@ -209,12 +208,12 @@ class Model_Kwalbum_Location extends Kwalbum_Model
                 ->param(':name', $this->name)
                 ->param(':latitude', $this->latitude ? $this->latitude : 0)
                 ->param(':longitude', $this->longitude ? $this->longitude : 0)
-                ->param(':count', (int) $this->count)
-                ->param(':child_count', (int) $this->child_count)
+                ->param(':count', (int)$this->count)
+                ->param(':child_count', (int)$this->child_count)
                 ->param(':thumbnail_item_id', (int)$this->thumbnail_item_id)
-                ->param(':parent_id', (int) $parent_id)
-                ->param(':name_hide_level', (int) $this->name_hide_level)
-                ->param(':coordinate_hide_level', (int) $this->coordinate_hide_level)
+                ->param(':parent_id', (int)$parent_id)
+                ->param(':name_hide_level', (int)$this->name_hide_level)
+                ->param(':coordinate_hide_level', (int)$this->coordinate_hide_level)
                 ->param(':description', $this->description ? $this->description : '');
             $query->execute();
         }
@@ -228,7 +227,7 @@ class Model_Kwalbum_Location extends Kwalbum_Model
      *
      * @return boolean
      */
-    public function delete()
+    public function delete(): bool
     {
         // do not delete the "unknown" location
         if ($this->id === 1) {
@@ -299,17 +298,17 @@ class Model_Kwalbum_Location extends Kwalbum_Model
     /**
      * Get full name including parent name if set
      *
-     * @param string $parent_name
+     * @param string|null $parent_name
      * @param string $name
      * @return string
      */
-    public static function getFullName($parent_name, $name)
+    public static function getFullName(?string $parent_name, string $name): string
     {
-        $parent = trim($parent_name) ? trim($parent_name).self::get_config('location_separator_1') : '';
-        return $parent.trim($name);
+        $parent = trim($parent_name) ? trim($parent_name) . self::get_config('location_separator_1') : '';
+        return $parent . trim($name);
     }
 
-    public function  __get($key)
+    public function __get($key)
     {
         switch ($key) {
             case 'name_hide_level_description':
@@ -334,17 +333,17 @@ class Model_Kwalbum_Location extends Kwalbum_Model
      *
      * @param Model_Kwalbum_User $user
      * @param int $min_count
-     * @param int $limit
+     * @param int|null $limit
      * @param int $offset
      * @param string $name
      * @param string $order
      * @return array
      */
-    static public function getNameArray(&$user, $min_count = 1, $limit = null, $offset = 0, $name = '', $order = '')
+    static public function getNameArray(Model_Kwalbum_User &$user, int $min_count = 1, int $limit = null, int $offset = 0, string $name = '', string $order = ''): array
     {
         $name = trim($name);
         if ($order) {
-            $order = 'ORDER BY '.$order;
+            $order = 'ORDER BY ' . $order;
         }
 
         $locations = array();
@@ -380,7 +379,7 @@ class Model_Kwalbum_Location extends Kwalbum_Model
                     ->execute();
                 if ($result->count() > 0) {
                     foreach ($result as $row) {
-                        $locations[] = ($row['parent'] ? $row['parent'].self::get_config('location_separator_1') : '').$row['name'];
+                        $locations[] = ($row['parent'] ? $row['parent'] . self::get_config('location_separator_1') : '') . $row['name'];
                         $not_query .= " AND loc.name != '{$row['name']}'";
                     }
                     if ($limit) {
@@ -397,11 +396,11 @@ class Model_Kwalbum_Location extends Kwalbum_Model
                 WHERE {$not_query} AND loc.name LIKE :part_name AND loc.count >= :min_count {$parent_query}
                   AND loc.name_hide_level <= :permission_level
                 {$order}"
-                .($limit ? ' LIMIT :limit' : null))
+                . ($limit ? ' LIMIT :limit' : null))
                 ->param(':part_name', $part_name)
                 ->param(':name', $name)
-                ->param(':min_count', (int) $min_count)
-                ->param(':permission_level', (int) $user->permission_level)
+                ->param(':min_count', (int)$min_count)
+                ->param(':permission_level', (int)$user->permission_level)
                 ->param(':limit', $limit);
             if ($parent_name) {
                 $query = $query->param(':parent_name', $parent_name);
@@ -411,7 +410,7 @@ class Model_Kwalbum_Location extends Kwalbum_Model
             if ($result->count() > 0) {
                 $new_locations = array();
                 foreach ($result as $row) {
-                    $new_locations[] = ($row['parent'] ? $row['parent'].self::get_config('location_separator_1') : '').$row['name'];
+                    $new_locations[] = ($row['parent'] ? $row['parent'] . self::get_config('location_separator_1') : '') . $row['name'];
                     $not_query .= " AND loc.name != '{$row['name']}'";
                 }
                 if (!$order) {
@@ -433,11 +432,11 @@ class Model_Kwalbum_Location extends Kwalbum_Model
                     WHERE {$not_query} AND loc.name LIKE :part_name {$parent_query} AND loc.count >= :min_count
                       AND loc.name_hide_level <= :permission_level
                     {$order}"
-                    .($limit ? ' LIMIT :limit' : null))
+                    . ($limit ? ' LIMIT :limit' : null))
                     ->param(':part_name', $part_name)
                     ->param(':name', $name)
-                    ->param(':min_count', (int) $min_count)
-                    ->param(':permission_level', (int) $user->permission_level)
+                    ->param(':min_count', (int)$min_count)
+                    ->param(':permission_level', (int)$user->permission_level)
                     ->param(':limit', $limit);
                 if ($parent_name) {
                     $query = $query->param(':parent_name', $parent_name);
@@ -446,7 +445,7 @@ class Model_Kwalbum_Location extends Kwalbum_Model
 
                 $new_locations = array();
                 foreach ($result as $row) {
-                    $new_locations[] = ($row['parent'] ? $row['parent'].self::get_config('location_separator_1') : '').$row['name'];
+                    $new_locations[] = ($row['parent'] ? $row['parent'] . self::get_config('location_separator_1') : '') . $row['name'];
                     $not_query .= " AND loc.name != '{$row['name']}'";
                 }
                 if (!$order) {
@@ -468,18 +467,18 @@ class Model_Kwalbum_Location extends Kwalbum_Model
                     WHERE {$not_query} AND p.name LIKE :part_name AND p.child_count >= :min_count
                       AND loc.name_hide_level <= :permission_level
                     {$order}"
-                    .($limit ? ' LIMIT :limit' : null))
+                    . ($limit ? ' LIMIT :limit' : null))
                     ->param(':part_name', $part_name)
                     ->param(':name', $name)
-                    ->param(':min_count', (int) $min_count)
-                    ->param(':permission_level', (int) $user->permission_level)
+                    ->param(':min_count', (int)$min_count)
+                    ->param(':permission_level', (int)$user->permission_level)
                     ->param(':limit', $limit)
                     ->execute();
 
                 if ($result->count() > 0) {
                     $new_locations = array();
                     foreach ($result as $row) {
-                        $new_locations[] = ($row['parent'] ? $row['parent'].self::get_config('location_separator_1') : '').$row['name'];
+                        $new_locations[] = ($row['parent'] ? $row['parent'] . self::get_config('location_separator_1') : '') . $row['name'];
                         $not_query .= " AND loc.name != '{$row['name']}'";
                     }
                     if (!$order) {
@@ -499,15 +498,15 @@ class Model_Kwalbum_Location extends Kwalbum_Model
                 WHERE (loc.count >= :min_count OR (!loc.parent_location_id AND loc.child_count >= :min_count))
                   AND loc.name_hide_level <= :permission_level
                 {$order}"
-                .($limit ? ' LIMIT :offset,:limit' : null))
+                . ($limit ? ' LIMIT :offset,:limit' : null))
                 ->param(':offset', $offset)
-                ->param(':min_count', (int) $min_count)
-                ->param(':permission_level', (int) $user->permission_level)
+                ->param(':min_count', (int)$min_count)
+                ->param(':permission_level', (int)$user->permission_level)
                 ->param(':limit', $limit)
                 ->execute();
 
             foreach ($result as $row) {
-                $locations[] = ($row['parent'] ? $row['parent'].self::get_config('location_separator_1') : '').$row['name'];
+                $locations[] = ($row['parent'] ? $row['parent'] . self::get_config('location_separator_1') : '') . $row['name'];
             }
             if (!$order) {
                 usort($locations, 'strnatcasecmp');
@@ -520,18 +519,18 @@ class Model_Kwalbum_Location extends Kwalbum_Model
     static public function getMarkers($left, $right, $top, $bottom, &$data)
     {
         $where_query = " WHERE latitude IS NOT NULL AND latitude != 0"
-            ." AND latitude >= '$bottom' AND latitude <= '$top'"
-            .($left>$right
+            . " AND latitude >= '$bottom' AND latitude <= '$top'"
+            . ($left > $right
                 ? " AND (longitude >= '$left' OR longitude <= '$right')"
                 : " AND longitude >= '$left' AND longitude <= '$right'");
         $query = 'SELECT id, name, latitude as lat, longitude as lon, (count+child_count AS count), thumbnail_item_id, description'
-            .' FROM kwalbum_locations'
-            .$where_query
-            .' ORDER BY count DESC'
-            .' LIMIT 10';
+            . ' FROM kwalbum_locations'
+            . $where_query
+            . ' ORDER BY count DESC'
+            . ' LIMIT 10';
         $result = DB::query(Database::SELECT, $query)
             ->execute();
-        foreach($result as $row) {
+        foreach ($result as $row) {
             $data[] = $row;
         }
         return;
@@ -563,8 +562,8 @@ class Model_Kwalbum_Location extends Kwalbum_Model
         foreach ($result as $row) {
             DB::query(Database::UPDATE,
                 "UPDATE kwalbum_locations a SET child_count = :count WHERE id=:id")
-                ->param(':count',$row['count(*)'])
-                ->param(':id',$row['parent_location_id'])
+                ->param(':count', $row['count(*)'])
+                ->param(':id', $row['parent_location_id'])
                 ->execute();
         }
     }

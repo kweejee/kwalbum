@@ -1,4 +1,5 @@
-<?php defined('SYSPATH') OR die('No direct access allowed.');
+<?php defined('SYSPATH') or die('No direct access allowed.');
+
 /**
  *
  *
@@ -9,7 +10,6 @@
  * @package kwalbum
  * @since 3.0 Jul 6, 2009
  */
-
 class Model_Kwalbum_User extends Kwalbum_Model
 {
     public $id, $name, $login_name, $email, $token, $visit_date, $permission_level, $reset_code;
@@ -27,9 +27,9 @@ class Model_Kwalbum_User extends Kwalbum_Model
      *
      * @param string $value
      * @param string $field
-     * @return \Model_Kwalbum_User
+     * @return Model_Kwalbum_User
      */
-    public function load($value = null, $field = 'id')
+    public function load($value = null, string $field = 'id'): Model_Kwalbum_User
     {
         $this->clear();
         if (is_null($value)
@@ -109,7 +109,7 @@ class Model_Kwalbum_User extends Kwalbum_Model
         }
     }
 
-    static public function getAllArray($order = 'name ASC')
+    static public function getAllArray($order = 'name ASC'): array
     {
         $users = array();
 
@@ -130,11 +130,9 @@ class Model_Kwalbum_User extends Kwalbum_Model
     }
 
     /**
-     *
-     * @param int $id
      * @return boolean
      */
-    public function delete()
+    public function delete(): bool
     {
         // do not delete main admin user or default "deleted user" account
         if ($this->id < 3) {
@@ -162,10 +160,10 @@ class Model_Kwalbum_User extends Kwalbum_Model
     /**
      * Check if a user can edit an item
      *
-     * @param Kwalbum_Item object of item to check about editing
+     * @param Model_Kwalbum_Item object of item to check about editing
      * @return true/false if user can edit the item
      */
-    public function can_edit_item($item = null)
+    public function can_edit_item($item = null): bool
     {
         // User can edit any item
         if ($this->permission_level >= 4)
@@ -184,16 +182,13 @@ class Model_Kwalbum_User extends Kwalbum_Model
     /**
      * Check if a user can see an item
      *
-     * @param Kwalbum_Item object of item to check about editing
-     * @return true/false if user can view the item
+     * @param Model_Kwalbum_Item object of item to check about editing
+     * @return bool
      */
-    public function can_view_item($item = null)
+    public function can_view_item($item = null): bool
     {
         // User can view any at the same level or lower
-        if ($this->permission_level >= $item->hide_level)
-            return true;
-
-        return false;
+        return $this->permission_level >= $item->hide_level;
     }
 
     public function password_equals($password_to_check)
@@ -234,7 +229,7 @@ class Model_Kwalbum_User extends Kwalbum_Model
                 $this->visit_date = date('Y-m-d H:i:s');
                 $this->save();
             } else {
-                if ( ! empty($_SESSION['kwalbum_id'])) {
+                if (!empty($_SESSION['kwalbum_id'])) {
                     $this->load((int)$_SESSION['kwalbum_id']);
                     if ($this->token) {
                         $this->token = '';
@@ -306,7 +301,7 @@ class Model_Kwalbum_User extends Kwalbum_Model
      * @param int $length length for cookie if using a cookie
      * @return Model_Kwalbum_User if login was successful
      */
-    public static function login($username, $password, $length=0)
+    public static function login($username, $password, $length = 0)
     {
         $user = Model::factory('Kwalbum_User')
             ->load($username, 'login_name');
@@ -320,7 +315,7 @@ class Model_Kwalbum_User extends Kwalbum_Model
             return null;
         }
 
-        $loginLength = (int) $length;
+        $loginLength = (int)$length;
         $user->visit_date = date('Y-m-d H:i:s');
         $user->token = Kwalbum_Helper::getRandomHash();
         $user->save();
@@ -328,7 +323,7 @@ class Model_Kwalbum_User extends Kwalbum_Model
         if ($loginLength > 0) {
             setcookie(
                 'kwalbum',
-                $user->id.':'.$user->token,
+                $user->id . ':' . $user->token,
                 time() + $loginLength,
                 '/'
             );
