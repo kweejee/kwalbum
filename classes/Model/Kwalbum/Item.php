@@ -123,11 +123,11 @@ class Model_Kwalbum_Item extends Kwalbum_Model
     /**
      * Save object changes to the database through inserts or updates
      *
-     * @param date|null $create_date_from_previous_save
+     * @param string|null $create_date_from_previous_save
      * @return Model_Kwalbum_Item
      * @todo Use a transaction
      */
-    public function save(date $create_date_from_previous_save = null): Model_Kwalbum_Item
+    public function save(string $create_date_from_previous_save = null): Model_Kwalbum_Item
     {
         // Set type
         $types = array_flip(Model_Kwalbum_Item::$types);

@@ -42,28 +42,6 @@ $(document).ready(function(){
 			});
 		}
 	});
-//	$('#files').uploadify({
-//		'uploader':'KWALBUM_URL/media/ajax/uploadify/uploadify.swf',
-//		'onComplete':function(event, ID, fileObj, response, data){
-//			if (console && console.log) {
-//				console.log(response);
-//				console.log(data);
-//			}
-//			kwablum_refresh_upload_data();
-//		},
-//		'onError':function(event,ID,fileObj,errorObj){
-//			if (console && console.log) {
-//				console.log(errorObj);
-//			}
-//		},
-//		'cancelImg':'KWALBUM_URL/media/ajax/uploadify/cancel.png',
-//		'script':'KWALBUM_URL/~ajax/upload.php',
-//		'multi':true,
-//		'buttonText':'Browse Files',
-//		'fileDataName':'userfile',
-//		'fileExt':'*.jpg;*.JPG;*.jpe;*.JPE;*.jpeg;*.JPEG;*.png;*.PNG;*.gif;*.GIF',
-//		'fileDesc':'Image Files Only'
-//	});
     $("#date").datepicker({dateFormat: "yy-mm-dd"});
 });
 
@@ -88,6 +66,7 @@ $(function () {
 				.text("Uploading " + uploadedCount + " of " + totalCount);
 		},
 		progress: function(e, data) {
+			$('#group_option').val("existing");
 			let progress = parseInt((data.loaded / data.total) * 100, 10);
 			data.context.css("background-position-x", 100 - progress + "%");
 		},
