@@ -24,8 +24,9 @@ class Model_Kwalbum_Location extends Kwalbum_Model
     {
         if (is_int($id_or_name)) {
             $this->load($id_or_name);
+        } else {
+            $this->clear();
         }
-        $this->clear();
 
         if ($id_or_name !== null) {
             // Cleanup name
