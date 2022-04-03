@@ -319,10 +319,7 @@ class Controller_Ajax extends Controller_Kwalbum
         echo json_encode($output_tags);
     }
 
-    /**
-     * @return string item data in json format
-     */
-    public function action_GetResizedImage(): string
+    public function action_GetResizedImage()
     {
         if (empty($_GET['id'])) {
             echo 'missing id';
