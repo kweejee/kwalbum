@@ -394,12 +394,12 @@ class Model_Kwalbum_Item extends Kwalbum_Model
     }
 
     /**
-     * This function is mostly copied from a comment in the php.net documentation
+     * This function is mostly copied from a comment in the php.net documentation.
      * @param resource $img
      * @param int $rotation
-     * @return resource|boolean
+     * @return resource|null rotated image or null if the image is not rotated
      */
-    protected function rotateImage($img, int $rotation): bool
+    protected function rotateImage($img, int $rotation)
     {
         $width = imagesx($img);
         $height = imagesy($img);
@@ -412,7 +412,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
                 $newimg = imagecreatetruecolor($width, $height);
                 break;
             default:
-                $newimg = false;
+                $newimg = null;
         }
         if ($newimg) {
             for ($i = 0; $i < $width; $i++) {
@@ -421,25 +421,24 @@ class Model_Kwalbum_Item extends Kwalbum_Model
                     switch ($rotation) {
                         case 90:
                             if (!@imagesetpixel($newimg, ($height - 1) - $j, $i, $reference)) {
-                                return false;
+                                return null;
                             }
                             break;
                         case 180:
                             if (!@imagesetpixel($newimg, $width - $i, ($height - 1) - $j, $reference)) {
-                                return false;
+                                return null;
                             }
                             break;
                         case 270:
                             if (!@imagesetpixel($newimg, $j, $width - $i, $reference)) {
-                                return false;
+                                return null;
                             }
                             break;
                     }
                 }
             }
-            return $newimg;
         }
-        return false;
+        return $newimg;
     }
 
     /**
