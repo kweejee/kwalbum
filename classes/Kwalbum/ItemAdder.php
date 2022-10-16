@@ -117,12 +117,12 @@ class Kwalbum_ItemAdder
                     }
                     $item->latitude = $lat;
                 }
-                if (!empty($data['GPSLongitude'])) {
-                    $longitude = $data['GPSLongitude'];
+                if (!empty($exif['GPSLongitude'])) {
+                    $longitude = $exif['GPSLongitude'];
                     $sec = explode('/', $longitude[2]);
                     $lon = @ ((int)$longitude[0] + ((int)$longitude[1] / 60)
                         + (((int)$sec[0] / (int)$sec[1]) / 3600));
-                    if (!empty($data['GPSLongitudeRef']) && 'W' == $data['GPSLongitudeRef']) {
+                    if (!empty($exif['GPSLongitudeRef']) && 'W' == $exif['GPSLongitudeRef']) {
                         $lon = -($lon);
                     }
                     $item->longitude = $lon;
