@@ -78,6 +78,12 @@ echo ' <span class="kwalbumPageNumbers">(item '.$item_index.' of '.$total_items.
 		echo '<br/><strong id="sortdate_label">Sorting Datetime:</strong> ';
 		echo '<span id="sortdate">'.$item->sort_date.'</span>';
 
+        echo '<br/><strong id="latitude_label">Latitude:</strong> ';
+        echo '<span id="latitude">'.$item->latitude.'</span>';
+
+        echo '<br/><strong id="slongitude_label">Longitude:</strong> ';
+        echo '<span id="longitude">'.$item->longitude.'</span>';
+
 		echo '<br/><span id="delete"><input type="button" id="delete_button" value="Delete Item"/></span><br/><br/>';
 
 	echo HTML::script($kwalbum_url.'/media/ajax/jquery.jeditable.mini.js')

@@ -71,6 +71,12 @@ echo ' <span class="kwalbumPageNumbers">(item '.$item_index.' of '.$total_items.
 			}
 			echo '<br/>';
 		}
+        if ($item->latitude != 0 || $item->longitude != 0)
+        {
+            echo '<strong>Coordinates: </strong>'
+                .HTML::anchor("https://www.google.com/maps/search/?api=1&query=$item->latitude%2C$item->longitude", "$item->latitude, $item->longitude")
+                .'<br/>';
+        }
 	?>
 	<strong>Views:</strong> <?php echo $item->count; ?><br/>
 
