@@ -18,7 +18,13 @@ class Model_Kwalbum_Item extends Kwalbum_Model
         $description, $latitude, $longitude, $path, $real_path, $filename,
         $has_comments, $hide_level, $count, $loaded;
     private $_user_name, $_original_location, $_original_user_id,
-        $_location_id, $_tags, $_persons, $_comments, $_comment_count;
+        $_location_id, $_persons, $_comments, $_comment_count;
+    /**
+     * Array of tag names
+     * @todo use array of Tag models instead of array of strings
+     * @var array
+     */
+    private $_tags;
     private $_location, $_location_name_hide_level, $_parent_location, $parent_location_name_hide_level;
     const EDIT_THUMB_MULTIPLIER = 4; // TODO: replace generated $limit with a user defined value from the browser
 
@@ -125,6 +131,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
      *
      * @param string|null $create_date_from_previous_save
      * @return Model_Kwalbum_Item
+     * @throws Exception
      * @todo Use a transaction
      */
     public function save(string $create_date_from_previous_save = null): Model_Kwalbum_Item
@@ -231,14 +238,8 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 
         // Set tags and persons once we know we have an item_id for the relationship.
 
-        // Remove duplicates of new persons and tags while making sure
-        // the arrays exist before recreating the relationships
-        $this->_persons = $this->getPersons();
-        $this->_tags = $this->getTags();
-
-        // Remove old item-person and item-tag relations
+        $this->_persons = $this->get_persons();
         $this->_delete_person_relations();
-        $this->_delete_tag_relations();
 
         // Create new item-person and item-tag relations
         $person = new Model_Kwalbum_Person;
@@ -259,26 +260,39 @@ class Model_Kwalbum_Item extends Kwalbum_Model
                 $person->save();
             }
         }
-        $tag = new Model_Kwalbum_Tag;
+        $this->saveTags();
+
+        return $this;
+    }
+
+    private function saveTags(): void
+    {
+        $this->_tags = $this->get_tags();
+        $this->_delete_tag_relations();
+
+        $tags = [];
         foreach ($this->_tags as $name) {
             $name = trim($name);
             if ($name != '') {
-                $tag->clear();
+                $tag = new Model_Kwalbum_Tag();
                 $tag->name = $name;
-                $tag->save();
-                DB::query(Database::INSERT,
-                    "INSERT INTO kwalbum_items_tags
-					(item_id, tag_id)
-					VALUES (:item_id, :tag_id)")
-                    ->param(':item_id', $this->id)
-                    ->param(':tag_id', $tag->id)
-                    ->execute();
-                $tag->count = $tag->count + 1;
-                $tag->save();
+                $tag->insert_if_needed();
+                $tags[] = $tag;
             }
         }
-
-        return $this;
+        $tags = array_unique($tags);
+        foreach ($tags as $tag) {
+            DB::query(Database::INSERT,
+                "INSERT INTO kwalbum_items_tags
+                (item_id, tag_id)
+                VALUES (:item_id, :tag_id)")
+                ->param(':item_id', $this->id)
+                ->param(':tag_id', $tag->id)
+                ->execute();
+            $tag->count = $tag->count + 1;
+            $tag->save();
+        }
+        $this->_tags = array_column($tags, "name");
     }
 
     /**
@@ -499,10 +513,19 @@ class Model_Kwalbum_Item extends Kwalbum_Model
     }
 
     /**
-     *
+     * @deprecated use get_tags
      * @return array
      */
     public function getTags(): array
+    {
+        return $this->get_tags();
+    }
+
+    /**
+     *
+     * @return array
+     */
+    public function get_tags(): array
     {
         if ($this->_tags === null) {
             $this->_tags = array();
@@ -522,10 +545,15 @@ class Model_Kwalbum_Item extends Kwalbum_Model
     }
 
     /**
-     *
+     * @deprecated use get_persons
      * @return array
      */
     public function getPersons(): array
+    {
+        return $this->get_persons();
+    }
+
+    public function get_persons(): array
     {
         if ($this->_persons === null) {
             $this->_persons = array();
@@ -559,10 +587,6 @@ class Model_Kwalbum_Item extends Kwalbum_Model
     public function __get($id)
     {
         switch ($id) {
-            case 'tags':
-                return $this->getTags();
-            case 'persons':
-                return $this->getPersons();
             case 'comments':
                 return $this->getComments();
             case 'pretty_date':
@@ -635,6 +659,8 @@ class Model_Kwalbum_Item extends Kwalbum_Model
                 return $this->_comment_count;
             case 'hide_level_name':
                 return isset(Model_Kwalbum_Item::$hide_level_names[$this->hide_level]) ? Model_Kwalbum_Item::$hide_level_names[$this->hide_level] : 'unknown';
+//            default:
+//                throw new Exception("$id is not supported for getting");
         }
     }
 
@@ -678,22 +704,93 @@ class Model_Kwalbum_Item extends Kwalbum_Model
         return $object->signedUrl(new Timestamp(new DateTime('tomorrow')), $options);
     }
 
-    /**
-     * @param string $value
-     */
-    public function addTag(string $value)
+    public function set_tags(array $tags): void
     {
-        $this->getTags();
-        $this->_tags[] = trim($value);
+        $this->_tags = [];
+        $this->append_tags($tags);
     }
 
     /**
-     * @param string $value
+     * Append tags to those already set
+     *
+     * @param array $tags
+     * @return void
      */
-    public function addPerson(string $value)
+    public function add_tags(array $tags): void
     {
-        $this->getPersons();
-        $this->_persons[] = trim($value);
+        $this->get_tags();
+        $this->append_tags($tags);
+    }
+
+    /**
+     * Remove tags from those already set
+     *
+     * @param array $tags
+     * @return void
+     */
+    public function remove_tags(array $tags): void
+    {
+        foreach ($tags as &$tag) {
+            $tag = self::htmlspecialchars(trim($tag));
+        }
+        $this->_tags = array_diff($this->get_tags(), $tags);
+    }
+
+    /**
+     * Append non-empty tags to _tags
+     * @param array $tags
+     * @return void
+     */
+    private function append_tags(array $tags): void
+    {
+        foreach ($tags as $tag) {
+            $tag = trim($tag);
+            if (!$tag)
+                continue;
+            $this->_tags[] = $tag;
+        }
+        $this->_tags = array_unique($this->_tags);
+    }
+
+    public function set_persons(array $persons): void
+    {
+        $this->_persons = [];
+        $this->append_persons($persons);
+    }
+    public function add_persons(array $persons): void
+    {
+        $this->get_persons();
+        $this->append_persons($persons);
+    }
+
+    /**
+     * Remove tags from those already set
+     *
+     * @param array $persons
+     * @return void
+     */
+    public function remove_persons(array $persons): void
+    {
+        foreach ($persons as &$person) {
+            $person = self::htmlspecialchars(trim($person));
+        }
+        $this->_persons = array_diff($this->get_persons(), $persons);
+    }
+
+    /**
+     * Append non-empty persons to _persons
+     * @param array $persons
+     * @return void
+     */
+    private function append_persons(array $persons): void
+    {
+        foreach ($persons as $person) {
+            $person = trim($person);
+            if (!$person)
+                continue;
+            $this->_persons[] = $person;
+        }
+        $this->_persons = array_unique($this->_persons);
     }
 
     /**
@@ -705,24 +802,17 @@ class Model_Kwalbum_Item extends Kwalbum_Model
         $this->_comments[] = $value;
     }
 
+
     public function __set($key, $value)
     {
         switch ($key) {
-            case 'tags':
-                if (is_array($value)) {
-                    $this->_tags = array_unique($value);
-                }
-                break;
-            case 'persons':
-                if (is_array($value)) {
-                    $this->_persons = array_unique($value);
-                }
-                break;
             case 'comments':
                 if (is_array($value)) {
                     $this->_comments = $value;
                 }
                 break;
+//            default:
+//                throw new Exception("$key is not supported for setting");
         }
     }
 
@@ -912,20 +1002,24 @@ class Model_Kwalbum_Item extends Kwalbum_Model
                 break;
             case 'tags':
                 foreach ($value as $tag) {
-                    $query .= ($query ? ' AND ' : null) .
-                        (string)DB::query(null, " 0 < (SELECT count(*) FROM kwalbum_items_tags
-						LEFT JOIN kwalbum_tags ON kwalbum_items_tags.tag_id = kwalbum_tags.id
-						WHERE kwalbum_tags.name=:tag AND kwalbum_items_tags.item_id=kwalbum_items.id)")
-                            ->param(':tag', $tag);
+                    if (trim($tag) != '') {
+                        $query .= ($query ? ' AND ' : null) .
+                            (string)DB::query(null, " 0 < (SELECT count(*) FROM kwalbum_items_tags
+                            LEFT JOIN kwalbum_tags ON kwalbum_items_tags.tag_id = kwalbum_tags.id
+                            WHERE kwalbum_tags.name=:tag AND kwalbum_items_tags.item_id=kwalbum_items.id)")
+                                ->param(':tag', self::htmlspecialchars($tag));
+                    }
                 }
                 break;
             case 'people':
-                foreach ($value as $tag) {
-                    $query .= ($query ? ' AND ' : null) .
-                        (string)DB::query(null, " 0 < (SELECT count(*) FROM kwalbum_items_persons
-						LEFT JOIN kwalbum_persons ON kwalbum_items_persons.person_id = kwalbum_persons.id
-						WHERE kwalbum_persons.name LIKE :tag AND kwalbum_items_persons.item_id=kwalbum_items.id)")
-                            ->param(':tag', $tag . '%');
+                foreach ($value as $person) {
+                    if (trim($person) != '') {
+                        $query .= ($query ? ' AND ' : null) .
+                            (string)DB::query(null, " 0 < (SELECT count(*) FROM kwalbum_items_persons
+                            LEFT JOIN kwalbum_persons ON kwalbum_items_persons.person_id = kwalbum_persons.id
+                            WHERE kwalbum_persons.name LIKE :person AND kwalbum_items_persons.item_id=kwalbum_items.id)")
+                                ->param(':person', self::htmlspecialchars($person) . '%');
+                    }
                 }
                 break;
             case 'type':
@@ -950,10 +1044,12 @@ class Model_Kwalbum_Item extends Kwalbum_Model
                     ->param(':create_date', $value);
                 break;
             default:
-                $query = '';
+                throw new Exception("$name is not a valid type to filter by");
         }
 
-        Model_Kwalbum_Item::$_where[] = $query;
+        if (!empty($query)) {
+            Model_Kwalbum_Item::$_where[] = $query;
+        }
     }
 
     /**

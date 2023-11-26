@@ -133,9 +133,9 @@ class Controller_AjaxAdmin extends Controller_Kwalbum
     function action_EditPersonName(): void
     {
         $this->_testPermission();
-        $person = Model::factory('Kwalbum_Person')->load((int)$_POST['id']);
+        $person = (new Model_Kwalbum_Person)->load((int)$_POST['id']);
         if (!empty($_POST['value'])) {
-            $person->name = htmlspecialchars(trim($_POST['value']));
+            $person->name = trim($_POST['value']);
             $person->save();
         }
         echo $person->name;
@@ -154,9 +154,9 @@ class Controller_AjaxAdmin extends Controller_Kwalbum
     function action_EditTagName(): void
     {
         $this->_testPermission();
-        $tag = Model::factory('Kwalbum_Tag')->load((int)$_POST['id']);
-        if (!empty($_POST['value'])) {
-            $tag->name = htmlspecialchars(trim($_POST['value']));
+        $tag = (new Model_Kwalbum_Tag)->load((int)$_POST['id']);
+        if (!empty(trim($_POST['value']))) {
+            $tag->name = trim($_POST['value']);
             $tag->save();
         }
         echo $tag->name;

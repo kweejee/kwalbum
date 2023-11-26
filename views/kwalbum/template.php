@@ -39,7 +39,7 @@ if ($people)
 if ($summary)
 	$title = $summary;
 
-$title = htmlspecialchars(isset($title) ? $title.$config->title_separator.$config->title : $config->title);
+$title = isset($title) ? $title.$config->title_separator.$config->title : $config->title;
 
 if (isset($content->item) and $content->item instanceof Model_Kwalbum_Item)
 {

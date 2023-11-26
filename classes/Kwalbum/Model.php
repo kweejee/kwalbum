@@ -1,9 +1,10 @@
-<?php
+<?php defined('SYSPATH') or die('No direct access allowed.');
+
 /**
  * A standard way for all Kwalbum model objects to behave.
  *
  * @author Tim Redmond <kweejee@tummycaching.com>
- * @copyright Copyright 2009-2012 Tim Redmond
+ * @copyright Copyright 2009-2023 Tim Redmond
  * @license GNU General Public License version 3 <http://www.gnu.org/licenses/>
  * @package kwalbum
  * @since Jul 28, 2009
@@ -11,7 +12,7 @@
 
 abstract class Kwalbum_Model extends Model
 {
-    public $loaded = false;
+    public $loaded = false; // TODO: use id instead
     static public $config;
 
 //	public function __construct($db = null)
@@ -36,6 +37,17 @@ abstract class Kwalbum_Model extends Model
             self::$config = Kohana::$config->load('kwalbum');
         }
         return self::$config->$key;
+    }
+
+    /**
+     * This exists to make sure everything is escaped the same way everywhere
+     *
+     * @param string $value
+     * @return string
+     */
+    public static function htmlspecialchars(string $value): string
+    {
+        return htmlspecialchars($value, ENT_COMPAT | ENT_HTML5 | ENT_SUBSTITUTE, 'UTF-8',false);
     }
 
     /**

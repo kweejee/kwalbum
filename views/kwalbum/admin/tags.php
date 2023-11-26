@@ -4,7 +4,7 @@
 <table border="1">
 	<tr><th>Count</th><th style="width:255px;">Name</th><th>Delete?</th></tr>
 <?php
-$tags = Model_Kwalbum_Tag::getAllArray();
+$tags = Model_Kwalbum_Tag::get_all_array();
 foreach ($tags as $tag)
 {
 	echo "	<tr id='row{$tag['id']}'><td>"

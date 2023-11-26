@@ -40,11 +40,11 @@ echo ' <span class="kwalbumPageNumbers">(item '.$item_index.' of '.$total_items.
 		); ?>
 
 	<?php
-		if (count($item->tags) > 0)
+		if (count($item->get_tags()) > 0)
 		{
 			echo '<strong>Tags:</strong> ';
 			$comma = false;
-			foreach ($item->tags as $tag)
+			foreach ($item->get_tags() as $tag)
 			{
 				if ($comma)
 					echo ', ';
@@ -53,11 +53,11 @@ echo ' <span class="kwalbumPageNumbers">(item '.$item_index.' of '.$total_items.
 			}
 			echo '<br/>';
 		}
-		if (count($item->persons) > 0)
+		if (count($item->get_persons()) > 0)
 		{
 			echo '<strong>People:</strong> ';
 			$comma = false;
-			foreach ($item->persons as $person)
+			foreach ($item->get_persons() as $person)
 			{
 				if ($comma)
 					echo ', ';

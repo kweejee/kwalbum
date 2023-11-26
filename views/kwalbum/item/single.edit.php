@@ -61,13 +61,13 @@ echo ' <span class="kwalbumPageNumbers">(item '.$item_index.' of '.$total_items.
 
 		echo '<strong id="tags_label">Tags:</strong> ';
 		echo '<span id="tags">';
-		$tags = $item->tags;
+		$tags = $item->get_tags();
 		echo implode(',', $tags);
 		echo '</span>';
 
 		echo '<br/><strong id="persons_label">People:</strong> ';
 		echo '<span id="persons">';
-		$persons = $item->persons;
+		$persons = $item->get_persons();
 		echo implode(',', $persons);
 		echo '</span>';
 

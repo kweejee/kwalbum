@@ -30,21 +30,21 @@ From here you can <?php echo HTML::anchor($kwalbum_url.'/~browse', '<b>browse al
 	</td>
 	<td>
 		Tags:<br/>
-		<select name="tags" multiple size="10">
-		<option value='' selected></option>
+		<select name="tags[]" multiple size="10">
+		<option value="" selected></option>
 		<?php
-		$tags = Model_Kwalbum_Tag::getNameArray();
+		$tags = Model_Kwalbum_Tag::get_name_array();
 		foreach ($tags as $name)
-			echo "<option value='$name'>$name</option>";
+			echo "<option value=\"$name\">$name</option>";
 		?>
 		</select>
 	</td>
 	<td>
 		People:<br/>
-		<select name="people" multiple size="10">
-		<option value='' selected></option>
+		<select name="people[]" multiple size="10">
+		<option value="" selected></option>
 		<?php
-		$people = Model_Kwalbum_Person::getNameArray();
+		$people = Model_Kwalbum_Person::get_name_array();
 		if ( ! $user->can_see_all)
 		{
 			$persons = array();
@@ -61,7 +61,7 @@ From here you can <?php echo HTML::anchor($kwalbum_url.'/~browse', '<b>browse al
 
 		foreach ($people as $name)
 		{
-			echo "<option value='$name'>$name</option>";
+			echo "<option value=\"$name\">$name</option>";
 		}
 		?>
 		</select>

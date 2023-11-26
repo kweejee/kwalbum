@@ -42,11 +42,11 @@ class Kwalbum_ItemAdder
 
         $item->location = trim(htmlspecialchars(@ $_POST['loc']));
 
-        $tags = explode(',', htmlspecialchars(@ $_POST['tags']));
+        $tags = explode(',', @ $_POST['tags']);
         for ($i = 0; $i < count($tags); $i++) {
             $tags[$i] = trim($tags[$i]);
         }
-        $item->tags = $tags;
+        $item->set_tags($tags);
         $item->visible_date = $item->sort_date = Kwalbum_Helper:: replaceBadDate(@ $_POST['date'] . $_POST['time']);
 
         $this->_item = $item;
@@ -95,9 +95,7 @@ class Kwalbum_ItemAdder
                 if ($irb = get_Photoshop_IRB($jpeg_header_data)) {
                     $xmp = Read_XMP_array_from_text(get_XMP_text($jpeg_header_data));
                     $pinfo = get_photoshop_file_info($exif, $xmp, $irb);
-                    foreach ($pinfo['keywords'] as $keyword) {
-                        $item->addTag(trim($keyword));
-                    }
+                    $item->addTags($pinfo['keywords']);
                     //echo '<pre>'.Kohana::debug( $pinfo );exit;
                 }*/
 

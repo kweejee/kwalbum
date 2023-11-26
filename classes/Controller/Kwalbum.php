@@ -94,8 +94,8 @@ class Controller_Kwalbum extends Controller_Template
         if (!empty($this->request->param('tags'))) {
             $this->tags = explode(',', rawurldecode($this->request->param('tags')));
             Model_Kwalbum_Item::append_where('tags', $this->tags);
-        } elseif (!empty($_GET['tags'])) {
-            $this->tags = explode(',', $_GET['tags']);
+        } elseif (!empty($_GET['tags']) && is_array($_GET['tags']) && !empty(trim(implode($_GET['tags'])))) {
+            $this->tags = $_GET['tags'];
             Model_Kwalbum_Item::append_where('tags', $this->tags);
             $redirect = true;
         } else
@@ -105,8 +105,8 @@ class Controller_Kwalbum extends Controller_Template
         if (!empty($this->request->param('people'))) {
             $this->people = explode(',', rawurldecode($this->request->param('people')));
             Model_Kwalbum_Item::append_where('people', $this->people);
-        } elseif (!empty($_GET['people'])) {
-            $this->people = explode(',', $_GET['people']);
+        } elseif (!empty($_GET['people']) && is_array($_GET['people']) && !empty(trim(implode($_GET['people'])))) {
+            $this->people = $_GET['people'];
             Model_Kwalbum_Item::append_where('people', $this->people);
             $redirect = true;
         } else

@@ -136,7 +136,7 @@ class Kwalbum_Helper
             $description .= substr($cleaned_description, 0, 50)
                 . (strlen($cleaned_description) > 50 ? '...' : null);
             if (!$description) {
-                $tags = implode(', ', $item->tags);
+                $tags = implode(', ', $item->get_tags());
                 if (strlen($tags > 53)) {
                     $tags = substr($tags, 0, 50) . '...';
                 }

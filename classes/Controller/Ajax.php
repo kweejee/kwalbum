@@ -130,29 +130,22 @@ class Controller_Ajax extends Controller_Kwalbum
 
     public function action_SetTags(): void
     {
-        $item = Model::factory('Kwalbum_Item')->load((int)$_POST['item']);
+        $item = (new Model_Kwalbum_Item)->load((int)$_POST['item']);
         $this->_testPermission($item);
-        $tags = explode(',', htmlspecialchars($_POST['value']));
-        for ($i = 0; $i < count($tags); $i++) {
-            $tags[$i] = trim($tags[$i]);
-        }
-        sort($tags, SORT_LOCALE_STRING);
-        $item->tags = $tags;
+        $tags = explode(',', $_POST['value']);
+        $item->set_tags($tags);
         $item->save();
-        echo implode(',', $item->tags);
+        echo implode(',', $item->get_tags());
     }
 
     public function action_SetPersons(): void
     {
-        $item = Model::factory('Kwalbum_Item')->load((int)$_POST['item']);
+        $item = (new Model_Kwalbum_Item)->load((int)$_POST['item']);
         $this->_testPermission($item);
-        $persons = explode(',', htmlspecialchars($_POST['value']));
-        for ($i = 0; $i < count($persons); $i++) {
-            $persons[$i] = trim($persons[$i]);
-        }
-        $item->persons = $persons;
+        $persons = explode(',', $_POST['value']);
+        $item->set_persons($persons);
         $item->save();
-        echo implode(',', $item->persons);
+        echo implode(',', $item->get_persons());
     }
 
     public function action_GetInputPersons(): void
@@ -291,32 +284,38 @@ class Controller_Ajax extends Controller_Kwalbum
     private function _getInputList($class): void
     {
         $this->_testPermission();
-        $tags = explode(',', @$_GET['term']);
-        if (!$size = count($tags))
+        $input_terms = explode(',', Kwalbum_Model::htmlspecialchars(trim($_GET['term'] ?? '')));
+        if (!$size = count($input_terms))
             exit;
 
-        $old_tags = '';
+        $other_input_terms = '';
         $not_included = [];
 
+        // trim all terms passed in and exclude all but the last for searching
+        $term = '';
         for ($i = 0; $i < $size; $i++) {
-            $tag = trim($tags[$i]);
-            if ($tag) {
-                if ($i < $size - 1) {
-                    $old_tags .= $tag . ',';
-                    $not_included[] = $tag;
-                }
+            $term = trim($input_terms[$i]);
+            if (!empty($term) && $i < $size - 1) {
+                $other_input_terms .= $term . ',';
+                $not_included[] = $term;
             }
         }
-        if (!$tag)
-            exit;
+        if (!$term) // term used for search has nothing so don't search
+            return;
 
-        $tags = call_user_func_array(array($class, "getNameArray"), array(0, 10, 0, $tag, 'count DESC', $not_included));
-
-        $output_tags = [];
-        foreach ($tags as $tag) {
-            $output_tags[] = $old_tags . $tag;
+        if ($class == Model_Kwalbum_Tag::class) {
+            $found_terms = Model_Kwalbum_Tag::get_name_array(0, 10, 0, $term, 'count DESC', $not_included);
+        } elseif ($class == Model_Kwalbum_Person::class) {
+            $found_terms = Model_Kwalbum_Person::get_name_array(0, 10, 0, $term, 'count DESC', $not_included);
+        } else {
+            throw new Exception('Unsupported term type');
         }
-        echo json_encode($output_tags);
+
+        $output_terms = [];
+        foreach ($found_terms as $found_term) {
+            $output_terms[] = $other_input_terms . $found_term;
+        }
+        echo json_encode($output_terms);
     }
 
     public function action_GetResizedImage(): void

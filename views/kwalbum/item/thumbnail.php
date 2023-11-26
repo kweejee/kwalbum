@@ -17,8 +17,8 @@ if ($in_edit_mode) {
 
 <?php
 if ($in_edit_mode) {
-    $tags = implode(', ', $item->tags);
-    $persons = implode(', ', $item->persons);
+    $tags = implode(', ', $item->get_tags());
+    $persons = implode(', ', $item->get_persons());
     echo "<label class='kwalbumMassInclude'>
         <input type='checkbox' name='kwalbum_mass_check[]' value='{$item->id}' "
         .($user->can_edit_item($item) ? '' : 'disabled ')." />
