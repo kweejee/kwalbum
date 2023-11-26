@@ -125,7 +125,7 @@ class Controller_Ajax extends Controller_Kwalbum
 
     public function action_GetInputTags(): void
     {
-        $this->_getInputList('Model_Kwalbum_Tag', 'getNameArray');
+        $this->_getInputList(Model_Kwalbum_Tag::class);
     }
 
     public function action_SetTags(): void
@@ -157,7 +157,7 @@ class Controller_Ajax extends Controller_Kwalbum
 
     public function action_GetInputPersons(): void
     {
-        $this->_getInputList('Model_Kwalbum_Person', 'getNameArray');
+        $this->_getInputList(Model_Kwalbum_Person::class);
     }
 
     public function action_SetEditMode(): void
@@ -310,7 +310,7 @@ class Controller_Ajax extends Controller_Kwalbum
         if (!$tag)
             exit;
 
-        $tags = call_user_func_array(array($class, $function), array(0, 10, 0, $tag, 'count DESC', $not_included));
+        $tags = call_user_func_array(array($class, "getNameArray"), array(0, 10, 0, $tag, 'count DESC', $not_included));
 
         $output_tags = [];
         foreach ($tags as $tag) {
