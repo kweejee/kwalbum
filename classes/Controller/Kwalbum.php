@@ -26,7 +26,7 @@ class Controller_Kwalbum extends Controller_Template
      */
     public $item;
 
-    public function before()
+    public function before(): void
     {
         $redirect = false;
         $this->template = new View('kwalbum/template');
@@ -213,7 +213,7 @@ class Controller_Kwalbum extends Controller_Template
         $this->template->set_global('user', $this->user);
     }
 
-    public function action_node_modules()
+    public function action_node_modules(): void
     {
         $file = $this->request->param('file');
         $this->auto_render = false;
@@ -240,7 +240,7 @@ class Controller_Kwalbum extends Controller_Template
         $this->response->status(404);
     }
 
-    public function action_media()
+    public function action_media(): void
     {
         $file = $this->request->param('file');
         $this->auto_render = false;

@@ -9,7 +9,6 @@
  * @author Tim Redmond <kweejee@tummycaching.com>
  * @copyright Copyright 2009-2012 Tim Redmond
  * @license GNU General Public License version 3 <http://www.gnu.org/licenses/>
- * @version 3.0 Jul 8, 2009
  * @package kwalbum
  * @since 3.0 Jul 8, 2009
  */
@@ -17,7 +16,7 @@ class Controller_Install extends Controller_Kwalbum
 {
     private $_user = array('minNameLength' => 2, 'maxNameLength' => 40);
 
-    public function action_index()
+    public function action_index(): void
     {
         $this->template->title = 'Install';
         $this->template->set_global('location', '');
@@ -142,7 +141,7 @@ class Controller_Install extends Controller_Kwalbum
      * @param Database to connect to
      * @return void
      */
-    private function _drop_tables()
+    private function _drop_tables(): void
     {
         // Drop order is arranged based on foreign key restraints.
         DB::query('', 'DROP TABLE IF EXISTS `kwalbum_comments`')->execute();
@@ -160,7 +159,7 @@ class Controller_Install extends Controller_Kwalbum
      * @param Database to connect to
      * @return void
      */
-    private function _create_tables()
+    private function _create_tables(): void
     {
         // Users
         DB::query('', 'CREATE  TABLE IF NOT EXISTS `kwalbum_users`(

@@ -15,7 +15,7 @@ class Controller_Admin extends Controller_Kwalbum
     // allow to run in production
     const ALLOW_PRODUCTION = true;
 
-    function action_index()
+    function action_index(): void
     {
         if (!$this->_testAdmin())
             return;
@@ -24,7 +24,7 @@ class Controller_Admin extends Controller_Kwalbum
 
     }
 
-    function action_locations()
+    function action_locations(): void
     {
         if (!$this->_testAdmin())
             return;
@@ -32,7 +32,7 @@ class Controller_Admin extends Controller_Kwalbum
         $this->template->title = 'Edit Locations';
     }
 
-    function action_tags()
+    function action_tags(): void
     {
         if (!$this->_testAdmin())
             return;
@@ -40,7 +40,7 @@ class Controller_Admin extends Controller_Kwalbum
         $this->template->title = 'Edit Tags';
     }
 
-    function action_people()
+    function action_people(): void
     {
         if (!$this->_testAdmin())
             return;
@@ -48,7 +48,7 @@ class Controller_Admin extends Controller_Kwalbum
         $this->template->title = 'Edit People';
     }
 
-    function action_users()
+    function action_users(): void
     {
         if (!$this->_testAdmin())
             return;
@@ -56,7 +56,7 @@ class Controller_Admin extends Controller_Kwalbum
         $this->template->title = 'Edit Users';
     }
 
-    private function _testAdmin()
+    private function _testAdmin(): bool
     {
         if ($this->user->is_admin)
             return true;

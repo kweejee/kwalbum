@@ -11,7 +11,7 @@
  */
 class Controller_Browse extends Controller_Kwalbum
 {
-    public function before()
+    public function before(): void
     {
         parent::before();
 
@@ -72,7 +72,7 @@ class Controller_Browse extends Controller_Kwalbum
         }
     }
 
-    public function action_index()
+    public function action_index(): void
     {
         if ($this->request->uri() == 'kwalbum' and
             !($this->location or $this->date or count($this->tags) > 0)
@@ -88,7 +88,7 @@ class Controller_Browse extends Controller_Kwalbum
         $this->template->title = 'browsing';
     }
 
-    public function action_comments()
+    public function action_comments(): void
     {
         $view = new View('kwalbum/browse/comments');
         Model_Kwalbum_Comment::set_sort_field('create');
@@ -99,7 +99,7 @@ class Controller_Browse extends Controller_Kwalbum
 
     }
 
-    public function action_popular()
+    public function action_popular(): void
     {
         $view = new View('kwalbum/browse/popular');
         Model_Kwalbum_Item::set_sort_field('count');
@@ -109,7 +109,7 @@ class Controller_Browse extends Controller_Kwalbum
         $this->template->title = 'browsing most popular';
     }
 
-    public function action_public()
+    public function action_public(): void
     {
         $view = new View('kwalbum/browse/index');
         Model_Kwalbum_Item::append_where('hide_level', 0);
@@ -118,7 +118,7 @@ class Controller_Browse extends Controller_Kwalbum
         $this->template->title = 'browsing public permissioned';
     }
 
-    public function action_member()
+    public function action_member(): void
     {
         $view = new View('kwalbum/browse/index');
         Model_Kwalbum_Item::append_where('hide_level', 1);
@@ -127,7 +127,7 @@ class Controller_Browse extends Controller_Kwalbum
         $this->template->title = 'browsing member permissioned';
     }
 
-    public function action_privileged()
+    public function action_privileged(): void
     {
         $view = new View('kwalbum/browse/index');
         Model_Kwalbum_Item::append_where('hide_level', 2);
@@ -136,7 +136,7 @@ class Controller_Browse extends Controller_Kwalbum
         $this->template->title = 'browsing privileged permissioned';
     }
 
-    public function action_contributor()
+    public function action_contributor(): void
     {
         $view = new View('kwalbum/browse/index');
         Model_Kwalbum_Item::append_where('hide_level', 3);
@@ -145,7 +145,7 @@ class Controller_Browse extends Controller_Kwalbum
         $this->template->title = 'browsing contributor permissioned';
     }
 
-    public function action_admin()
+    public function action_admin(): void
     {
         $view = new View('kwalbum/browse/index');
         Model_Kwalbum_Item::append_where('hide_level', 5);

@@ -6,7 +6,6 @@
  * @author Tim Redmond <kweejee@tummycaching.com>
  * @copyright Copyright 2009-2012 Tim Redmond
  * @license GNU General Public License version 3 <http://www.gnu.org/licenses/>
- * @version 3.0 Jun 30, 2009
  * @package kwalbum
  * @since 3.0 Jun 30, 2009
  */
@@ -16,7 +15,7 @@ use Google\Cloud\Core\Timestamp;
 
 class Controller_Item extends Controller_Kwalbum
 {
-    function before()
+    function before(): void
     {
         $this->auto_render = false;
         parent::before();
@@ -26,7 +25,7 @@ class Controller_Item extends Controller_Kwalbum
         }
     }
 
-    function action_index()
+    function action_index(): void
     {
         $this->item->increase_count();
         $this->auto_render = true;
@@ -40,34 +39,34 @@ class Controller_Item extends Controller_Kwalbum
         //$this->template->title = 'single item';
     }
 
-    function action_hidden()
+    function action_hidden(): void
     {
         $this->_send_file($this->item->real_path . $this->item->filename);
     }
 
-    function action_thumbnail()
+    function action_thumbnail(): void
     {
         $this->_send_file($this->item->real_path . 't/' . $this->item->filename, '_thumbnail');
     }
 
-    function action_resize()
+    function action_resize(): void
     {
         $this->action_resized();
     }
 
-    function action_resized()
+    function action_resized(): void
     {
         $this->item->increase_count();
         $this->_send_file($this->item->real_path . 'r/' . $this->item->filename, '_resized');
     }
 
-    function action_original()
+    function action_original(): void
     {
         $this->item->increase_count();
         $this->_send_file($this->item->real_path . $this->item->filename);
     }
 
-    function action_download()
+    function action_download(): void
     {
         $this->item->increase_count();
         $bucket = Kwalbum_Helper::getGoogleBucket();
@@ -81,7 +80,7 @@ class Controller_Item extends Controller_Kwalbum
         exit;
     }
 
-    private function _send_file($filepathname, $filename_addition = '', $download = false)
+    private function _send_file($filepathname, $filename_addition = '', $download = false): void
     {
         if (!$filepath = realpath($filepathname)) {
             // Return a 404 status

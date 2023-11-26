@@ -11,7 +11,7 @@
 
 class Controller_AjaxAdmin extends Controller_Kwalbum
 {
-    function action_EditLocationName()
+    function action_EditLocationName(): void
     {
         $this->_testPermission();
         if (!empty($_POST['id'])) {
@@ -54,7 +54,7 @@ class Controller_AjaxAdmin extends Controller_Kwalbum
         exit;
     }
 
-    protected function getHideLevelOptions($field)
+    protected function getHideLevelOptions($field): void
     {
         if (!empty($_GET['id'])) {
             $id = explode('_', $_GET['id']);
@@ -97,31 +97,31 @@ class Controller_AjaxAdmin extends Controller_Kwalbum
         return $loc;
     }
 
-    public function action_GetLocationNameHideLevel()
+    public function action_GetLocationNameHideLevel(): void
     {
         $this->getHidelevelOptions('name');
     }
 
-    public function action_EditLocationNameHideLevel()
+    public function action_EditLocationNameHideLevel(): void
     {
         $loc = $this->setLocationHideLevel('name');
         echo $loc->name_hide_level_description;
         exit;
     }
 
-    function action_GetLocationCoordinateHideLevel()
+    function action_GetLocationCoordinateHideLevel(): void
     {
         $this->getHidelevelOptions('coordinate');
     }
 
-    public function action_EditLocationCoordinateHideLevel()
+    public function action_EditLocationCoordinateHideLevel(): void
     {
         $loc = $this->setLocationHideLevel('coordinate');
         echo $loc->coordinate_hide_level_description;
         exit;
     }
 
-    function action_DeleteLocation()
+    function action_DeleteLocation(): void
     {
         $this->_testPermission();
         Model::factory('Kwalbum_Location')
@@ -130,7 +130,7 @@ class Controller_AjaxAdmin extends Controller_Kwalbum
         exit;
     }
 
-    function action_EditPersonName()
+    function action_EditPersonName(): void
     {
         $this->_testPermission();
         $person = Model::factory('Kwalbum_Person')->load((int)$_POST['id']);
@@ -142,7 +142,7 @@ class Controller_AjaxAdmin extends Controller_Kwalbum
         exit;
     }
 
-    function action_DeletePerson()
+    function action_DeletePerson(): void
     {
         $this->_testPermission();
         Model::factory('Kwalbum_Person')
@@ -151,7 +151,7 @@ class Controller_AjaxAdmin extends Controller_Kwalbum
         exit;
     }
 
-    function action_EditTagName()
+    function action_EditTagName(): void
     {
         $this->_testPermission();
         $tag = Model::factory('Kwalbum_Tag')->load((int)$_POST['id']);
@@ -163,7 +163,7 @@ class Controller_AjaxAdmin extends Controller_Kwalbum
         exit;
     }
 
-    function action_DeleteTag()
+    function action_DeleteTag(): void
     {
         $this->_testPermission();
         Model::factory('Kwalbum_Tag')
@@ -172,7 +172,7 @@ class Controller_AjaxAdmin extends Controller_Kwalbum
         exit;
     }
 
-    function action_GetUserPermission()
+    function action_GetUserPermission(): void
     {
         if (!empty($_GET['id'])) {
             $id = explode('_', $_GET['id']);
@@ -189,7 +189,7 @@ class Controller_AjaxAdmin extends Controller_Kwalbum
         exit;
     }
 
-    function action_EditUserPermission()
+    function action_EditUserPermission(): void
     {
         $this->_testPermission();
         if (!empty($_POST['id'])) {
@@ -210,7 +210,7 @@ class Controller_AjaxAdmin extends Controller_Kwalbum
         exit;
     }
 
-    function action_DeleteUser()
+    function action_DeleteUser(): void
     {
         $this->_testPermission();
         Model::factory('Kwalbum_User')
@@ -219,7 +219,7 @@ class Controller_AjaxAdmin extends Controller_Kwalbum
         exit;
     }
 
-    private function _testPermission()
+    private function _testPermission(): void
     {
         if ($this->user->is_admin) {
             return;

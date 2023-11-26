@@ -14,7 +14,7 @@ class Controller_User extends Controller_Kwalbum
     // allow to run in production
     const ALLOW_PRODUCTION = true;
 
-    function action_login()
+    function action_login(): void
     {
         $this->template->content = new View('kwalbum/user/login');
 
@@ -35,7 +35,7 @@ class Controller_User extends Controller_Kwalbum
         $this->template->title = 'Logging In';
     }
 
-    function action_logout()
+    function action_logout(): void
     {
         /* Cookie and session clearing is done in Model_Kwalbum_User, mostly
          * in_clear_cookies(). This is so that all session checking and clearing
@@ -45,7 +45,7 @@ class Controller_User extends Controller_Kwalbum
         $this->template->title = 'Logged Out';
     }
 
-    function action_upload()
+    function action_upload(): void
     {
         $user = $this->user;
         if (!$user->can_add) {
@@ -77,7 +77,7 @@ class Controller_User extends Controller_Kwalbum
             . HTML::script($this->url . '/media/ajax/upload.js');
     }
 
-    function action_write()
+    function action_write(): void
     {
         $user = $this->user;
         if (!$user->can_add) {
@@ -130,7 +130,7 @@ class Controller_User extends Controller_Kwalbum
         $template->head .= HTML::script('kwalbum/media/ajax/write.js');
     }
 
-    function action_register()
+    function action_register(): void
     {
 
         $this->template->content = new View('kwalbum/user/register');
@@ -213,7 +213,7 @@ class Controller_User extends Controller_Kwalbum
         $this->template->set_global('errors', $errors);
     }
 
-    public function action_resetpassword()
+    public function action_resetpassword(): void
     {
         $this->template->content = new View('kwalbum/user/resetpassword');
         $this->template->title = 'Reset Password';
