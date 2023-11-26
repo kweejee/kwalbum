@@ -31,7 +31,7 @@ echo ' <span class="kwalbumPageNumbers">(item '.$item_index.' of '.$total_items.
 	.'<br/>';
 ?>
 
-	<?=($item->location ? HTML::anchor($kwalbum_url.'/'.$item->location, $item->location).'<br />' : '') ?>
+	<?=($item->location ? HTML::anchor($kwalbum_url.'/'.rawurlencode($item->location), $item->location).'<br />' : '') ?>
 	<?php echo $item->pretty_date; ?>
 	<hr/>
 	<?php echo (

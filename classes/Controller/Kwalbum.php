@@ -34,7 +34,7 @@ class Controller_Kwalbum extends Controller_Template
 
         // get location from URL
         if ($this->request->param('location')) {
-            $this->location = urldecode($this->request->param('location'));
+            $this->location = rawurldecode($this->request->param('location'));
             Model_Kwalbum_Item::append_where('location', $this->location);
         } elseif (!empty($_GET['location'])) {
             $this->location = $_GET['location'];
@@ -91,8 +91,8 @@ class Controller_Kwalbum extends Controller_Template
         }
 
         // tags
-        $this->tags = explode(',', urldecode($this->request->param('tags')));
-        if ($this->tags[0] != '') {
+        if (!empty($this->request->param('tags'))) {
+            $this->tags = explode(',', rawurldecode($this->request->param('tags')));
             Model_Kwalbum_Item::append_where('tags', $this->tags);
         } elseif (!empty($_GET['tags'])) {
             $this->tags = explode(',', $_GET['tags']);
@@ -102,8 +102,8 @@ class Controller_Kwalbum extends Controller_Template
             $this->tags = [];
 
         // people names
-        $this->people = explode(',', urldecode($this->request->param('people')));
-        if ($this->people[0] != '') {
+        if (!empty($this->request->param('people'))) {
+            $this->people = explode(',', rawurldecode($this->request->param('people')));
             Model_Kwalbum_Item::append_where('people', $this->people);
         } elseif (!empty($_GET['people'])) {
             $this->people = explode(',', $_GET['people']);
@@ -114,9 +114,9 @@ class Controller_Kwalbum extends Controller_Template
 
         // created timestamp
         if ($this->request->param('created_date')) {
-            $this->create_dt = urldecode($this->request->param('created_date'));
+            $this->create_dt = rawurldecode($this->request->param('created_date'));
             if ($this->request->param('created_time')) {
-                $this->create_dt .= ' ' . urldecode($this->request->param('created_time'));
+                $this->create_dt .= ' ' . rawurldecode($this->request->param('created_time'));
                 Model_Kwalbum_Item::append_where('create_dt', $this->create_dt);
             } else {
                 Model_Kwalbum_Item::append_where('create_date', $this->create_dt);
@@ -156,8 +156,8 @@ class Controller_Kwalbum extends Controller_Template
                 . ($day2 ? $day2 . '/' : null);
         }
         $this->params .=
-            ($this->location ? $this->location . '/' : null)
-            . ($this->tags ? 'tags/' . implode(',', $this->tags) . '/' : null)
+            ($this->location ? rawurlencode($this->location) . '/' : null)
+            . ($this->tags ? 'tags/' . rawurlencode(implode(',', $this->tags)) . '/' : null)
             . ($this->people ? 'people/' . implode(',', $this->people) . '/' : null)
             . ($this->create_dt ? 'created/' . implode('/', explode(' ', $this->create_dt)) . '/' : null);
 

@@ -8,7 +8,7 @@ $tags = Model_Kwalbum_Tag::getAllArray();
 foreach ($tags as $tag)
 {
 	echo "	<tr id='row{$tag['id']}'><td>"
-		.HTML::anchor($kwalbum_url.'/tags/'.$tag['name'], $tag['count'])
+		.HTML::anchor($kwalbum_url.'/tags/'.rawurlencode($tag['name']), $tag['count'])
 		."</td><td><span id='tag{$tag['id']}'>{$tag['name']}</span></td><td style='text-align:center'>"
 		."<a href='#' onClick='deleteTag({$tag['id']});return false;'>[X]</a></td></tr>";
 }

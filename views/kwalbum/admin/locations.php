@@ -28,7 +28,7 @@ echo HTML::script($kwalbum_url.'/media/ajax/jquery.jeditable.mini.js')
 foreach ($locations as $loc) {
     $full_name = Model_Kwalbum_Location::getFullName($loc['parent_name'], $loc['name']);
     $count_link = HTML::anchor(
-        $kwalbum_url.'/'.$full_name,
+        $kwalbum_url.'/'.rawurlencode($full_name),
         '<span title="Items with this exact location">'.$loc['count'].'</span> / <span title="Total including child locations">'.($loc['count']+$loc['child_count']).'</span>'
     );
     $name_permission_class = 'kwalbumLocationNameHideLevel';
