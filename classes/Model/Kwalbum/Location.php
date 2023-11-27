@@ -17,13 +17,14 @@ class Model_Kwalbum_Location extends Kwalbum_Model
 
     /**
      *
-     * @param int|string $id_or_name
+     * @param int|string|null $id_or_name
      * @return $this
      */
-    public function __construct($id_or_name = null)
+    public function __construct(int|string $id_or_name = null)
     {
         if (is_int($id_or_name)) {
             $this->load($id_or_name);
+            return $this;
         } else {
             $this->clear();
         }
