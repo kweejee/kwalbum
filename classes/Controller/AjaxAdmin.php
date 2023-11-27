@@ -21,9 +21,9 @@ class Controller_AjaxAdmin extends Controller_Kwalbum
             echo 'Invalid id';
             exit;
         }
-        $loc = Model::factory('Kwalbum_Location')->load((int)$id[1]);
+        $loc = (new Model_Kwalbum_Location)->load((int)$id[1]);
         if (!empty($_POST['value'])) {
-            $names = explode(trim(Kwalbum_Model::get_config('location_separator_1')), htmlspecialchars($_POST['value']));
+            $names = explode(trim(Kwalbum_Model::get_config('location_separator_1')), $_POST['value']);
             $parent_name = '';
             if (count($names) > 1) {
                 $parent_name = trim($names[0]);
@@ -50,7 +50,7 @@ class Controller_AjaxAdmin extends Controller_Kwalbum
             }
             $loc->save();
         }
-        echo (string)$loc;
+        echo $loc;
         exit;
     }
 

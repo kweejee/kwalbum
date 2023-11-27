@@ -20,7 +20,7 @@ class Controller_Browse extends Controller_Kwalbum
 
         if ($this->in_edit_mode && !empty($_POST['kwalbum_mass_check'])) {
             if (!empty($_POST['loc'])) {
-                $location = trim(htmlspecialchars($_POST['loc']));
+                $location = $_POST['loc'];
             }
             if (!empty($_POST['vis'])) {
                 $visibility = Kwalbum_ItemAdder::get_visibility($this->user);

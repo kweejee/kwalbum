@@ -27,6 +27,9 @@ class Model_Kwalbum_Location extends Kwalbum_Model
             return $this;
         } else {
             $this->clear();
+            if ($id_or_name) {
+                $id_or_name = self::htmlspecialchars($id_or_name);
+            }
         }
 
         if ($id_or_name !== null) {
@@ -124,6 +127,7 @@ class Model_Kwalbum_Location extends Kwalbum_Model
     public function save(): Model_Kwalbum_Location
     {
         $id = $this->id;
+        $this->name = self::htmlspecialchars($this->name);
 
         $parent_id = 0;
         if ($this->parent_name) {
@@ -138,7 +142,7 @@ class Model_Kwalbum_Location extends Kwalbum_Model
                     ->param(':name', $this->parent_name)
                     ->execute();
             }
-            if (!empty($result)) {
+            if (isset($result) && $result->count() > 0) {
                 $parent_id = $result[0]['id'];
             } else {
                 $parent = clone $this;
@@ -168,15 +172,15 @@ class Model_Kwalbum_Location extends Kwalbum_Model
                     VALUES (:name, :latitude, :longitude, :count, :child_count, :thumbnail_item_id, :parent_id,
                         :name_hide_level, :coordinate_hide_level, :description)")
                     ->param(':name', $this->name)
-                    ->param(':latitude', $this->latitude ? $this->latitude : 0)
-                    ->param(':longitude', $this->longitude ? $this->longitude : 0)
+                    ->param(':latitude', $this->latitude ?: 0)
+                    ->param(':longitude', $this->longitude ?: 0)
                     ->param(':count', (int)$this->count)
                     ->param(':child_count', (int)$this->child_count)
-                    ->param(':thumbnail_item_id', $this->thumbnail_item_id ? $this->thumbnail_item_id : 0)
+                    ->param(':thumbnail_item_id', $this->thumbnail_item_id ?: 0)
                     ->param(':parent_id', (int)$parent_id)
                     ->param(':name_hide_level', (int)$this->name_hide_level)
                     ->param(':coordinate_hide_level', (int)$this->coordinate_hide_level)
-                    ->param(':description', $this->description ? $this->description : '')
+                    ->param(':description', $this->description ?: '')
                     ->execute();
                 $this->id = $result[0];
 
@@ -185,7 +189,7 @@ class Model_Kwalbum_Location extends Kwalbum_Model
             }
 
             $row = $result[0];
-            $this->id = $id = (int)$row['id'];
+            $this->id = (int)$row['id'];
             if (!$this->latitude) {
                 $this->latitude = (float)$row['latitude'];
             }
@@ -306,7 +310,7 @@ class Model_Kwalbum_Location extends Kwalbum_Model
      */
     public static function getFullName(?string $parent_name, string $name): string
     {
-        $parent = trim($parent_name) ? trim($parent_name) . self::get_config('location_separator_1') : '';
+        $parent = trim($parent_name ?? '') ? trim($parent_name) . self::get_config('location_separator_1') : '';
         return $parent . trim($name);
     }
 
@@ -341,7 +345,7 @@ class Model_Kwalbum_Location extends Kwalbum_Model
      * @param string $order
      * @return array
      */
-    static public function getNameArray(Model_Kwalbum_User &$user, int $min_count = 1, int $limit = null, int $offset = 0, string $name = '', string $order = ''): array
+    static public function get_name_array(Model_Kwalbum_User &$user, int $min_count = 1, int $limit = null, int $offset = 0, string $name = '', string $order = ''): array
     {
         $name = trim($name);
         if ($order) {
@@ -366,7 +370,7 @@ class Model_Kwalbum_Location extends Kwalbum_Model
             if ($parent_name) {
                 $parent_query = "AND p.name = :parent_name";
             }
-            $not_query = 'loc.name != :name';
+            $not_names = [''];
 
             // Select almost exact (not case sensitive) match first
             if (strlen($name) > 0) {
@@ -382,7 +386,7 @@ class Model_Kwalbum_Location extends Kwalbum_Model
                 if ($result->count() > 0) {
                     foreach ($result as $row) {
                         $locations[] = ($row['parent'] ? $row['parent'] . self::get_config('location_separator_1') : '') . $row['name'];
-                        $not_query .= " AND loc.name != '{$row['name']}'";
+                        $not_names[] = $row['name'];
                     }
                     if ($limit) {
                         $limit -= $result->count();
@@ -395,12 +399,14 @@ class Model_Kwalbum_Location extends Kwalbum_Model
                 "SELECT loc.name AS name, p.id, p.name AS parent
                 FROM kwalbum_locations loc
                 LEFT JOIN kwalbum_locations p ON (p.id = loc.parent_location_id)
-                WHERE {$not_query} AND loc.name LIKE :part_name AND loc.count >= :min_count {$parent_query}
+                WHERE loc.name != :name AND loc.name NOT IN :not_names
+                  AND loc.name LIKE :part_name AND loc.count >= :min_count {$parent_query}
                   AND loc.name_hide_level <= :permission_level
                 {$order}"
                 . ($limit ? ' LIMIT :limit' : null))
                 ->param(':part_name', $part_name)
                 ->param(':name', $name)
+                ->param(':not_names', $not_names)
                 ->param(':min_count', (int)$min_count)
                 ->param(':permission_level', (int)$user->permission_level)
                 ->param(':limit', $limit);
@@ -413,7 +419,7 @@ class Model_Kwalbum_Location extends Kwalbum_Model
                 $new_locations = array();
                 foreach ($result as $row) {
                     $new_locations[] = ($row['parent'] ? $row['parent'] . self::get_config('location_separator_1') : '') . $row['name'];
-                    $not_query .= " AND loc.name != '{$row['name']}'";
+                    $not_names[] = $row['name'];
                 }
                 if (!$order) {
                     usort($new_locations, 'strnatcasecmp');
@@ -431,12 +437,14 @@ class Model_Kwalbum_Location extends Kwalbum_Model
                     "SELECT loc.name AS name, p.id, p.name AS parent
                     FROM kwalbum_locations loc
                     LEFT JOIN kwalbum_locations p ON (p.id = loc.parent_location_id)
-                    WHERE {$not_query} AND loc.name LIKE :part_name {$parent_query} AND loc.count >= :min_count
+                    WHERE loc.name != :name AND loc.name NOT IN :not_names
+                      AND loc.name LIKE :part_name {$parent_query} AND loc.count >= :min_count
                       AND loc.name_hide_level <= :permission_level
                     {$order}"
                     . ($limit ? ' LIMIT :limit' : null))
                     ->param(':part_name', $part_name)
                     ->param(':name', $name)
+                    ->param(':not_names', $not_names)
                     ->param(':min_count', (int)$min_count)
                     ->param(':permission_level', (int)$user->permission_level)
                     ->param(':limit', $limit);
@@ -448,7 +456,7 @@ class Model_Kwalbum_Location extends Kwalbum_Model
                 $new_locations = array();
                 foreach ($result as $row) {
                     $new_locations[] = ($row['parent'] ? $row['parent'] . self::get_config('location_separator_1') : '') . $row['name'];
-                    $not_query .= " AND loc.name != '{$row['name']}'";
+                    $not_names[] = $row['name'];
                 }
                 if (!$order) {
                     usort($new_locations, 'strnatcasecmp');
@@ -466,12 +474,14 @@ class Model_Kwalbum_Location extends Kwalbum_Model
                     "SELECT loc.name AS name, p.id, p.name AS parent
                     FROM kwalbum_locations loc
                     LEFT JOIN kwalbum_locations p ON (p.id = loc.parent_location_id)
-                    WHERE {$not_query} AND p.name LIKE :part_name AND p.child_count >= :min_count
+                    WHERE loc.name != :name AND loc.name NOT IN :not_names
+                      AND p.name LIKE :part_name AND p.child_count >= :min_count
                       AND loc.name_hide_level <= :permission_level
                     {$order}"
                     . ($limit ? ' LIMIT :limit' : null))
                     ->param(':part_name', $part_name)
                     ->param(':name', $name)
+                    ->param(':not_names', $not_names)
                     ->param(':min_count', (int)$min_count)
                     ->param(':permission_level', (int)$user->permission_level)
                     ->param(':limit', $limit)
@@ -481,7 +491,6 @@ class Model_Kwalbum_Location extends Kwalbum_Model
                     $new_locations = array();
                     foreach ($result as $row) {
                         $new_locations[] = ($row['parent'] ? $row['parent'] . self::get_config('location_separator_1') : '') . $row['name'];
-                        $not_query .= " AND loc.name != '{$row['name']}'";
                     }
                     if (!$order) {
                         usort($new_locations, 'strnatcasecmp');

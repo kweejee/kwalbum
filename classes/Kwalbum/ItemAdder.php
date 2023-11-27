@@ -40,7 +40,7 @@ class Kwalbum_ItemAdder
 
         $item->hide_level = Kwalbum_ItemAdder:: get_visibility($user);
 
-        $item->location = trim(htmlspecialchars(@ $_POST['loc']));
+        $item->location = trim($_POST['loc']);
 
         $tags = explode(',', @ $_POST['tags']);
         for ($i = 0; $i < count($tags); $i++) {
@@ -81,7 +81,7 @@ class Kwalbum_ItemAdder
                 if (isset($info['APP13'])) {
                     $iptc = iptcparse($info['APP13']);
                     foreach ($iptc as $key => $data) {
-                        if ($key == '2#120') {
+                        if ($key == '2#120' && $data[0] != null) {
                             $item->description = trim($data[0]);
                         }
                     }

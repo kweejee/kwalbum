@@ -27,15 +27,15 @@ class Controller_Ajax extends Controller_Kwalbum
     {
         $this->_testPermission();
         $userInput = trim(@$_GET['term']);
-        $locations = Model_Kwalbum_Location::getNameArray($this->user, 0, 20, 0, $userInput, '(loc.count+loc.child_count) DESC, p.name ASC, loc.name ASC');
+        $locations = Model_Kwalbum_Location::get_name_array($this->user, 0, 20, 0, $userInput, '(loc.count+loc.child_count) DESC, p.name ASC, loc.name ASC');
         echo json_encode($locations);
     }
 
     public function action_SetLocation(): void
     {
-        $item = Model::factory('Kwalbum_Item')->load((int)$_POST['item']);
+        $item = (new Model_Kwalbum_Item)->load((int)$_POST['item']);
         $this->_testPermission($item);
-        $item->location = htmlspecialchars(trim($_POST['value']));
+        $item->location = trim($_POST['value'] ?? '');
         $item->save();
         echo $item->location;
     }
@@ -85,7 +85,7 @@ class Controller_Ajax extends Controller_Kwalbum
     {
         $item = Model::factory('Kwalbum_Item')->load((int)$_POST['item']);
         $this->_testPermission($item);
-        $item->description = trim($_POST['value']);
+        $item->description = trim($_POST['value'] ?? '');
         $item->save();
         echo $item->description;
     }

@@ -15,8 +15,11 @@ class Model_Kwalbum_Item extends Kwalbum_Model
 {
     public $id, $type, $user_id, $location,
         $visible_date, $sort_date, $update_date, $create_date,
-        $description, $latitude, $longitude, $path, $real_path, $filename,
+        $latitude, $longitude, $path,
         $has_comments, $hide_level, $count, $loaded;
+    public string $description = '';
+    public string $filename = '';
+    public string $real_path = '';
     private $_user_name, $_original_location, $_original_user_id,
         $_location_id, $_persons, $_comments, $_comment_count;
     /**
@@ -153,7 +156,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
             DB::query(Database::UPDATE, "
                 UPDATE kwalbum_locations loc
                 LEFT JOIN kwalbum_locations p ON (p.id = loc.parent_location_id)
-                SET loc.count = loc.count-1, p.child_count = p.child_count-1
+                SET loc.count = GREATEST(1, loc.count)-1, p.child_count = GREATEST(1, p.child_count)-1
                 WHERE loc.id = :id")
                 ->param(':id', $this->_location_id)
                 ->execute();
@@ -966,6 +969,7 @@ class Model_Kwalbum_Item extends Kwalbum_Model
             case 'location':
                 $parent_name = '';
                 $loc_name = '';
+                $value = self::htmlspecialchars($value);
                 $names = explode(trim(self::get_config('location_separator_1')), $value);
                 if (count($names) > 1) {
                     $parent_name = trim($names[0]);
