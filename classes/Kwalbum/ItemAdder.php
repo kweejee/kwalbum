@@ -74,30 +74,28 @@ class Kwalbum_ItemAdder
             $fullpath = $item->real_path . $item->filename;
 
             $import_caption = !empty($_POST['import_caption']);
+            $import_keywords = !empty($_POST['import_keywords']);
 
-            if ($import_caption) {
+            if ($import_caption || $import_keywords) {
                 $info = null;
-                $size = getimagesize($fullpath, $info);
+                getimagesize($fullpath, $info);
                 if (isset($info['APP13'])) {
                     $iptc = iptcparse($info['APP13']);
                     foreach ($iptc as $key => $data) {
-                        if ($key == '2#120' && $data[0] != null) {
+                        if ($key == '2#120' && $import_caption && $data[0] != null) { // https://www.iptc.org/std/photometadata/specification/IPTC-PhotoMetadata#description
                             $item->description = trim($data[0]);
+                        }
+                        if ($key == '2#025' && $import_keywords) { https://www.iptc.org/std/photometadata/specification/IPTC-PhotoMetadata#keywords
+                            $item->add_tags($data);
                         }
                     }
                 }
             }
 
+
             $exif = @exif_read_data($fullpath);
             if ($exif) {
 //                Kohana::$log->add('var', print_r($exif));
-                /*
-                if ($irb = get_Photoshop_IRB($jpeg_header_data)) {
-                    $xmp = Read_XMP_array_from_text(get_XMP_text($jpeg_header_data));
-                    $pinfo = get_photoshop_file_info($exif, $xmp, $irb);
-                    $item->addTags($pinfo['keywords']);
-                    //echo '<pre>'.Kohana::debug( $pinfo );exit;
-                }*/
 
                 // replace the set date if one is found in the picture's exif data
                 if (isset($exif['DateTimeOriginal'])) {
