@@ -79,7 +79,7 @@
 		</td>
 		<td rowspan="2" style="vertical-align:top;" class="inputs">
 			<input type="checkbox" name="import_caption" id="import_caption" checked>Copy IPTC Caption to Description</input><br/>
-			<input type="checkbox" name="import_keywords" id="import_keywords" checked>Copy IPTC Keywords to Tags</input><br/>
+			<input type="checkbox" name="import_keywords" id="import_keywords">Copy IPTC Keywords to Tags</input><br/>
 		</td>
 	</tr>
 	</table>
