@@ -324,8 +324,13 @@ class Model_Kwalbum_User extends Kwalbum_Model
             setcookie(
                 'kwalbum',
                 $user->id . ':' . $user->token,
-                time() + $loginLength,
-                '/'
+                [
+                    'expires' => time() + $loginLength,
+                    'path' => '/',
+                    'secure' => true,
+                    'httponly' => true,
+                    'samesite' => 'Strict'
+                ]
             );
         }
 
