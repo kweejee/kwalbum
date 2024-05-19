@@ -27,7 +27,7 @@ $(document).ready(function(){
         loadurl:'KWALBUM_URL/~ajaxAdmin/GetLocationCoordinateHideLevel'
     });
 });
-var deleteLocation = function (id) {
+const deleteLocation = function (id) {
     if (confirm('You are about to permanently delete "'+$('#location_'+id).text()+'".')) {
         $.post(
             "KWALBUM_URL/~ajaxAdmin/DeleteLocation",

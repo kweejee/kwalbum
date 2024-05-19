@@ -1,5 +1,5 @@
 // Kwalbum 3.0
-var kwalbum = {
+const kwalbum = {
     resize_pop: null,
     images: {},
     current_id: null
@@ -9,7 +9,7 @@ $(document).ready(function(){
     $(window).on('resize', kwalbum.centerResizePopup);
 	$(".kwalbumThumbnailLink").on('click', function(event) {
         if (event.which === 1) { // left click only
-            var item_id = event.currentTarget.id;
+            let item_id = event.currentTarget.id;
             kwalbum.loadResizedImage(item_id);
             event.preventDefault();
         }
@@ -34,11 +34,11 @@ kwalbum.hideResizePopup = function () {
 }
 
 kwalbum.goToNextImage = function (backward) {
-    var current_item = kwalbum.images[kwalbum.current_id];
+    let current_item = kwalbum.images[kwalbum.current_id];
     if (!current_item) {
         return;
     }
-    var next_id = current_item.next_id;
+    let next_id = current_item.next_id;
     if (backward) {
         next_id = current_item.prev_id;
     }
@@ -54,10 +54,8 @@ kwalbum.centerResizePopup = function (hide_resize_message) {
     }
     $("#kwalbumResizeBox div+div").hide();
     $("#kwalbumResized"+kwalbum.current_id).show();
-    var left = (document.documentElement.clientWidth - $("#kwalbumResizeBox").width()) / 2;
-    left = Math.max(0, left);
-    var top = (document.documentElement.clientHeight - $("#kwalbumResizeBox").height()) / 2;
-    top = Math.max(0, top);
+    const left = Math.max(0, (document.documentElement.clientWidth - $("#kwalbumResizeBox").width()) / 2);
+    const top = Math.max(0, (document.documentElement.clientHeight - $("#kwalbumResizeBox").height()) / 2)
     kwalbum.resize_pop
         .css('left', left+'px')
         .css('top', top+'px');
@@ -90,7 +88,7 @@ kwalbum.loadResizedImage = function (item_elem_id) {
         kwalbum.resize_pop.show();
     }
 
-    var item_id = item_elem_id.split('_')[1]
+    let item_id = item_elem_id.split('_')[1]
     if (!item_id) {
         return;
     }
@@ -102,7 +100,7 @@ kwalbum.loadResizedImage = function (item_elem_id) {
 
     $("#kwalbumResizeMessage").show();
     kwalbum.centerResizePopup();
-    var resize_url = "/kwalbum/~ajax/GetResizedImage?id="+item_id; // TODO: dates, location, tags, people
+    let resize_url = "/kwalbum/~ajax/GetResizedImage?id="+item_id; // TODO: dates, location, tags, people
     $.ajax({
         url: resize_url,
         dataType: 'json',

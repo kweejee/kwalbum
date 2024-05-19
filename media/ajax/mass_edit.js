@@ -18,16 +18,16 @@ $(document).ready(function(){
     });
 });
 
-var kwalbumSetAutocomplete = function (input_selector, autocomplete_action) {
-    var $input = $(input_selector);
-    var cache = $input.data("kwalbum_cache");
+const kwalbumSetAutocomplete = function (input_selector, autocomplete_action) {
+    let $input = $(input_selector);
+    let cache = $input.data("kwalbum_cache");
     if (typeof cache !== "object") {
         cache = {};
     }
-    var data = {
+    const data = {
         minLength: 2,
         source: function(request, response) {
-            var term = request.term;
+            let term = request.term;
             if (term in cache) {
                 response(cache[term]);
                 return;

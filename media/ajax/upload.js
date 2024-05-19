@@ -1,9 +1,9 @@
 // Kwalbum 3.0
-var loc = {
+const loc = {
 	lastXhr: null,
 	cache: {}
 };
-var tags = {
+const tags = {
 	lastXhr: null,
 	cache: {}
 };
@@ -11,7 +11,7 @@ $(document).ready(function(){
 	$("#loc").focus().autocomplete({
 		minLength: 2,
 		source: function( request, response ) {
-			var term = request.term;
+			let term = request.term;
 			if ( term in loc.cache ) {
 				response( loc.cache[ term ] );
 				return;
@@ -28,7 +28,7 @@ $(document).ready(function(){
 	$("#tags").autocomplete({
 		minLength: 2,
 		source: function( request, response ) {
-			var term = request.term;
+			let term = request.term;
 			if ( term in tags.cache ) {
 				response( tags.cache[ term ] );
 				return;

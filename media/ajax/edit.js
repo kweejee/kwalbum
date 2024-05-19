@@ -3,10 +3,10 @@ $(document).ready(function(){
 	$.editable.addInputType('autocomplete', {
 		element:$.editable.types.text.element,
 		plugin:function(settings, original) {
-			var data = {
+			const data = {
 				minLength: 2,
 				source: function( request, response ) {
-					var term = request.term;
+					let term = request.term;
 					if ( term in settings.cache ) {
 						response( settings.cache[ term ] );
 						return;
@@ -157,7 +157,7 @@ $(document).ready(function(){
 		}
 	});
 });
-var rotate = function (degrees) {
+const rotate = function (degrees) {
 	$.post(
 		"KWALBUM_URL/~ajax/RotateItem",
 		{item: item_id, degrees: degrees},
