@@ -16,7 +16,7 @@ $(document).ready(function(){
     });
     $(document).keyup(function(e) {
         if (e.keyCode == 27) { // esc
-            $("#kwalbumResizePopup").hide();
+            kwalbum.hideResizePopup();
         } else if (e.keyCode == 39 || e.keyCode == 37) { // right & left
             if (kwalbum.current_id && $("#kwalbumResizePopup").css('display') === 'block') {
                 if (e.keyCode == 39) {
@@ -28,6 +28,10 @@ $(document).ready(function(){
         }
     });
 });
+
+kwalbum.hideResizePopup = function () {
+    $("#kwalbumResizePopup").hide();
+}
 
 kwalbum.goToNextImage = function (backward) {
     var current_item = kwalbum.images[kwalbum.current_id];
