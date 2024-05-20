@@ -1,11 +1,13 @@
 // Kwalbum 3.0
 const kwalbum = {
     resize_pop: null,
+    resize_box: null,
     images: {},
     current_id: null
 };
 $(document).ready(function(){
     kwalbum.resize_pop = $("#kwalbumResizePopup");
+    kwalbum.resize_box = $("#kwalbumResizeBox");
     $(window).on('resize', kwalbum.centerResizePopup);
 	$(".kwalbumThumbnailLink").on('click', function(event) {
         if (event.which === 1) { // left click only
@@ -54,19 +56,19 @@ kwalbum.centerResizePopup = function (hide_resize_message) {
     }
     $("#kwalbumResizeBox div+div").hide();
     $("#kwalbumResized"+kwalbum.current_id).show();
-    const left = Math.max(0, (document.documentElement.clientWidth - $("#kwalbumResizeBox").width()) / 2);
-    const top = Math.max(0, (document.documentElement.clientHeight - $("#kwalbumResizeBox").height()) / 2)
+    const left = Math.max(0, (document.documentElement.clientWidth - kwalbum.resize_box.width()) / 2);
+    const top = Math.max(0, (document.documentElement.clientHeight - kwalbum.resize_box.height()) / 2)
     kwalbum.resize_pop
         .css('left', left+'px')
         .css('top', top+'px');
 };
+
 kwalbum.setResizedImageHTML = function (data) {
-    $("#kwalbumResizeBox").append("<div id='kwalbumResized"+data.id+"' style='display:none;'>"
-        +data.img_html);
+    kwalbum.resize_box.append("<div id='kwalbumResized"+data.id+"' style='display:none;'>" + data.img_html);
     if (data.type !== "description only") {
-        $("#kwalbumResizeBox").append("<div class='kwalbumResizedDescription'>"+data.description+"</div>");
+        kwalbum.resize_box.append("<div class='kwalbumResizedDescription'>"+data.description+"</div>");
     }
-    $("#kwalbumResizeBox").append("</div>");
+    kwalbum.resize_box.append("</div>");
     if (data.type === "description only" || data.type === "unknown") {
         kwalbum.centerResizePopup(true);
     }
