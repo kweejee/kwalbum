@@ -147,10 +147,8 @@ class Model_Kwalbum_Comment extends Kwalbum_Model
     {
         if ($sort_direction == 'ASC') {
             Model_Kwalbum_Comment:: $_sort_direction = 'ASC';
-            Model_Kwalbum_Comment:: $_gtlt = '<';
         } else {
             Model_Kwalbum_Comment:: $_sort_direction = 'DESC';
-            Model_Kwalbum_Comment:: $_gtlt = '>';
         }
     }
 
