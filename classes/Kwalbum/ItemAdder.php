@@ -105,8 +105,9 @@ class Kwalbum_ItemAdder
 
                 if (!empty($exif['GPSLatitude'])) {
                     $latitude = $exif['GPSLatitude'];
+                    $min = explode('/', $latitude[1]);
                     $sec = explode('/', $latitude[2]);
-                    $lat = @ ((int)$latitude[0] + ((int)$latitude[1] / 60)
+                    $lat = @ ((int)$latitude[0] + (((int)$min[0] / (int)$min[1]) / 60)
                         + (((int)$sec[0] / (int)$sec[1]) / 3600));
                     if (!empty($exif['GPSLatitudeRef']) && 'S' == $exif['GPSLatitudeRef']) {
                         $lat = -($lat);
@@ -115,8 +116,9 @@ class Kwalbum_ItemAdder
                 }
                 if (!empty($exif['GPSLongitude'])) {
                     $longitude = $exif['GPSLongitude'];
+                    $min = explode('/', $longitude[1]);
                     $sec = explode('/', $longitude[2]);
-                    $lon = @ ((int)$longitude[0] + ((int)$longitude[1] / 60)
+                    $lon = @ ((int)$longitude[0] + (((int)$min[0] / (int)$min[1]) / 60)
                         + (((int)$sec[0] / (int)$sec[1]) / 3600));
                     if (!empty($exif['GPSLongitudeRef']) && 'W' == $exif['GPSLongitudeRef']) {
                         $lon = -($lon);
