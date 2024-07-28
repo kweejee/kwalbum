@@ -30,7 +30,7 @@ From here you can <?php echo HTML::anchor($kwalbum_url.'/~browse', '<b>browse al
 	</td>
 	<td>
 		Tags:<br/>
-		<select name="tags[]" multiple size="10">
+		<select name="tags[]" multiple size="10" tabindex="2">
 		<option value="" selected></option>
 		<?php
 		$tags = Model_Kwalbum_Tag::get_name_array();
@@ -41,7 +41,7 @@ From here you can <?php echo HTML::anchor($kwalbum_url.'/~browse', '<b>browse al
 	</td>
 	<td>
 		People:<br/>
-		<select name="people[]" multiple size="10">
+		<select name="people[]" multiple size="10" tabindex="3">
 		<option value="" selected></option>
 		<?php
 		$people = Model_Kwalbum_Person::get_name_array();
@@ -67,9 +67,9 @@ From here you can <?php echo HTML::anchor($kwalbum_url.'/~browse', '<b>browse al
 		</select>
 	</td>
 	</tr></table>
-    Start Date: <input type="date" name="date" />
-    End Date: <input type="date" name="date2" />
+    Start Date: <input type="date" name="date" tabindex="4" />
+    End Date: <input type="date" name="date2" tabindex="5" />
 	<br/>
-	<input type='submit' value='Search'/>
+	<input type='submit' value='Search' tabindex="6" />
 </form>
 </div>
