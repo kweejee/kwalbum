@@ -587,45 +587,55 @@ class Model_Kwalbum_Item extends Kwalbum_Model
         return $this->_comments;
     }
 
+    public function getPrettyDate(string $kwalbum_url = null): string
+    {
+        $datetime = explode(' ', $this->visible_date);
+
+        if (count($datetime) > 1) {
+            $time = explode(':', $datetime[1]);
+            $hour = $time[0];
+            $minute = empty($time[1]) ? null : $time[1];
+            $second = empty($time[2]) ? null : $time[2];
+        } else {
+            $hour = '';
+            $minute = '';
+        }
+        $date = explode('-', $datetime[0]);
+        $year = empty($date[0]) ? null : (int)$date[0];
+        $month = empty($date[1]) ? null : (int)$date[1];
+        $day = empty($date[2]) ? null : (int)$date[2];
+
+        if (!$month) {
+            // year only if no month
+            if ($year) {
+                $pretty_date = $year;
+            } else {
+                $pretty_date = '';
+            }
+        } else if (!$day) {
+            // month & year only if no day
+            $pretty_date = date('F Y', strtotime("$year-$month-1"));
+        } else {
+            $pretty_date = date('F j, Y', strtotime($this->visible_date));
+        }
+        if ($hour !== '00' or $minute !== '00' or $second !== '00') {
+            $pretty_date .= " $hour:$minute";
+        }
+
+        if ($year && $kwalbum_url) {
+            $pretty_date = HTML::anchor($kwalbum_url . '/' . $year . ($month ? "/$month" : '') . ($day ? "/$day" : ''), $pretty_date);
+        }
+
+        return $pretty_date;
+    }
+
     public function __get($id)
     {
         switch ($id) {
             case 'comments':
                 return $this->getComments();
             case 'pretty_date':
-                $datetime = explode(' ', $this->visible_date);
-
-                if (count($datetime) > 1) {
-                    $time = explode(':', $datetime[1]);
-                    $hour = $time[0];
-                    $minute = empty($time[1]) ? null : $time[1];
-                    $second = empty($time[2]) ? null : $time[2];
-                } else {
-                    $hour = '';
-                    $minute = '';
-                }
-                $date = explode('-', $datetime[0]);
-                $year = empty($date[0]) ? null : (int)$date[0];
-                $month = empty($date[1]) ? null : (int)$date[1];
-                $day = empty($date[2]) ? null : (int)$date[2];
-
-                if (!$month) {
-                    // year only if no month
-                    if ($year) {
-                        $pretty_date = $year;
-                    } else {
-                        $pretty_date = '';
-                    }
-                } else if (!$day) {
-                    // month & year only if no day
-                    $pretty_date = date('F Y', strtotime("$year-$month-1"));
-                } else {
-                    $pretty_date = date('F j, Y', strtotime($this->visible_date));
-                }
-                if ($hour !== '00' or $minute !== '00' or $second !== '00') {
-                    $pretty_date .= " $hour:$minute";
-                }
-                return $pretty_date;
+                return $this->getPrettyDate();
             case 'date':
                 $date = explode(' ', $this->visible_date);
                 return $date ? $date[0] : '';

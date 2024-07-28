@@ -3,7 +3,6 @@
  *
  *
  * @author Tim Redmond <kweejee@gmail.com>
- * @copyright Copyright 2009-2014 Tim Redmond
  * @license GNU General Public License version 3 <http://www.gnu.org/licenses/>
  * @package kwalbum
  */
