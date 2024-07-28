@@ -52,6 +52,14 @@ class Kwalbum_ItemAdder
         $this->_item = $item;
     }
 
+    private function convertCoordinateToDecimal(string $coordinate): float
+    {
+        $min = explode('/', $coordinate[1]);
+        $sec = explode('/', $coordinate[2]);
+        return @ ((int)$coordinate[0] + (((int)$min[0] / (int)$min[1]) / 60)
+            + (((int)$sec[0] / (int)$sec[1]) / 3600));
+    }
+
     /**
      * Save file in proper location and save information to database
      *
@@ -104,22 +112,14 @@ class Kwalbum_ItemAdder
                 }
 
                 if (!empty($exif['GPSLatitude'])) {
-                    $latitude = $exif['GPSLatitude'];
-                    $min = explode('/', $latitude[1]);
-                    $sec = explode('/', $latitude[2]);
-                    $lat = @ ((int)$latitude[0] + (((int)$min[0] / (int)$min[1]) / 60)
-                        + (((int)$sec[0] / (int)$sec[1]) / 3600));
+                    $lat = $this->convertCoordinateToDecimal($exif['GPSLatitude']);
                     if (!empty($exif['GPSLatitudeRef']) && 'S' == $exif['GPSLatitudeRef']) {
                         $lat = -($lat);
                     }
                     $item->latitude = $lat;
                 }
                 if (!empty($exif['GPSLongitude'])) {
-                    $longitude = $exif['GPSLongitude'];
-                    $min = explode('/', $longitude[1]);
-                    $sec = explode('/', $longitude[2]);
-                    $lon = @ ((int)$longitude[0] + (((int)$min[0] / (int)$min[1]) / 60)
-                        + (((int)$sec[0] / (int)$sec[1]) / 3600));
+                    $lon = $this->convertCoordinateToDecimal($exif['GPSLongitude']);
                     if (!empty($exif['GPSLongitudeRef']) && 'W' == $exif['GPSLongitudeRef']) {
                         $lon = -($lon);
                     }
