@@ -33,16 +33,16 @@
 	<tr>
 		<td class="inputs">
 			<label>Location:</label>
-			<input type="text" class="text" name="loc" id="loc" value="<?php echo $location?>" size="15" />
+			<input type="text" class="text" name="loc" id="loc" value="<?php echo $location?>" size="15" tabindex="1"/>
 		</td>
 		<td class="inputs">
 			<label>Tags:</label>
-			<input type="text" class="text" name="tags" id="tags" value="<?php echo $tags?>" size="20" />
+			<input type="text" class="text" name="tags" id="tags" value="<?php echo $tags?>" size="20" tabindex="2"/>
 		</td>
 		<td class="inputs">
 			Date if not on picture:
-			<input type="text" class="text" name="date" id="date" value="<?php echo $date ?>" size="10" />
-			<input type="text" class="text" name="time" id="time" value="<?php echo $time ?>" size="3" />
+			<input type="text" class="text" name="date" id="date" value="0000-00-00" size="10" />
+			<input type="text" class="text" name="time" id="time" value="00:00" size="3" />
 		</td>
 	</tr>
 
@@ -70,7 +70,7 @@
 		<td colspan="2">
             <span class="btn btn-success fileinput-button">
               <span>Select &amp; Upload files...</span>
-            <input id="fileupload" type="file" name="file" data-url="<?php echo $kwalbum_url.'/~ajax/upload' ?>" multiple>
+            <input id="fileupload" type="file" name="file" data-url="<?php echo $kwalbum_url.'/~ajax/upload' ?>" multiple tabindex="3" />
             </span>
             <div id="progress">
                 <p class="bar" style="width: 0%;"></p>
