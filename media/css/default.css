@@ -42,6 +42,9 @@ img{border-style:hidden;}
 .kwalbumResizedBox {
     border: 1px solid;
 }
+.kwalbumResizedBox img {
+    max-width: 100%;
+}
 .kwalbumResizedInfoBox {width:300px;float:left;padding-top:0px;}
 .kwalbumResizedInfoBox .kwalbumThumbnailBox {padding:0.5em;width:120px;}
 .kwalbumResizedInfoBox .kwalbumThumbnailBox img{width:100px;}
