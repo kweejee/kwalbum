@@ -52,7 +52,7 @@ class Kwalbum_ItemAdder
         $this->_item = $item;
     }
 
-    private function convertCoordinateToDecimal(string $coordinate): float
+    private function convertCoordinateToDecimal(array $coordinate): float
     {
         $min = explode('/', $coordinate[1]);
         $sec = explode('/', $coordinate[2]);
@@ -183,7 +183,7 @@ class Kwalbum_ItemAdder
 
         while (!Model_Kwalbum_Item::check_unique_filename($item->real_path, $item->filename)) {
             # TODO: Handle race condition if same filename is uploaded in multiple requests at same time
-            if (!isset($name)) {
+            if (!isset($name) || !isset($extension)) {
                 $i = 0;
                 $name = pathinfo($item->filename, PATHINFO_FILENAME);
                 $extension = pathinfo($item->filename, PATHINFO_EXTENSION);
@@ -197,7 +197,7 @@ class Kwalbum_ItemAdder
             return $ex->getMessage();
         }
 
-        if (!Upload:: save($file, $item->filename, $item->real_path)) {
+        if (!Kohana_Upload::save($file, $item->filename, $item->real_path)) {
             return 'Upload could not be saved';
         }
 
