@@ -145,6 +145,10 @@ class Kwalbum_ItemAdder
             }
         }
 
+        if ($item->type == 'gpx' || $item->type == 'geojson') {
+            $item->description = $item->filename;
+        }
+
         if (isset($_POST['group_option']) and $_POST['group_option'] == 'existing') {
             $result = DB::query(Database::SELECT,
                 "SELECT create_dt

@@ -121,7 +121,7 @@ class Kwalbum_Helper
     {
         $cleaned_description = strip_tags(str_replace(array('<br>', '<br/>'), ' ', $item->description));
         $description = '';
-        $description_only = $item->type == 'description only';
+        $description_only = $item->type == 'description only' || $item->type == 'gpx' || $item->type == 'geojson';
 
         if ($item->type == 'jpeg' or
             $item->type == 'gif' or

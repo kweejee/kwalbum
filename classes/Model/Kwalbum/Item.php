@@ -50,6 +50,8 @@ class Model_Kwalbum_Item extends Kwalbum_Model
         53 => 'doc',
         54 => 'mpeg',
         55 => 'mp4',*/
+        56 => 'gpx',
+        57 => 'geojson',
         255 => 'description only'
     );
     static private $_where = array();
