@@ -1,6 +1,6 @@
 <?php
 /**
- * @author Tim Redmond <kweejee@tummycaching.com>
+ * @author Tim Redmond
  * @copyright Copyright 2009-2014 Tim Redmond
  * @license GNU General Public License version 3 <http://www.gnu.org/licenses/>
  * @package kwalbum

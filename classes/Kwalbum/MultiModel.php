@@ -3,7 +3,7 @@
 /**
  * A standard way for all many-to-many Kwalbum model objects to behave
  *
- * @author Tim Redmond <kweejee@gmail.com>
+ * @author Tim Redmond
  * @copyright Copyright 2023 Tim Redmond
  * @license GNU General Public License version 3 <http://www.gnu.org/licenses/>
  * @package kwalbum

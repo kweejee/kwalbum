@@ -2,7 +2,7 @@
 /**
  *
  *
- * @author Tim Redmond <kweejee@gmail.com>
+ * @author Tim Redmond
  * @license GNU General Public License version 3 <http://www.gnu.org/licenses/>
  * @package kwalbum
  */

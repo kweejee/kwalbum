@@ -3,7 +3,7 @@
 /**
  * A standard way for all Kwalbum model objects to behave.
  *
- * @author Tim Redmond <kweejee@tummycaching.com>
+ * @author Tim Redmond
  * @copyright Copyright 2009-2023 Tim Redmond
  * @license GNU General Public License version 3 <http://www.gnu.org/licenses/>
  * @package kwalbum

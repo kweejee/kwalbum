@@ -6,7 +6,7 @@
  * It creates tables in the database and adds the first user as an
  * administrator.
  *
- * @author Tim Redmond <kweejee@tummycaching.com>
+ * @author Tim Redmond
  * @copyright Copyright 2009-2012 Tim Redmond
  * @license GNU General Public License version 3 <http://www.gnu.org/licenses/>
  * @package kwalbum

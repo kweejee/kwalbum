@@ -3,7 +3,7 @@
 /**
  * Main layout of every Kwalbum page.
  *
- * @author Tim Redmond <kweejee@tummycaching.com>
+ * @author Tim Redmond
  * @copyright Copyright 2009-2012 Tim Redmond
  * @license GNU General Public License version 3 <http://www.gnu.org/licenses/>
  * @package kwalbum

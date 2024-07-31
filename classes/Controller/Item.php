@@ -1,10 +1,7 @@
 <?php defined('SYSPATH') or die('No direct access allowed.');
 
 /**
- *
- *
- * @author Tim Redmond <kweejee@tummycaching.com>
- * @copyright Copyright 2009-2012 Tim Redmond
+ * @author Tim Redmond
  * @license GNU General Public License version 3 <http://www.gnu.org/licenses/>
  * @package kwalbum
  * @since 3.0 Jun 30, 2009
