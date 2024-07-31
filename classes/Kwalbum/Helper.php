@@ -121,18 +121,19 @@ class Kwalbum_Helper
     {
         $cleaned_description = strip_tags(str_replace(array('<br>', '<br/>'), ' ', $item->description));
         $description = '';
+        $description_only = $item->type == 'description only';
 
         if ($item->type == 'jpeg' or
             $item->type == 'gif' or
             $item->type == 'png') {
             $link_text = "<img src='{$item->getThumbnailURL($kwalbum_url)}'/>";
-        } elseif ($item->type == 'description only') {
-            $link_text = '<div class="box-thumbnail-description">' . substr($cleaned_description, 0, 200)
+        } elseif ($description_only) {
+            $link_text = '<div class="kwalbumThumbnailDescriptionBox">' . substr($cleaned_description, 0, 200)
                 . (strlen($cleaned_description) > 200 ? '...' : null) . '</div>';
         } else {
             $link_text = 'Unknown Filetype';
         }
-        if ($item->type != 'description only') {
+        if (!$description_only) {
             $description .= substr($cleaned_description, 0, 50)
                 . (strlen($cleaned_description) > 50 ? '...' : null);
             if (!$description) {
@@ -150,7 +151,7 @@ class Kwalbum_Helper
                 array('class' => 'kwalbumThumbnailLink', 'id' => "kwalbumItem_{$item->id}")
             )
             . "<br/>\n"
-            . ($description ? '<div class="box-thumbnail-description">' . $description . '</div>' : '')
+            . ($description ? '<div class="kwalbumThumbnailDescriptionBox">' . $description . '</div>' : '')
             . ($item->has_comments ? '<span class="kwalbumHasComments">*has comments</span>' : null);
     }
 

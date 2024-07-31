@@ -1,33 +1,54 @@
-html { background:#83c018; }
-body {margin: 1em; font-size: 76%; font-family: Arial, sans-serif; color: #273907; line-height: 1.5; }
+html { background: #dcfca6; }
+body {margin: 1em; font-family: Arial, sans-serif; color: #273907; line-height: 1.5; }
 h1 { font-size: 3em; font-weight: normal; color: #fff; }
-.box { padding: 1em; background:#98cc2b;border:1px solid #569f09;text-align:left;float:left;margin:5px;}
-.box-right{border:0px;width:300px;float:right;padding-top:0px;}
-.box-thumbnail{border:0px;padding:0.5em;width:120px;background:#83c018;}
-.box-thumbnail img{width:100px;}
-.box-comments{clear:both;}
-.box-thumbnail-description{width:200px;}
 
 #large_description{width:640px;}
 
-.copyright {clear:both;padding:0;text-align:center;font-size:0.7em;color:#557d10;}
+.copyright {
+    clear:both;
+    padding:0;
+    text-align:center;
+    font-size:0.7em;
+}
 .errors{color:red;}
 
 
-a{color: inherit;text-decoration:none;}
 img{border-style:hidden;}
 .hidden{display:none;}
 
-.kwalbumBox{
-	border-width:1px;
-	border-style:solid;
-	float:left;
-	margin:5px;
-	padding:5px;
+.kwalbumMenu{
+    font-size:0.9em;
+    margin:0px;
+    padding:0px;
+}
+.kwalbumMenu a{
+    color: inherit;
+    text-decoration:none;
+}
+
+.box { padding: 1em; text-align:left;float:left;margin:5px;}
+.kwalbumBox, .kwalbumThumbnailBox{
+    border-width: 1px;
+    border-style: solid;
+    float: left;
+    margin: 5px;
+    padding: 5px;
 }
 .kwalbumThumbnailBox{
-	height:192px;
-	text-align:center;
+    font-size: 0.7em;
+    height:192px;
+    text-align:center;
+}
+.kwalbumResizedBox {
+    border: 1px solid;
+}
+.kwalbumResizedInfoBox {width:300px;float:left;padding-top:0px;}
+.kwalbumResizedInfoBox .kwalbumThumbnailBox {padding:0.5em;width:120px;}
+.kwalbumResizedInfoBox .kwalbumThumbnailBox img{width:100px;}
+.kwalbumThumbnailDescriptionBox{width:100%;}
+.kwalbumThumbnails{
+    display: flex;
+    flex-wrap: wrap;
 }
 .kwalbumThumbnailBox.kwalbumEditMode{
     height:auto;
@@ -39,8 +60,6 @@ img{border-style:hidden;}
     display: none;
     position: fixed;
     padding: 5px;
-}
-.kwalbumResizeBox {
 }
 .kwalbumPageNumbers {
     clear:both;
@@ -70,10 +89,6 @@ img{border-style:hidden;}
 .kwalbumPopupTitle{text-align:center;font-size:1.4em;font-weight:bold;}
 .kwalbumPopupDescription{text-align:left;}
 
-#kwalbumMassEditFields .kwalbumMassEditField {float: left;}
-#kwalbumMassEditFields .kwalbumMassEditField:nth-child(3n+1) {clear: left;}
-.kwalbumMassEditInputs {clear: left;}
-.kwalbumMassEditCheckAlls {float: right;}
 .kwalbumItemInfo {
     margin: 0;
     max-width: 250px;
@@ -93,12 +108,74 @@ img{border-style:hidden;}
 }
 .kwalbumItemLocation {
     max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
+.kwalbumItemVisibility_0,
+.kwalbumItemVisibility_1 {
+    font-weight: bold;
+}
+
+#kwalbumMassEditFields .kwalbumMassEditField {float: left;}
+#kwalbumMassEditFields .kwalbumMassEditField:nth-child(3n+1) {clear: left;}
+.kwalbumMassEditInputs {clear: left;}
 .kwalbumMassEditField:nth-child(3n+1) {width: 279px;}
 .kwalbumMassEditField:nth-child(3n+2) {width: 287px;}
 .kwalbumMassEditField:nth-child(3n+3) {width: 276px;}
-.kwalbumMassEditField input {width: 190px;float:right;margin-right:10px;}
-.kwalbumMassEditField select {width: 192px;float:right;margin-right:10px;}
+.kwalbumMassEditField input {width: 190px;margin-right:10px;}
+.kwalbumMassEditField select {width: 192px;margin-right:10px;}
 #kwalbum_me_add_tags, #kwalbum_me_add_people {color:green;}
 #kwalbum_me_rem_tags, #kwalbum_me_rem_people {color:red;}
+.kwalbumMassEditCheckAlls {float: right;}
+
+
+.file {
+    position: relative;
+    background: linear-gradient(to right, lightblue 50%, transparent 50%);
+    background-size: 200% 100%;
+    background-position: right bottom;
+    transition:all 1s ease;
+}
+.file.done {
+    background: lightgreen;
+}
+.file.error {
+    padding: 5px;
+    background: #ff4c4c;
+}
+.file a {
+    display: block;
+    position: relative;
+    padding: 5px;
+    color: black;
+}
+#progress .bar {
+    background: green;
+    box-sizing: border-box;
+    visibility: collapse;
+    white-space: nowrap;
+}
+#progress .fileupload-processing{
+    background: green;
+    padding: 6px 10px;
+    box-sizing: border-box;
+    visibility: visible;
+}
+.btn {
+    display: inline-block;
+    margin-bottom: 0; // For input.btn
+    text-align: center;
+    vertical-align: middle;
+    touch-action: manipulation;
+    cursor: pointer;
+    background-image: none;
+    border: 1px solid transparent;
+    padding: 6px 12px;
+    white-space: nowrap;
+}
+.btn-success {
+    color: #fff;
+    background-color: #0c880c;
+    border-color: #4cae4c;
+}

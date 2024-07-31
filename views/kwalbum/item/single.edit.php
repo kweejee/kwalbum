@@ -10,7 +10,7 @@
  */
 
 ?>
-<div class="box">
+<div class="box kwalbumResizedBox">
 	<?php
 		if ($item->type != 'description only')
 		{
@@ -30,8 +30,7 @@
 	?>
 </div>
 
-<div class="box-right">
-	<div class="box">
+<div class="box kwalbumResizedInfoBox">
 <?php
 echo ' <span class="kwalbumPageNumbers">(item '.$item_index.' of '.$total_items.') - '
 	.HTML::anchor($kwalbum_url.'/'
@@ -92,7 +91,7 @@ echo ' <span class="kwalbumPageNumbers">(item '.$item_index.' of '.$total_items.
 	<strong>Views:</strong> <?php echo $item->count; ?><br/>
 
 	<div>
-		<div class="box box-thumbnail">
+		<div class="box kwalbumThumbnailBox">
 		Previous Item:<br/>
 		<?php
 		if ($previous_item->id)
@@ -101,7 +100,7 @@ echo ' <span class="kwalbumPageNumbers">(item '.$item_index.' of '.$total_items.
 			echo 'Viewing First Item';
 		?>
 		</div>
-		<div class="box box-thumbnail">
+		<div class="box kwalbumThumbnailBox">
 		Next Item:<br/>
 		<?php
 
@@ -113,10 +112,10 @@ echo ' <span class="kwalbumPageNumbers">(item '.$item_index.' of '.$total_items.
 		</div>
 	</div>
 
-</div></div>
+</div>
 
-<div class="box box-comments">
-<a name='comments'><b>Comments:</b></a><br/>
+<div class="box kwalbumCommentsBox">
+<a id='comments'><b>Comments:</b></a><br/>
 <?php
 foreach ($item->comments as $comment)
 {

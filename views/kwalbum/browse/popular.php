@@ -28,12 +28,12 @@ $page_links = "<div class='kwalbumPageNumbers'>pages: $page_links</div>";
 echo $page_links;
 
 if (count($items) == 0)
-	echo '<div class="kwalbumBox"><h2>No items were found that have view counts.</h2></div>';
+	echo '<div class="kwalbumThumbnailBox"><h2>No items were found that have view counts.</h2></div>';
 
 foreach ($items as $item)
 {
 	$item->hide_if_needed($user);
-	echo "<div class='kwalbumBox' style='height:250px;'>";
+	echo "<div class='kwalbumThumbnailBox' style='height:250px;'>";
 
 	// show thumbnail based on file type
 	echo '<h2>'.$item->count.' <small>views</small></h2>';

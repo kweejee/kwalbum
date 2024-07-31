@@ -101,9 +101,9 @@ if ($in_edit_mode) {
 }
 
 echo $page_links_div;
-
+echo '<div class="kwalbumThumbnails">';
 if (empty($items)) {
-    echo '<div class="kwalbumBox"><h2>No items were found that match your search.</h2></div>';
+    echo '<div class="kwalbumThumbnailBox"><h2>No items were found that match your search.</h2></div>';
 } else {
     foreach ($items as $item) {
         $item->hide_if_needed($user);
@@ -112,7 +112,7 @@ if (empty($items)) {
         echo $thumbview->render();
     }
 }
-
+echo '</div>';
 echo $page_links_div;
 
 if ($in_edit_mode) {

@@ -20,22 +20,22 @@
 		if ($user->can_edit)
 		{
 			if ($user->can_add)
-				echo HTML::anchor($kwalbum_url.'/~user/upload', 'upload').' - ';
-			echo '<a href="#" id="kwalbumEditToggle'.($in_edit_mode ? 'View">view' : 'Edit">edit').'</a> - ';
+				echo HTML::anchor($kwalbum_url.'/~user/upload', 'Upload').' - ';
+			echo '<a href="#" id="kwalbumEditToggle'.($in_edit_mode ? 'View">View' : 'Edit">Edit').'</a> - ';
 		}
 		if ($user->is_admin)
 		{
-			echo HTML::anchor($kwalbum_url.'/~admin', 'admin').' - ';
+			echo HTML::anchor($kwalbum_url.'/~admin', 'Admin').' - ';
 		}
-		echo HTML::anchor($kwalbum_url.'/~user/logout', 'logout');
+		echo HTML::anchor($kwalbum_url.'/~user/logout', 'Logout');
 
 		if ($in_edit_mode)
 			echo '&nbsp;&nbsp;&nbsp;<strong>!!! In Edit Mode !!!</strong>&nbsp;&nbsp;&nbsp;';
 	}
 	else
 	{
-		echo HTML::anchor($kwalbum_url.'/~user/login', 'login')
-			.' - '.HTML::anchor($kwalbum_url.'/~user/register', 'register');
+		echo HTML::anchor($kwalbum_url.'/~user/login', 'Login')
+			.' - '.HTML::anchor($kwalbum_url.'/~user/register', 'Register');
 	}
 	?>
 </div>
