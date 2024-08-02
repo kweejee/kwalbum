@@ -63,7 +63,7 @@ class Model_Kwalbum_Location extends Kwalbum_Model
                 $query = DB::query(Database::SELECT, "
                     SELECT id
                     FROM kwalbum_locations
-                    WHERE name = :name
+                    WHERE name = :name AND parent_location_id = 0
                     LIMIT 1");
             }
             $result = $query->param(':name', $this->name)
