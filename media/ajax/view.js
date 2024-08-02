@@ -56,6 +56,7 @@ kwalbum.centerResizePopup = function (hide_resize_message) {
     }
     $("#kwalbumResizeBox div+div").hide();
     $("#kwalbumResized"+kwalbum.current_id).show();
+    $("#kwalbumResizedDesc"+kwalbum.current_id).show();
     const left = Math.max(0, (document.documentElement.clientWidth - kwalbum.resize_box.width()) / 2);
     const top = Math.max(0, (document.documentElement.clientHeight - kwalbum.resize_box.height()) / 2)
     kwalbum.resize_pop
@@ -66,7 +67,7 @@ kwalbum.centerResizePopup = function (hide_resize_message) {
 kwalbum.setResizedImageHTML = function (data) {
     kwalbum.resize_box.append("<div id='kwalbumResized"+data.id+"' style='display:none;'>" + data.img_html);
     if (data.type !== "description only") {
-        kwalbum.resize_box.append("<div class='kwalbumResizedDescription'>"+data.description+"</div>");
+        kwalbum.resize_box.append("<div id='kwalbumResizedDesc"+data.id+"' class='kwalbumResizedDescription'>"+data.description+"</div>");
     }
     kwalbum.resize_box.append("</div>");
     if (data.type === "description only" || data.type === "unknown") {
