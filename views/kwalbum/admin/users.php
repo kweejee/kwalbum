@@ -21,7 +21,7 @@ foreach ($users as $u) {
     }
 	echo <<<ROW
     <tr id='row{$u->id}'>
-        <td><span id='user{$user->id}'>{$u->name}</span></td>
+        <td><span id='user{$u->id}'>{$u->name}</span></td>
         <td>{$u->login_name}</td>
         <td>{$u->email}</td>
         <td>{$u->visit_date}</td>
